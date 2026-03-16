@@ -155,3 +155,18 @@ a sign out button. They cannot access any app pages.
 - Owner sees all controls; admin can manage employees/viewers
 - Pending invites show as "Pending" with a "?" avatar
 - Duplicate invites show a clear error message
+
+## System Admin Page
+
+Available at `/admin` for SYSTEM_ADMIN users only.
+
+**Features:**
+- Create new organizations with an owner
+- View all organizations with owner email + member count
+- New owner emails receive a Cognito invite automatically
+
+**Accessing the admin page:**
+The "System Admin" link appears in the sidebar only for users
+with `system_role = SYSTEM_ADMIN`. The route is also enforced
+by `RoleRoute` — manually navigating to `/admin` as a regular
+user redirects to the dashboard.
