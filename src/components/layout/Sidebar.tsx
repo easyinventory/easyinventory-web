@@ -6,6 +6,7 @@ interface NavItem {
   to: string;
   label: string;
   requiredOrgRoles?: string[];
+  requiredSystemRole?: string;
 }
 
 const navItems: NavItem[] = [
@@ -20,6 +21,11 @@ const navItems: NavItem[] = [
     label: "Organization",
     requiredOrgRoles: ["ORG_OWNER", "ORG_ADMIN"],
   },
+  {
+    to: "/admin",
+    label: "System Admin",
+    requiredSystemRole: "SYSTEM_ADMIN",
+  },
 ];
 
 export default function Sidebar() {
@@ -31,13 +37,18 @@ export default function Sidebar() {
     navigate("/login");
   };
 
-  // Filter nav items based on org role
+  // Filter nav items based on org/system roles
   const visibleItems = navItems.filter((item) => {
-    if (!item.requiredOrgRoles) return true;
-    return (
-      profile?.org_role != null &&
-      item.requiredOrgRoles.includes(profile.org_role)
-    );
+    if (item.requiredOrgRoles) {
+      return (
+        profile?.org_role != null &&
+        item.requiredOrgRoles.includes(profile.org_role)
+      );
+    }
+    if (item.requiredSystemRole) {
+      return profile?.system_role === item.requiredSystemRole;
+    }
+    return true;
   });
 
   // Format org role for display
@@ -64,7 +75,9 @@ export default function Sidebar() {
             to={item.to}
             end={item.to === "/"}
             className={({ isActive }) =>
-              `sidebar__link${isActive ? " sidebar__link--active" : ""}`
+              `sidebar__link${isActive ? " sidebar__link--active" : ""}${
+                item.requiredSystemRole ? " sidebar__link--admin" : ""
+              }`
             }
           >
             {item.label}
