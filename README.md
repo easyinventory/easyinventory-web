@@ -95,6 +95,22 @@ Password requirements (Cognito defaults):
 - At least one number
 - At least one special character
 
+### Invite sign-up flow
+1. Admin invites an email on the org settings page
+2. Cognito sends an invite email with a temporary password
+3. Invited user visits the login page and enters their temp password
+4. The login form swaps to "Set new password"
+5. User sets their permanent password
+6. Backend claims their placeholder account and activates org membership
+7. User lands on the dashboard as an active member
+
+Password requirements (Cognito defaults):
+- Minimum 8 characters
+- At least one uppercase letter
+- At least one lowercase letter
+- At least one number
+- At least one special character
+
 ### Protected routes
 All app routes (dashboard, products, inventory, etc.) are wrapped
 in a `ProtectedRoute` component that redirects to `/login` if the
