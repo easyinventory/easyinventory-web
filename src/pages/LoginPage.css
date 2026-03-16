@@ -87,3 +87,15 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.login-form__forgot {
+  font-size: 13px;
+  color: var(--color-primary);
+  text-decoration: none;
+  text-align: right;
+  margin-top: -8px;
+}
+
+.login-form__forgot:hover {
+  text-decoration: underline;
+}

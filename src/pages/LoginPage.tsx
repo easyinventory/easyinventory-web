@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
@@ -74,6 +75,9 @@ export default function LoginPage() {
           {error && (
             <div className="login-form__error">{error}</div>
           )}
+        <Link to="/forgot-password" className="login-form__forgot">
+        Forgot password?
+        </Link>
 
           <button
             type="submit"
