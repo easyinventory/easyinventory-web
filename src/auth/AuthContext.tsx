@@ -1,5 +1,4 @@
 import {
-  createContext,
   useState,
   useEffect,
   useCallback,
@@ -12,49 +11,18 @@ import {
   CognitoUserSession,
 } from "amazon-cognito-identity-js";
 import apiClient, { setAuthToken } from "../api/client";
+import {
+  AuthContext,
+  type AuthContextType,
+  type AuthUser,
+  type UserProfile,
+} from "./auth-context";
 
 // ── Cognito pool config ──
 const userPool = new CognitoUserPool({
   UserPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
   ClientId: import.meta.env.VITE_COGNITO_APP_CLIENT_ID,
 });
-
-// ── Types ──
-export interface AuthUser {
-  email: string;
-  sub: string;
-}
-
-export interface UserProfile {
-  id: string;
-  email: string;
-  system_role: string;
-  is_active: boolean;
-  created_at: string;
-  org_role: string | null;
-}
-
-export interface AuthContextType {
-  user: AuthUser | null;
-  profile: UserProfile | null;
-  token: string | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  error: string | null;
-  forgotPassword: (email: string) => Promise<void>;
-  confirmResetPassword: (
-    email: string,
-    code: string,
-    newPassword: string
-  ) => Promise<void>;
-  refreshProfile: () => Promise<void>;
-  needsNewPassword: boolean;
-  completeNewPassword: (newPassword: string) => Promise<void>;
-}
-// ── Context ──
-export const AuthContext = createContext<AuthContextType | null>(null);
 
 // ── Helper: extract user info from session ──
 function extractUser(session: CognitoUserSession): AuthUser {
@@ -70,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => userPool.getCurrentUser() != null);
   const [error, setError] = useState<string | null>(null);
   const [pendingUser, setPendingUser] = useState<CognitoUser | null>(null);
   const [needsNewPassword, setNeedsNewPassword] = useState(false);
@@ -102,7 +70,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const cognitoUser = userPool.getCurrentUser();
     if (!cognitoUser) {
-      setIsLoading(false);
       return;
     }
 
