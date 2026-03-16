@@ -7,11 +7,28 @@ const apiClient = axios.create({
   },
 });
 
-// PR-09 will add an interceptor here to attach the JWT:
-// apiClient.interceptors.request.use((config) => {
-//   const token = getToken();
-//   if (token) config.headers.Authorization = `Bearer ${token}`;
-//   return config;
-// });
+// Token is set by AuthContext after login
+let authToken: string | null = null;
+
+export function setAuthToken(token: string | null) {
+  authToken = token;
+}
+
+apiClient.interceptors.request.use((config) => {
+  if (authToken) {
+    config.headers.Authorization = `Bearer ${authToken}`;
+  }
+  return config;
+});
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      authToken = null;
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default apiClient;
