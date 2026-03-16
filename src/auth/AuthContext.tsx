@@ -33,8 +33,13 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   error: string | null;
+  forgotPassword: (email: string) => Promise<void>;
+  confirmResetPassword: (
+    email: string,
+    code: string,
+    newPassword: string
+  ) => Promise<void>;
 }
-
 // ── Context ──
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -140,7 +145,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
   }, []);
 
-  const value: AuthContextType = {
+    // Forgot password — sends verification code to email
+    const forgotPassword = useCallback((email: string): Promise<void> => {
+    const cognitoUser = new CognitoUser({
+        Username: email,
+        Pool: userPool,
+    });
+
+    return new Promise((resolve, reject) => {
+        cognitoUser.forgotPassword({
+        onSuccess: () => {
+            resolve();
+        },
+        onFailure: (err: Error) => {
+            reject(err);
+        },
+        inputVerificationCode: () => {
+            // This callback fires when code is sent successfully
+            resolve();
+        },
+        });
+    });
+    }, []);
+
+    // Confirm password reset with verification code
+    const confirmResetPassword = useCallback(
+    (email: string, code: string, newPassword: string): Promise<void> => {
+        const cognitoUser = new CognitoUser({
+        Username: email,
+        Pool: userPool,
+        });
+
+        return new Promise((resolve, reject) => {
+        cognitoUser.confirmPassword(code, newPassword, {
+            onSuccess: () => {
+            resolve();
+            },
+            onFailure: (err: Error) => {
+            reject(err);
+            },
+        });
+        });
+    },
+    []
+    );
+
+
+    const value: AuthContextType = {
     user,
     token,
     isLoading,
@@ -148,7 +199,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     error,
-  };
+    forgotPassword,
+    confirmResetPassword,
+    };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

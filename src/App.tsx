@@ -11,6 +11,8 @@ import AnalyticsPage from "./pages/AnalyticsPage";
 import SuppliersPage from "./pages/SuppliersPage";
 import OrgSettingsPage from "./pages/OrgSettingsPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 export default function App() {
   return (
@@ -19,7 +21,9 @@ export default function App() {
         <Routes>
           {/* Public routes */}
           <Route path="/login" element={<LoginPage />} />
-
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          
           {/* App routes (will be protected in PR-11) */}
           <Route element={<AppLayout />}>
             <Route path="/" element={<DashboardPage />} />
