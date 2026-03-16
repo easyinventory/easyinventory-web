@@ -99,3 +99,9 @@
 .login-form__forgot:hover {
   text-decoration: underline;
 }
+
+.login-form__hint {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-top: 4px;
+}
