@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# EasyInventory Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React frontend for the EasyInventory inventory management platform.
 
-Currently, two official plugins are available:
+## Prerequisites
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js 20+
+- npm
 
-## React Compiler
+## Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Clone the repo
+2. `cp .env.example .env` and fill in values
+3. `npm install`
+4. `npm run dev`
+5. App: http://localhost:5173
 
-## Expanding the ESLint configuration
+## Development Commands
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Command            | What it does               |
+|--------------------|----------------------------|
+| `npm run dev`      | Start dev server           |
+| `npm run build`    | Production build           |
+| `npm run preview`  | Preview production build   |
+| `npm run lint`     | Run ESLint                 |
+| `npm run lint:fix` | Auto-fix ESLint issues     |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Project Structure
+```
+src/
+├── api/             # Axios client + API functions
+├── auth/            # Auth context + Cognito integration (PR-09)
+├── components/
+│   ├── layout/      # Sidebar, AppLayout, PageHeader
+│   └── ui/          # Shared UI components
+├── hooks/           # Custom React hooks
+├── pages/           # Route-level page components
+├── App.tsx          # Router + route definitions
+├── main.tsx         # Entry point
+└── index.css        # Global styles + CSS variables
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## CSS Approach
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+This project uses **plain CSS** with CSS variables for theming.
+Each component has a co-located `.css` file (e.g., `Sidebar.tsx`
+and `Sidebar.css`). Global variables and utility classes are in
+`src/index.css`.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+No Tailwind, no CSS-in-JS, no preprocessors. Keep it simple.
+
+## Environment Variables
+
+| Variable                     | Description                    |
+|------------------------------|--------------------------------|
+| `VITE_API_URL`               | Backend API base URL           |
+| `VITE_COGNITO_REGION`        | AWS Cognito region (PR-09)     |
+| `VITE_COGNITO_USER_POOL_ID`  | Cognito User Pool ID (PR-09)   |
+| `VITE_COGNITO_APP_CLIENT_ID` | Cognito App Client ID (PR-09)  |
