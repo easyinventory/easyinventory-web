@@ -15,6 +15,7 @@ import StoreLayoutPage from "./pages/StoreLayoutPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import SuppliersPage from "./pages/SuppliersPage";
 import OrgSettingsPage from "./pages/OrgSettingsPage";
+import AdminPage from "./pages/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
@@ -42,6 +43,15 @@ export default function App() {
                   element={
                     <RoleRoute allowedRoles={["ORG_OWNER", "ORG_ADMIN"]} roleField="org_role">
                       <OrgSettingsPage />
+                    </RoleRoute>
+                  }
+                />
+                {/* System admin routes — gated on system_role */}
+                <Route
+                  path="/admin"
+                  element={
+                    <RoleRoute allowedRoles={["SYSTEM_ADMIN"]} roleField="system_role">
+                      <AdminPage />
                     </RoleRoute>
                   }
                 />
