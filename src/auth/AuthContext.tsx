@@ -11,7 +11,7 @@ import {
   AuthenticationDetails,
   CognitoUserSession,
 } from "amazon-cognito-identity-js";
-import { setAuthToken } from "../api/client";
+import apiClient, { setAuthToken } from "../api/client";
 
 // ── Cognito pool config ──
 const userPool = new CognitoUserPool({
@@ -25,8 +25,18 @@ export interface AuthUser {
   sub: string;
 }
 
+export interface UserProfile {
+  id: string;
+  email: string;
+  system_role: string;
+  is_active: boolean;
+  created_at: string;
+  org_role: string | null;
+}
+
 export interface AuthContextType {
   user: AuthUser | null;
+  profile: UserProfile | null;
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -55,9 +65,33 @@ function extractUser(session: CognitoUserSession): AuthUser {
 // ── Provider ──
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  async function fetchProfile(jwt: string): Promise<UserProfile | null> {
+    try {
+      setAuthToken(jwt);
+
+      // Fetch user record and org memberships in parallel
+      const [userRes, orgsRes] = await Promise.all([
+        apiClient.get("/api/me"),
+        apiClient.get("/api/orgs/me"),
+      ]);
+
+      const user = userRes.data;
+      const memberships = orgsRes.data;
+
+      // Get the first active membership's org_role (or null if no memberships)
+      const orgRole =
+        memberships.length > 0 ? memberships[0].org_role : null;
+
+      return { ...user, org_role: orgRole } as UserProfile;
+    } catch {
+      return null;
+    }
+  }
 
   // Check for existing session on mount (page refresh)
   useEffect(() => {
@@ -68,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     cognitoUser.getSession(
-      (err: Error | null, session: CognitoUserSession | null) => {
+      async (err: Error | null, session: CognitoUserSession | null) => {
         if (err || !session || !session.isValid()) {
           setIsLoading(false);
           return;
@@ -77,6 +111,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(extractUser(session));
         setToken(jwt);
         setAuthToken(jwt);
+
+        const userProfile = await fetchProfile(jwt);
+        setProfile(userProfile);
+
         setIsLoading(false);
       }
     );
@@ -99,12 +137,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       return new Promise((resolve, reject) => {
         cognitoUser.authenticateUser(authDetails, {
-          onSuccess: (session: CognitoUserSession) => {
+          onSuccess: async (session: CognitoUserSession) => {
             const jwt = session.getIdToken().getJwtToken();
             setUser(extractUser(session));
             setToken(jwt);
             setAuthToken(jwt);
             setError(null);
+
+            const userProfile = await fetchProfile(jwt);
+            setProfile(userProfile);
+
             resolve();
           },
           onFailure: (err: Error) => {
@@ -141,6 +183,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     setUser(null);
     setToken(null);
+    setProfile(null);
     setAuthToken(null);
     setError(null);
   }, []);
@@ -193,6 +236,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const value: AuthContextType = {
     user,
+    profile,
     token,
     isLoading,
     isAuthenticated: !!user && !!token,
