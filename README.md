@@ -80,3 +80,17 @@ via an Axios interceptor.
 The Cognito SDK stores the refresh token in localStorage.
 On page refresh, the AuthContext checks for an existing session
 and restores it automatically (no re-login needed).
+
+### Password reset flow
+1. User clicks "Forgot password?" on `/login`
+2. Enters email on `/forgot-password`
+3. Cognito sends a 6-digit verification code to their email
+4. User enters code + new password on `/reset-password`
+5. On success, redirected to `/login` to sign in with new password
+
+Password requirements (Cognito defaults):
+- Minimum 8 characters
+- At least one uppercase letter
+- At least one lowercase letter
+- At least one number
+- At least one special character
