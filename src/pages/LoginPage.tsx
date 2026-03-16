@@ -1,32 +1,36 @@
-import { Link } from "react-router-dom";
-import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import "./LoginPage.css";
 
 export default function LoginPage() {
-  const { login, error, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, error: authError } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Where to go after login — default to dashboard
+  const from =
+    (location.state as { from?: { pathname: string } })?.from?.pathname || "/";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // If already logged in, redirect to dashboard
+  // If already logged in, redirect
   if (isAuthenticated) {
-    navigate("/", { replace: true });
+    navigate(from, { replace: true });
     return null;
   }
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
       await login(email, password);
-      navigate("/", { replace: true });
+      navigate(from, { replace: true });
     } catch {
-      // Error is already set in AuthContext
+      // Error is handled by AuthContext and available via authError
     } finally {
       setIsSubmitting(false);
     }
@@ -41,13 +45,14 @@ export default function LoginPage() {
         </p>
 
         <form className="login-form" onSubmit={handleSubmit}>
-          <div className="form-field">
-            <label className="form-field__label" htmlFor="email">
-              Email
-            </label>
+          {authError && (
+            <div className="login-form__error">{authError}</div>
+          )}
+
+          <div className="login-form__field">
+            <label htmlFor="email">Email</label>
             <input
               id="email"
-              className="form-field__input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -57,13 +62,10 @@ export default function LoginPage() {
             />
           </div>
 
-          <div className="form-field">
-            <label className="form-field__label" htmlFor="password">
-              Password
-            </label>
+          <div className="login-form__field">
+            <label htmlFor="password">Password</label>
             <input
               id="password"
-              className="form-field__input"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -72,17 +74,14 @@ export default function LoginPage() {
             />
           </div>
 
-          {error && (
-            <div className="login-form__error">{error}</div>
-          )}
-        <Link to="/forgot-password" className="login-form__forgot">
-        Forgot password?
-        </Link>
+          <Link to="/forgot-password" className="login-form__forgot">
+            Forgot password?
+          </Link>
 
           <button
             type="submit"
             className="login-form__submit"
-            disabled={isSubmitting || !email || !password}
+            disabled={isSubmitting}
           >
             {isSubmitting ? "Signing in..." : "Sign in"}
           </button>
