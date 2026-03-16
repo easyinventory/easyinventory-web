@@ -49,6 +49,7 @@ export interface AuthContextType {
     code: string,
     newPassword: string
   ) => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 // ── Context ──
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -234,6 +235,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
 
+    const refreshProfile = useCallback(async () => {
+      if (!token) return;
+      const userProfile = await fetchProfile(token);
+      setProfile(userProfile);
+    }, [token]);
+
     const value: AuthContextType = {
     user,
     profile,
@@ -245,6 +252,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     error,
     forgotPassword,
     confirmResetPassword,
+    refreshProfile,
     };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

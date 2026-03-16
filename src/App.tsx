@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { AuthProvider } from "./auth/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import RequireOrg from "./components/auth/RequireOrg";
 import RoleRoute from "./components/auth/RoleRoute";
 import AppLayout from "./components/layout/AppLayout";
 import LoginPage from "./pages/LoginPage";
@@ -28,26 +29,23 @@ export default function App() {
 
           {/* Protected routes — must be logged in */}
           <Route element={<ProtectedRoute />}>
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="/inventory" element={<InventoryPage />} />
-              <Route path="/store-layout" element={<StoreLayoutPage />} />
-              <Route path="/analytics" element={<AnalyticsPage />} />
-              <Route path="/suppliers" element={<SuppliersPage />} />
-
-              {/* Org admin routes — gated on org_role, not system_role */}
-              <Route
-                path="/org-settings"
-                element={
-                  <RoleRoute
-                    allowedRoles={["ORG_OWNER", "ORG_ADMIN"]}
-                    roleField="org_role"
-                  >
-                    <OrgSettingsPage />
-                  </RoleRoute>
-                }
-              />
+            <Route element={<RequireOrg />}>
+              <Route element={<AppLayout />}>
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/products" element={<ProductsPage />} />
+                <Route path="/inventory" element={<InventoryPage />} />
+                <Route path="/store-layout" element={<StoreLayoutPage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/suppliers" element={<SuppliersPage />} />
+                <Route
+                  path="/org-settings"
+                  element={
+                    <RoleRoute allowedRoles={["ORG_OWNER", "ORG_ADMIN"]} roleField="org_role">
+                      <OrgSettingsPage />
+                    </RoleRoute>
+                  }
+                />
+              </Route>
             </Route>
           </Route>
 

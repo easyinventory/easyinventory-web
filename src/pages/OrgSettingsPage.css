@@ -1,0 +1,25 @@
+.org-settings {
+  max-width: 700px;
+}
+
+.org-settings__org-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.org-settings__org-name {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.org-settings__org-meta {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
