@@ -126,3 +126,16 @@ into the `profile` object in AuthContext.
 | `ORG_EMPLOYEE` | No — redirected to dashboard | No |
 | `ORG_VIEWER` | No — redirected to dashboard | No |
 | No membership | No — redirected to dashboard | No |
+
+## Organization Management UI
+
+**No org membership:** Users without an org membership see a
+"Waiting for organization access" screen with their email and
+a sign out button. They cannot access any app pages.
+
+**Org settings page** (ORG_OWNER and ORG_ADMIN only):
+- Inline invite form with email + role dropdown
+- Member list with role management and status controls
+- Owner sees all controls; admin can manage employees/viewers
+- Pending invites show as "Pending" with a "?" avatar
+- Duplicate invites show a clear error message
