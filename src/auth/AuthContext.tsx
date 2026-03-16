@@ -50,6 +50,8 @@ export interface AuthContextType {
     newPassword: string
   ) => Promise<void>;
   refreshProfile: () => Promise<void>;
+  needsNewPassword: boolean;
+  completeNewPassword: (newPassword: string) => Promise<void>;
 }
 // ── Context ──
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -70,6 +72,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pendingUser, setPendingUser] = useState<CognitoUser | null>(null);
+  const [needsNewPassword, setNeedsNewPassword] = useState(false);
 
   async function fetchProfile(jwt: string): Promise<UserProfile | null> {
     try {
@@ -165,10 +169,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             reject(new Error(message));
           },
           newPasswordRequired: () => {
-            const msg =
-              "You must set a new password. Use the Cognito hosted UI or AWS CLI.";
-            setError(msg);
-            reject(new Error(msg));
+            // Store the Cognito user so we can complete the challenge
+            setPendingUser(cognitoUser);
+            setNeedsNewPassword(true);
+            setError(null);
+            // Resolve — the login page will swap to the new password form
+            resolve();
           },
         });
       });
@@ -185,9 +191,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setToken(null);
     setProfile(null);
+    setPendingUser(null);
+    setNeedsNewPassword(false);
     setAuthToken(null);
     setError(null);
   }, []);
+
+  // Complete new-password challenge
+  const completeNewPassword = useCallback(
+    (newPassword: string): Promise<void> => {
+      if (!pendingUser) {
+        return Promise.reject(new Error("No pending password challenge"));
+      }
+
+      return new Promise((resolve, reject) => {
+        pendingUser.completeNewPasswordChallenge(
+          newPassword,
+          {},  // required attributes — empty for our setup
+          {
+            onSuccess: async (session: CognitoUserSession) => {
+              const jwt = session.getIdToken().getJwtToken();
+              setUser(extractUser(session));
+              setToken(jwt);
+              setAuthToken(jwt);
+              setPendingUser(null);
+              setNeedsNewPassword(false);
+              setError(null);
+
+              // Fetch profile — this triggers placeholder claiming
+              const userProfile = await fetchProfile(jwt);
+              setProfile(userProfile);
+
+              resolve();
+            },
+            onFailure: (err: Error) => {
+              if (err.name === "InvalidPasswordException") {
+                setError(
+                  "Password must include uppercase, lowercase, number, and special character."
+                );
+              } else {
+                setError(err.message);
+              }
+              reject(err);
+            },
+          }
+        );
+      });
+    },
+    [pendingUser]
+  );
 
     // Forgot password — sends verification code to email
     const forgotPassword = useCallback((email: string): Promise<void> => {
@@ -253,6 +305,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     forgotPassword,
     confirmResetPassword,
     refreshProfile,
+    needsNewPassword,
+    completeNewPassword,
     };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
