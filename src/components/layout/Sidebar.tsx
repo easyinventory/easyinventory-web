@@ -1,4 +1,5 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/useAuth";
 import "./Sidebar.css";
 
 const navItems = [
@@ -12,6 +13,14 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <aside className="sidebar">
       <div className="sidebar__logo">EasyInventory</div>
@@ -31,9 +40,12 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="sidebar__footer">
-        <p>Org: —</p>
-        <p>Role: —</p>
+      <div className="sidebar__user">
+        <p className="sidebar__user-email">{user?.email || "—"}</p>
+        <p className="sidebar__user-role">Signed in</p>
+        <button className="sidebar__logout" onClick={handleLogout}>
+          Sign out
+        </button>
       </div>
     </aside>
   );
