@@ -94,3 +94,35 @@ Password requirements (Cognito defaults):
 - At least one lowercase letter
 - At least one number
 - At least one special character
+
+### Protected routes
+All app routes (dashboard, products, inventory, etc.) are wrapped
+in a `ProtectedRoute` component that redirects to `/login` if the
+user is not authenticated. After login, the user is sent back to
+the page they originally tried to visit.
+
+### Role-based access
+Two layers of enforcement:
+
+1. **Route-level** — `RoleRoute` wraps role-gated routes. If a user
+   without the required role manually navigates to the URL, they're
+   redirected to the dashboard. This is the real security boundary.
+2. **UI-level** — the sidebar hides nav links the user can't access.
+   This is cosmetic but prevents confusion.
+
+`RoleRoute` supports two role fields:
+- `roleField="system_role"` — checks `users.system_role` (default)
+- `roleField="org_role"` — checks `org_memberships.org_role`
+
+After login, the app fetches both `GET /api/me` (user record) and
+`GET /api/orgs/me` (org memberships) in parallel. Both are merged
+into the `profile` object in AuthContext.
+
+### Org roles
+| Role | Can access org settings? | Sidebar shows link? |
+|---|---|---|
+| `ORG_OWNER` | Yes | Yes |
+| `ORG_ADMIN` | Yes | Yes |
+| `ORG_EMPLOYEE` | No — redirected to dashboard | No |
+| `ORG_VIEWER` | No — redirected to dashboard | No |
+| No membership | No — redirected to dashboard | No |

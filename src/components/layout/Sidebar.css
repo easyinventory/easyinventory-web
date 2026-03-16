@@ -88,3 +88,21 @@
 .sidebar__logout:hover {
   color: var(--color-danger);
 }
+
+.sidebar__role-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 8px;
+  border-radius: var(--radius-md);
+  margin-top: 2px;
+}
+
+.sidebar__role-badge--admin {
+  background: var(--color-primary-bg);
+  color: var(--color-primary-text);
+}
+
+.sidebar__role-badge--user {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+}

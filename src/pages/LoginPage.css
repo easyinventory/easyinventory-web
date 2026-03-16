@@ -33,18 +33,18 @@
   gap: 16px;
 }
 
-.form-field {
+.login-form__field {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.form-field__label {
+.login-form__field label {
   font-size: 13px;
   color: var(--color-text-secondary);
 }
 
-.form-field__input {
+.login-form__field input {
   padding: 8px 12px;
   font-size: 14px;
   font-family: var(--font-sans);
@@ -54,7 +54,7 @@
   transition: border-color 0.15s;
 }
 
-.form-field__input:focus {
+.login-form__field input:focus {
   border-color: var(--color-primary);
 }
 
