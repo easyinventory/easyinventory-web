@@ -1,12 +1,13 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
+import { OrgRole, SystemRole } from "../../constants/roles";
 import "./Sidebar.css";
 
 interface NavItem {
   to: string;
   label: string;
-  requiredOrgRoles?: string[];
-  requiredSystemRole?: string;
+  requiredOrgRoles?: OrgRole[];
+  requiredSystemRole?: SystemRole;
 }
 
 const navItems: NavItem[] = [
@@ -19,12 +20,12 @@ const navItems: NavItem[] = [
   {
     to: "/org-settings",
     label: "Organization",
-    requiredOrgRoles: ["ORG_OWNER", "ORG_ADMIN"],
+    requiredOrgRoles: [OrgRole.OWNER, OrgRole.ADMIN],
   },
   {
     to: "/admin",
     label: "System Admin",
-    requiredSystemRole: "SYSTEM_ADMIN",
+    requiredSystemRole: SystemRole.ADMIN,
   },
 ];
 
@@ -57,8 +58,8 @@ export default function Sidebar() {
     : "member";
 
   const isOrgAdmin =
-    profile?.org_role === "ORG_OWNER" ||
-    profile?.org_role === "ORG_ADMIN";
+    profile?.org_role === OrgRole.OWNER ||
+    profile?.org_role === OrgRole.ADMIN;
 
   const roleClass = isOrgAdmin
     ? "sidebar__role-badge--admin"

@@ -6,6 +6,7 @@ import {
   activateMember,
   removeMember,
 } from "../../api/orgApi";
+import { OrgRole } from "../../constants/roles";
 import "./MemberRow.css";
 
 interface MemberRowProps {
@@ -24,10 +25,10 @@ export default function MemberRow({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isOwner = member.org_role === "ORG_OWNER";
-  const isAdmin = member.org_role === "ORG_ADMIN";
+  const isOwner = member.org_role === OrgRole.OWNER;
+  const isAdmin = member.org_role === OrgRole.ADMIN;
   const isSelf = member.email === currentUserEmail;
-  const actorIsOwner = actorRole === "ORG_OWNER";
+  const actorIsOwner = actorRole === OrgRole.OWNER;
   const isPending = !member.is_active && member.email.includes("@");
 
   // Can this actor modify this member?
@@ -41,7 +42,7 @@ export default function MemberRow({
     .slice(0, 2)
     .toUpperCase();
 
-  const handleRoleChange = async (newRole: string) => {
+  const handleRoleChange = async (newRole: OrgRole) => {
     setIsLoading(true);
     setError(null);
     try {
@@ -150,12 +151,12 @@ export default function MemberRow({
           <select
             className="member-row__role-select"
             value={member.org_role}
-            onChange={(e) => handleRoleChange(e.target.value)}
+            onChange={(e) => handleRoleChange(e.target.value as OrgRole)}
             disabled={isLoading}
           >
-            {actorIsOwner && <option value="ORG_ADMIN">Admin</option>}
-            <option value="ORG_EMPLOYEE">Employee</option>
-            <option value="ORG_VIEWER">Viewer</option>
+            {actorIsOwner && <option value={OrgRole.ADMIN}>Admin</option>}
+            <option value={OrgRole.EMPLOYEE}>Employee</option>
+            <option value={OrgRole.VIEWER}>Viewer</option>
           </select>
         ) : (
           <span style={{ fontSize: 11, color: "var(--color-text-secondary)" }}>
