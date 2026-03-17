@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { JSX } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
 import "./Sidebar.css";
