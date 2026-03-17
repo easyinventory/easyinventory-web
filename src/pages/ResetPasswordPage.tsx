@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
-import "./ResetPasswordPage.css";
+import AuthLayout from "../components/layout/AuthLayout";
 
 export default function ResetPasswordPage() {
   const { confirmResetPassword } = useAuth();
@@ -68,25 +68,25 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="reset-page">
-      <div className="reset-card">
-        <h1 className="reset-card__title">Set new password</h1>
-        <p className="reset-card__subtitle">
+    <AuthLayout>
+      <div className="auth-card">
+        <h1 className="auth-card__title">Set new password</h1>
+        <p className="auth-card__subtitle">
           Enter the verification code sent to your email and choose a new
           password.
         </p>
 
-        <form className="reset-form" onSubmit={handleSubmit}>
-          {error && <div className="reset-form__error">{error}</div>}
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {error && <div className="auth-form__error">{error}</div>}
           {success && (
-            <div className="reset-form__success">
+            <div className="auth-form__success">
               Password reset successfully! Redirecting to sign in...
             </div>
           )}
 
           {!success && (
             <>
-              <div className="reset-form__field">
+              <div className="auth-form__field">
                 <label htmlFor="email">Email</label>
                 <input
                   id="email"
@@ -98,7 +98,7 @@ export default function ResetPasswordPage() {
                 />
               </div>
 
-              <div className="reset-form__field">
+              <div className="auth-form__field">
                 <label htmlFor="code">Verification code</label>
                 <input
                   id="code"
@@ -111,12 +111,12 @@ export default function ResetPasswordPage() {
                   autoComplete="one-time-code"
                   inputMode="numeric"
                 />
-                <p className="reset-form__hint">
+                <p className="auth-form__hint">
                   Check your email for a 6-digit code from Cognito.
                 </p>
               </div>
 
-              <div className="reset-form__field">
+              <div className="auth-form__field">
                 <label htmlFor="newPassword">New password</label>
                 <input
                   id="newPassword"
@@ -127,13 +127,13 @@ export default function ResetPasswordPage() {
                   required
                   minLength={8}
                 />
-                <p className="reset-form__hint">
+                <p className="auth-form__hint">
                   Must include uppercase, lowercase, number, and special
                   character.
                 </p>
               </div>
 
-              <div className="reset-form__field">
+              <div className="auth-form__field">
                 <label htmlFor="confirmPassword">Confirm password</label>
                 <input
                   id="confirmPassword"
@@ -148,7 +148,7 @@ export default function ResetPasswordPage() {
 
               <button
                 type="submit"
-                className="reset-form__submit"
+                className="auth-form__submit"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Resetting..." : "Reset password"}
@@ -156,11 +156,11 @@ export default function ResetPasswordPage() {
             </>
           )}
 
-          <Link to="/login" className="reset-form__back">
+          <Link to="/login" className="auth-form__link">
             Back to sign in
           </Link>
         </form>
       </div>
-    </div>
+    </AuthLayout>
   );
 }
