@@ -5,24 +5,24 @@ import {
   type ReactNode,
 } from "react";
 import {
-  CognitoUserPool,
   CognitoUser,
-  AuthenticationDetails,
   CognitoUserSession,
 } from "amazon-cognito-identity-js";
 import apiClient, { setAuthToken } from "../api/client";
+import {
+  authenticateUser as authenticateCognitoUser,
+  completeNewPasswordChallenge as completeCognitoNewPasswordChallenge,
+  confirmForgotPassword as confirmCognitoForgotPassword,
+  forgotPassword as requestCognitoPasswordReset,
+  getCurrentSession,
+  signOut as signOutCognitoUser,
+} from "./cognito-service";
 import {
   AuthContext,
   type AuthContextType,
   type AuthUser,
   type UserProfile,
 } from "./auth-context";
-
-// ── Cognito pool config ──
-const userPool = new CognitoUserPool({
-  UserPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
-  ClientId: import.meta.env.VITE_COGNITO_APP_CLIENT_ID,
-});
 
 // ── Helper: extract user info from session ──
 function extractUser(session: CognitoUserSession): AuthUser {
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(() => userPool.getCurrentUser() != null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pendingUser, setPendingUser] = useState<CognitoUser | null>(null);
   const [needsNewPassword, setNeedsNewPassword] = useState(false);
@@ -66,95 +66,77 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // Check for existing session on mount (page refresh)
-  useEffect(() => {
-    const cognitoUser = userPool.getCurrentUser();
-    if (!cognitoUser) {
-      return;
-    }
+  const handleAuthenticatedSession = useCallback(
+    async (session: CognitoUserSession) => {
+      const jwt = session.getIdToken().getJwtToken();
+      setUser(extractUser(session));
+      setToken(jwt);
+      setAuthToken(jwt);
 
-    cognitoUser.getSession(
-      async (err: Error | null, session: CognitoUserSession | null) => {
-        if (err || !session || !session.isValid()) {
-          setIsLoading(false);
-          return;
-        }
-        const jwt = session.getIdToken().getJwtToken();
-        setUser(extractUser(session));
-        setToken(jwt);
-        setAuthToken(jwt);
-
-        const userProfile = await fetchProfile(jwt);
-        setProfile(userProfile);
-
-        setIsLoading(false);
-      }
-    );
-  }, []);
-
-  // Login
-  const login = useCallback(
-    (email: string, password: string): Promise<void> => {
-      setError(null);
-
-      const cognitoUser = new CognitoUser({
-        Username: email,
-        Pool: userPool,
-      });
-
-      const authDetails = new AuthenticationDetails({
-        Username: email,
-        Password: password,
-      });
-
-      return new Promise((resolve, reject) => {
-        cognitoUser.authenticateUser(authDetails, {
-          onSuccess: async (session: CognitoUserSession) => {
-            const jwt = session.getIdToken().getJwtToken();
-            setUser(extractUser(session));
-            setToken(jwt);
-            setAuthToken(jwt);
-            setError(null);
-
-            const userProfile = await fetchProfile(jwt);
-            setProfile(userProfile);
-
-            resolve();
-          },
-          onFailure: (err: Error) => {
-            let message = "Login failed. Please try again.";
-
-            if (err.name === "NotAuthorizedException") {
-              message = "Incorrect email or password.";
-            } else if (err.name === "UserNotFoundException") {
-              message = "No account found with that email.";
-            } else if (err.name === "UserNotConfirmedException") {
-              message = "Please verify your email before signing in.";
-            }
-
-            setError(message);
-            reject(new Error(message));
-          },
-          newPasswordRequired: () => {
-            // Store the Cognito user so we can complete the challenge
-            setPendingUser(cognitoUser);
-            setNeedsNewPassword(true);
-            setError(null);
-            // Resolve — the login page will swap to the new password form
-            resolve();
-          },
-        });
-      });
+      const userProfile = await fetchProfile(jwt);
+      setProfile(userProfile);
     },
     []
   );
 
+  // Check for existing session on mount (page refresh)
+  useEffect(() => {
+    const restoreSession = async () => {
+      const session = await getCurrentSession();
+
+      if (!session) {
+        setIsLoading(false);
+        return;
+      }
+
+      await handleAuthenticatedSession(session);
+      setIsLoading(false);
+    };
+
+    void restoreSession();
+  }, [handleAuthenticatedSession]);
+
+  // Login
+  const login = useCallback(
+    async (email: string, password: string): Promise<void> => {
+      setError(null);
+
+      try {
+        const result = await authenticateCognitoUser(email, password);
+
+        if (result.type === "newPasswordRequired") {
+          setPendingUser(result.cognitoUser);
+          setNeedsNewPassword(true);
+          setError(null);
+          setIsLoading(false);
+          return;
+        }
+
+        await handleAuthenticatedSession(result.session);
+        setError(null);
+      } catch (err: unknown) {
+        let message = "Login failed. Please try again.";
+
+        if (err instanceof Error) {
+          if (err.name === "NotAuthorizedException") {
+            message = "Incorrect email or password.";
+          } else if (err.name === "UserNotFoundException") {
+            message = "No account found with that email.";
+          } else if (err.name === "UserNotConfirmedException") {
+            message = "Please verify your email before signing in.";
+          }
+        }
+
+        setError(message);
+        throw new Error(message);
+      }
+    },
+    [handleAuthenticatedSession]
+  );
+
   // Logout
   const logout = useCallback(() => {
-    const cognitoUser = userPool.getCurrentUser();
-    if (cognitoUser) {
-      cognitoUser.signOut();
-    }
+    signOutCognitoUser();
     setUser(null);
     setToken(null);
     setProfile(null);
@@ -166,101 +148,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Complete new-password challenge
   const completeNewPassword = useCallback(
-    (newPassword: string): Promise<void> => {
+    async (newPassword: string): Promise<void> => {
       if (!pendingUser) {
         return Promise.reject(new Error("No pending password challenge"));
       }
 
-      return new Promise((resolve, reject) => {
-        pendingUser.completeNewPasswordChallenge(
-          newPassword,
-          {},  // required attributes — empty for our setup
-          {
-            onSuccess: async (session: CognitoUserSession) => {
-              const jwt = session.getIdToken().getJwtToken();
-              setUser(extractUser(session));
-              setToken(jwt);
-              setAuthToken(jwt);
-              setPendingUser(null);
-              setNeedsNewPassword(false);
-              setError(null);
-
-              // Fetch profile — this triggers placeholder claiming
-              const userProfile = await fetchProfile(jwt);
-              setProfile(userProfile);
-
-              resolve();
-            },
-            onFailure: (err: Error) => {
-              if (err.name === "InvalidPasswordException") {
-                setError(
-                  "Password must include uppercase, lowercase, number, and special character."
-                );
-              } else {
-                setError(err.message);
-              }
-              reject(err);
-            },
-          }
+      try {
+        const session = await completeCognitoNewPasswordChallenge(
+          pendingUser,
+          newPassword
         );
-      });
+
+        await handleAuthenticatedSession(session);
+        setPendingUser(null);
+        setNeedsNewPassword(false);
+        setError(null);
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === "InvalidPasswordException") {
+          setError(
+            "Password must include uppercase, lowercase, number, and special character."
+          );
+        } else if (err instanceof Error) {
+          setError(err.message);
+        }
+
+        throw err;
+      }
     },
-    [pendingUser]
+    [handleAuthenticatedSession, pendingUser]
   );
 
-    // Forgot password — sends verification code to email
-    const forgotPassword = useCallback((email: string): Promise<void> => {
-    const cognitoUser = new CognitoUser({
-        Username: email,
-        Pool: userPool,
-    });
+  // Forgot password — sends verification code to email
+  const forgotPassword = useCallback((email: string): Promise<void> => {
+    return requestCognitoPasswordReset(email);
+  }, []);
 
-    return new Promise((resolve, reject) => {
-        cognitoUser.forgotPassword({
-        onSuccess: () => {
-            resolve();
-        },
-        onFailure: (err: Error) => {
-            reject(err);
-        },
-        inputVerificationCode: () => {
-            // This callback fires when code is sent successfully
-            resolve();
-        },
-        });
-    });
-    }, []);
-
-    // Confirm password reset with verification code
-    const confirmResetPassword = useCallback(
+  // Confirm password reset with verification code
+  const confirmResetPassword = useCallback(
     (email: string, code: string, newPassword: string): Promise<void> => {
-        const cognitoUser = new CognitoUser({
-        Username: email,
-        Pool: userPool,
-        });
-
-        return new Promise((resolve, reject) => {
-        cognitoUser.confirmPassword(code, newPassword, {
-            onSuccess: () => {
-            resolve();
-            },
-            onFailure: (err: Error) => {
-            reject(err);
-            },
-        });
-        });
+      return confirmCognitoForgotPassword(email, code, newPassword);
     },
     []
-    );
+  );
 
+  const refreshProfile = useCallback(async () => {
+    if (!token) return;
+    const userProfile = await fetchProfile(token);
+    setProfile(userProfile);
+  }, [token]);
 
-    const refreshProfile = useCallback(async () => {
-      if (!token) return;
-      const userProfile = await fetchProfile(token);
-      setProfile(userProfile);
-    }, [token]);
-
-    const value: AuthContextType = {
+  const value: AuthContextType = {
     user,
     profile,
     token,
@@ -274,7 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshProfile,
     needsNewPassword,
     completeNewPassword,
-    };
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
