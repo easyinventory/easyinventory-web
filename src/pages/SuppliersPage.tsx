@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   createSupplier,
   deleteSupplier,
@@ -51,6 +51,7 @@ export default function SuppliersPage() {
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const successTimeoutRef = useRef<number | null>(null);
 
   const fetchSuppliers = useCallback(() => listSuppliers(), []);
   const {
@@ -77,10 +78,10 @@ export default function SuppliersPage() {
     localStorage.setItem(SELECTED_SUPPLIER_STORAGE_KEY, supplierId);
   };
 
-  const loadSupplierIntoForm = (supplier: Supplier) => {
+  const loadSupplierIntoForm = useCallback((supplier: Supplier) => {
     setSelectedSupplierId(supplier.id);
     setForm(toFormValues(supplier));
-  };
+  }, []);
 
   useEffect(() => {
     if (suppliers.length === 0) {
@@ -103,16 +104,28 @@ export default function SuppliersPage() {
     }
 
     loadSupplierIntoForm(storedSupplier);
-  }, [selectedSupplierId, suppliers]);
+  }, [loadSupplierIntoForm, selectedSupplierId, suppliers]);
 
   const setSuccessMessage = (message: string) => {
     setSuccess(message);
-    setTimeout(() => {
+    if (successTimeoutRef.current !== null) {
+      clearTimeout(successTimeoutRef.current);
+    }
+    successTimeoutRef.current = window.setTimeout(() => {
       setSuccess(null);
+      successTimeoutRef.current = null;
     }, 3000);
   };
 
-  const toPayload = (): SupplierCreateRequest | SupplierUpdateRequest => ({
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current !== null) {
+        clearTimeout(successTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const toPayload = (): SupplierCreateRequest => ({
     name: form.name.trim(),
     contact_name: form.contact_name.trim() || undefined,
     contact_email: form.contact_email.trim() || undefined,
@@ -139,14 +152,13 @@ export default function SuppliersPage() {
         await updateSupplier(selectedSupplierId, payload);
         setSuccessMessage("Supplier updated.");
       } else {
-        const createdSupplier = await createSupplier(payload as SupplierCreateRequest);
+        const createdSupplier = await createSupplier(payload);
         loadSupplierIntoForm(createdSupplier);
         persistSelectedSupplierId(createdSupplier.id);
         setSuccessMessage("Supplier created.");
       }
 
       setRefreshKey((k) => k + 1);
-      refetch();
     } catch (err: unknown) {
       setActionError(extractApiError(err));
     } finally {
@@ -183,8 +195,6 @@ export default function SuppliersPage() {
       }
 
       setSuccessMessage("Supplier deleted.");
-      setRefreshKey((k) => k + 1);
-      refetch();
     } catch (err: unknown) {
       setActionError(extractApiError(err));
     } finally {
@@ -197,7 +207,7 @@ export default function SuppliersPage() {
     setForm((prev) => ({ ...prev, [field]: nextValue }));
   };
 
-  const handleAddVendor = () => {
+  const handleAddSupplier = () => {
     setActionError(null);
     setSuccess(null);
     resetForm();
@@ -206,7 +216,7 @@ export default function SuppliersPage() {
 
   const handleSupplierSelection = (supplierId: string) => {
     if (!supplierId) {
-      handleAddVendor();
+      handleAddSupplier();
       return;
     }
 
@@ -244,7 +254,7 @@ export default function SuppliersPage() {
               type={isEditing ? "button" : "submit"}
               form={isEditing ? undefined : SUPPLIER_FORM_ID}
               className="suppliers-page__add-btn"
-              onClick={isEditing ? handleAddVendor : undefined}
+              onClick={isEditing ? handleAddSupplier : undefined}
               disabled={isSubmitting || isLoading}
             >
               Add supplier
@@ -268,7 +278,7 @@ export default function SuppliersPage() {
           actionError={actionError}
           success={success}
           onSubmit={handleSubmit}
-          onCancel={handleAddVendor}
+          onCancel={handleAddSupplier}
           onDelete={() => {
             if (!selectedSupplier) {
               return;
