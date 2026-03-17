@@ -1,0 +1,18 @@
+.empty-state {
+  text-align: center;
+  padding: 24px;
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+}
+
+.empty-state__icon {
+  margin-bottom: 6px;
+}
+
+.empty-state__message {
+  line-height: 1.4;
+}
+
+.empty-state__action {
+  margin-top: 10px;
+}
