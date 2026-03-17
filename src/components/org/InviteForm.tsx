@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { inviteMember } from "../../api/orgApi";
 import { OrgRole, formatRoleLabel } from "../../constants/roles";
+import { extractApiError } from "../../utils";
 import "./InviteForm.css";
 
 interface InviteFormProps {
@@ -33,15 +34,7 @@ export default function InviteForm({ actorRole, onInvited }: InviteFormProps) {
       // Clear success message after 4 seconds
       setTimeout(() => setSuccess(null), 4000);
     } catch (err: unknown) {
-      if (
-        typeof err === "object" && err !== null && "response" in err &&
-        typeof (err as Record<string, unknown>).response === "object"
-      ) {
-        const axiosErr = err as { response: { data: { detail: string } } };
-        setError(axiosErr.response.data.detail);
-      } else {
-        setError("Failed to send invite. Please try again.");
-      }
+      setError(extractApiError(err));
     } finally {
       setIsSubmitting(false);
     }

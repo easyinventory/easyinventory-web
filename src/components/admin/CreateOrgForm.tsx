@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createOrg } from "../../api/adminApi";
+import { extractApiError } from "../../utils";
 import "./CreateOrgForm.css";
 
 interface CreateOrgFormProps {
@@ -28,15 +29,7 @@ export default function CreateOrgForm({ onCreated }: CreateOrgFormProps) {
 
       setTimeout(() => setSuccess(null), 4000);
     } catch (err: unknown) {
-      if (
-        typeof err === "object" && err !== null && "response" in err &&
-        typeof (err as Record<string, unknown>).response === "object"
-      ) {
-        const axiosErr = err as { response: { data: { detail: string } } };
-        setError(axiosErr.response.data.detail);
-      } else {
-        setError("Failed to create organization. Please try again.");
-      }
+      setError(extractApiError(err));
     } finally {
       setIsSubmitting(false);
     }
