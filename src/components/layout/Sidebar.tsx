@@ -1,32 +1,8 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
+import { navItems } from "../../constants/navigation";
+import { OrgRole, formatRoleLabel, isOrgAdmin } from "../../constants/roles";
 import "./Sidebar.css";
-
-interface NavItem {
-  to: string;
-  label: string;
-  requiredOrgRoles?: string[];
-  requiredSystemRole?: string;
-}
-
-const navItems: NavItem[] = [
-  { to: "/", label: "Dashboard" },
-  { to: "/products", label: "Products" },
-  { to: "/inventory", label: "Inventory" },
-  { to: "/store-layout", label: "Store layout" },
-  { to: "/analytics", label: "Analytics" },
-  { to: "/suppliers", label: "Suppliers" },
-  {
-    to: "/org-settings",
-    label: "Organization",
-    requiredOrgRoles: ["ORG_OWNER", "ORG_ADMIN"],
-  },
-  {
-    to: "/admin",
-    label: "System Admin",
-    requiredSystemRole: "SYSTEM_ADMIN",
-  },
-];
 
 export default function Sidebar() {
   const { user, profile, logout } = useAuth();
@@ -42,7 +18,7 @@ export default function Sidebar() {
     if (item.requiredOrgRoles) {
       return (
         profile?.org_role != null &&
-        item.requiredOrgRoles.includes(profile.org_role)
+        item.requiredOrgRoles.includes(profile.org_role as OrgRole)
       );
     }
     if (item.requiredSystemRole) {
@@ -53,14 +29,10 @@ export default function Sidebar() {
 
   // Format org role for display
   const roleLabel = profile?.org_role
-    ? profile.org_role.replace("ORG_", "").toLowerCase()
+    ? formatRoleLabel(profile.org_role)
     : "member";
 
-  const isOrgAdmin =
-    profile?.org_role === "ORG_OWNER" ||
-    profile?.org_role === "ORG_ADMIN";
-
-  const roleClass = isOrgAdmin
+  const roleClass = isOrgAdmin(profile?.org_role)
     ? "sidebar__role-badge--admin"
     : "sidebar__role-badge--user";
 

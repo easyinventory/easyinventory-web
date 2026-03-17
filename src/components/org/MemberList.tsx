@@ -1,6 +1,8 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback } from "react";
 import { listMembers } from "../../api/orgApi";
 import type { OrgMember } from "../../api/orgApi";
+import { useApiData } from "../../hooks/useApiData";
+import { EmptyState, ErrorBanner, LoadingState } from "../ui";
 import MemberRow from "./MemberRow";
 import "./MemberList.css";
 
@@ -15,27 +17,14 @@ export default function MemberList({
   currentUserEmail,
   refreshKey,
 }: MemberListProps) {
-  const [members, setMembers] = useState<OrgMember[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchMembers = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await listMembers();
-      setMembers(data);
-    } catch {
-      setError("Failed to load members.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Fetch on mount and when refreshKey changes (after invite/update)
-  useEffect(() => {
-    fetchMembers();
-  }, [fetchMembers, refreshKey]);
+  const fetchMembers = useCallback(() => listMembers(), []);
+  const {
+    data: membersData,
+    isLoading,
+    error,
+    refetch,
+  } = useApiData<OrgMember[]>(fetchMembers, [refreshKey]);
+  const members = membersData ?? [];
 
   const activeCount = members.filter((m) => m.is_active).length;
   const pendingCount = members.filter((m) => !m.is_active).length;
@@ -51,14 +40,12 @@ export default function MemberList({
         </div>
       </div>
 
-      {error && <div className="member-list__error">{error}</div>}
+      {error && <ErrorBanner message={error} />}
 
       {isLoading ? (
-        <div className="member-list__loading">Loading members...</div>
+        <LoadingState text="Loading members..." />
       ) : members.length === 0 ? (
-        <div className="member-list__empty">
-          No members yet. Invite someone above.
-        </div>
+        <EmptyState message="No members yet. Invite someone above." />
       ) : (
         members.map((member) => (
           <MemberRow
@@ -66,7 +53,7 @@ export default function MemberList({
             member={member}
             actorRole={actorRole}
             currentUserEmail={currentUserEmail}
-            onUpdated={fetchMembers}
+            onUpdated={refetch}
           />
         ))
       )}

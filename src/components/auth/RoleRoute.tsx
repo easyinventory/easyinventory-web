@@ -1,8 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
+import type { OrgRole, SystemRole } from "../../constants/roles";
 
 interface RoleRouteProps {
-  allowedRoles: string[];
+  allowedRoles: Array<OrgRole | SystemRole>;
   roleField?: "system_role" | "org_role";
   children?: React.ReactNode;
 }
@@ -14,7 +15,7 @@ export default function RoleRoute({
 }: RoleRouteProps) {
   const { profile } = useAuth();
 
-  const userRole = profile?.[roleField];
+  const userRole = profile?.[roleField] as OrgRole | SystemRole | null | undefined;
 
   // No profile loaded, no role, or role not allowed → bounce to dashboard
   if (!userRole || !allowedRoles.includes(userRole)) {
@@ -22,7 +23,7 @@ export default function RoleRoute({
   }
 
   // Supports both wrapper and layout usage:
-  //   <RoleRoute allowedRoles={["ORG_ADMIN"]} roleField="org_role"><Page /></RoleRoute>
-  //   <Route element={<RoleRoute allowedRoles={["SYSTEM_ADMIN"]} />}>
+  //   <RoleRoute allowedRoles={[OrgRole.ADMIN]} roleField="org_role"><Page /></RoleRoute>
+  //   <Route element={<RoleRoute allowedRoles={[SystemRole.ADMIN]} />}>
   return children ? <>{children}</> : <Outlet />;
 }

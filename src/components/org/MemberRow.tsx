@@ -6,6 +6,8 @@ import {
   activateMember,
   removeMember,
 } from "../../api/orgApi";
+import { OrgRole, formatRoleLabel } from "../../constants/roles";
+import { extractApiError } from "../../utils";
 import "./MemberRow.css";
 
 interface MemberRowProps {
@@ -24,10 +26,10 @@ export default function MemberRow({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isOwner = member.org_role === "ORG_OWNER";
-  const isAdmin = member.org_role === "ORG_ADMIN";
+  const isOwner = member.org_role === OrgRole.OWNER;
+  const isAdmin = member.org_role === OrgRole.ADMIN;
   const isSelf = member.email === currentUserEmail;
-  const actorIsOwner = actorRole === "ORG_OWNER";
+  const actorIsOwner = actorRole === OrgRole.OWNER;
   const isPending = !member.is_active && member.email.includes("@");
 
   // Can this actor modify this member?
@@ -41,19 +43,14 @@ export default function MemberRow({
     .slice(0, 2)
     .toUpperCase();
 
-  const handleRoleChange = async (newRole: string) => {
+  const handleRoleChange = async (newRole: OrgRole) => {
     setIsLoading(true);
     setError(null);
     try {
       await updateMemberRole(member.id, { org_role: newRole });
       onUpdated();
     } catch (err: unknown) {
-      if (
-        typeof err === "object" && err !== null && "response" in err
-      ) {
-        const axiosErr = err as { response: { data: { detail: string } } };
-        setError(axiosErr.response.data.detail);
-      }
+      setError(extractApiError(err));
     } finally {
       setIsLoading(false);
     }
@@ -70,12 +67,7 @@ export default function MemberRow({
       }
       onUpdated();
     } catch (err: unknown) {
-      if (
-        typeof err === "object" && err !== null && "response" in err
-      ) {
-        const axiosErr = err as { response: { data: { detail: string } } };
-        setError(axiosErr.response.data.detail);
-      }
+      setError(extractApiError(err));
     } finally {
       setIsLoading(false);
     }
@@ -89,12 +81,7 @@ export default function MemberRow({
       await removeMember(member.id);
       onUpdated();
     } catch (err: unknown) {
-      if (
-        typeof err === "object" && err !== null && "response" in err
-      ) {
-        const axiosErr = err as { response: { data: { detail: string } } };
-        setError(axiosErr.response.data.detail);
-      }
+      setError(extractApiError(err));
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +117,7 @@ export default function MemberRow({
           <div className="member-row__email">
             {member.email}
             {isSelf && (
-              <span style={{ color: "var(--color-text-tertiary)", fontSize: 11, marginLeft: 6 }}>
+              <span className="member-row__self-label">
                 — you
               </span>
             )}
@@ -150,16 +137,16 @@ export default function MemberRow({
           <select
             className="member-row__role-select"
             value={member.org_role}
-            onChange={(e) => handleRoleChange(e.target.value)}
+            onChange={(e) => handleRoleChange(e.target.value as OrgRole)}
             disabled={isLoading}
           >
-            {actorIsOwner && <option value="ORG_ADMIN">Admin</option>}
-            <option value="ORG_EMPLOYEE">Employee</option>
-            <option value="ORG_VIEWER">Viewer</option>
+            {actorIsOwner && <option value={OrgRole.ADMIN}>Admin</option>}
+            <option value={OrgRole.EMPLOYEE}>Employee</option>
+            <option value={OrgRole.VIEWER}>Viewer</option>
           </select>
         ) : (
-          <span style={{ fontSize: 11, color: "var(--color-text-secondary)" }}>
-            {member.org_role.replace("ORG_", "").toLowerCase()}
+          <span className="member-row__role-label">
+            {formatRoleLabel(member.org_role)}
           </span>
         )}
 

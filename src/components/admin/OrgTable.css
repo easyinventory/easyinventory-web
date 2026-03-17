@@ -21,6 +21,10 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+.org-table__header-center {
+  text-align: center;
+}
+
 .org-table__row {
   display: grid;
   grid-template-columns: 2fr 1.5fr 0.8fr 1fr;
@@ -55,27 +59,4 @@
 .org-table__date {
   color: var(--color-text-tertiary);
   font-size: 12px;
-}
-
-.org-table__loading {
-  text-align: center;
-  padding: 24px;
-  color: var(--color-text-tertiary);
-  font-size: 13px;
-}
-
-.org-table__empty {
-  text-align: center;
-  padding: 24px;
-  color: var(--color-text-tertiary);
-  font-size: 13px;
-}
-
-.org-table__error {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
-  font-size: 12px;
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
-  margin-bottom: 12px;
 }
