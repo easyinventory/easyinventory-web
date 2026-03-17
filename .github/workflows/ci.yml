@@ -80,23 +80,68 @@ jobs:
     steps:
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          envs: AWS_REGION,AWS_ACCOUNT_ID,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY
           script: |
+            set -e
+
+            echo "=== DEPLOY DEBUG START ==="
+            echo "Time (UTC): $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo "Host: $(hostname)"
+            echo "User: $(whoami)"
+            echo "Shell: $SHELL"
+            echo "Home: $HOME"
+
             cd ~/easyinventory
-            source .env.prod
+            echo "PWD after cd: $(pwd)"
+            echo "Repo contents:"
+            ls -la
+            echo ".env.prod exists?"
+            if [ -f .env.prod ]; then echo "yes"; else echo "no"; fi
+
+            echo "Binary versions:"
+            command -v aws && aws --version || echo "aws CLI missing"
+            command -v docker && docker --version || echo "docker missing"
+            command -v docker-compose && docker-compose --version || echo "docker-compose binary not found (ok if using docker compose plugin)"
+            docker compose version || echo "docker compose plugin missing"
+
+            echo "AWS env presence checks:"
+            [ -n "$AWS_REGION" ] && echo "AWS_REGION set" || echo "AWS_REGION missing"
+            [ -n "$AWS_ACCOUNT_ID" ] && echo "AWS_ACCOUNT_ID set" || echo "AWS_ACCOUNT_ID missing"
+            [ -n "$AWS_ACCESS_KEY_ID" ] && echo "AWS_ACCESS_KEY_ID set" || echo "AWS_ACCESS_KEY_ID missing"
+            [ -n "$AWS_SECRET_ACCESS_KEY" ] && echo "AWS_SECRET_ACCESS_KEY set" || echo "AWS_SECRET_ACCESS_KEY missing"
+
+            ECR_REPO="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/easyinventory/web"
+            echo "Computed ECR_REPO: $ECR_REPO"
+
+            echo "Testing AWS caller identity..."
+            aws sts get-caller-identity || true
 
             # Log in to ECR
-            aws ecr get-login-password --region $AWS_REGION | \
-              docker login --username AWS --password-stdin $ECR_REPO
+            echo "Logging into ECR..."
+            aws ecr get-login-password --region "$AWS_REGION" | \
+              docker login --username AWS --password-stdin "$ECR_REPO"
 
             # Pull latest web image
-            docker compose -f docker-compose.prod.yml pull web
+            echo "Pulling web image via docker compose..."
+            docker compose --env-file .env.prod -f docker-compose.prod.yml pull web
 
             # Restart web container
-            docker compose -f docker-compose.prod.yml up -d web
+            echo "Restarting web container..."
+            docker compose --env-file .env.prod -f docker-compose.prod.yml up -d web
+
+            echo "Container status (web):"
+            docker compose --env-file .env.prod -f docker-compose.prod.yml ps web || true
 
             # Remove dangling images
+            echo "Pruning dangling images..."
             docker image prune -f
+            echo "=== DEPLOY DEBUG END ==="
