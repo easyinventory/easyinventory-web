@@ -113,3 +113,85 @@ a:hover {
   background: var(--color-danger-bg);
   color: var(--color-danger);
 }
+
+.form-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.form-card__title {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.form-card__row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.form-card__field {
+  flex: 1;
+}
+
+.form-card__field label {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.form-card__field input,
+.form-card__field select {
+  width: 100%;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  border: 1px solid var(--color-border-hover);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  box-sizing: border-box;
+  height: 34px;
+}
+
+.form-card__field input:focus,
+.form-card__field select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-bg);
+}
+
+.form-card__submit {
+  height: 34px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  background: var(--color-primary-bg);
+  color: var(--color-primary-text);
+  border: 1px solid var(--color-primary-bg);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.form-card__submit:hover {
+  background: #d0e4f5;
+}
+
+.form-card__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-card__hint {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-top: 8px;
+}
