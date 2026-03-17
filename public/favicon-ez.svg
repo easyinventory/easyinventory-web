@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="EZ Inventory">
+  <rect x="4" y="4" width="56" height="56" rx="12" fill="#0f172a"/>
+  <path d="M20 22h24v8H28v6h14v8H28v6h16v8H20z" fill="#22c55e"/>
+  <path d="M30 18h14v8l-10 20h10v8H26v-8l10-20H30z" fill="#f8fafc"/>
+</svg>
