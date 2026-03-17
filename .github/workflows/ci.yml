@@ -1,0 +1,122 @@
+name: Web — Test, Build & Deploy
+
+on:
+  push:
+    branches: [development, main]
+  pull_request:
+    branches: [development, main]
+
+env:
+  ECR_REPO: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/easyinventory/web
+
+jobs:
+
+  # ─── Job 1: Lint + Build Check ───────────────────────
+  # Runs on: every push and PR to development and main
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (validates TypeScript + catches build errors)
+        run: npm run build
+        env:
+          VITE_API_URL: https://api.ezinventory.io
+          VITE_COGNITO_REGION: us-east-2
+          VITE_COGNITO_USER_POOL_ID: placeholder
+          VITE_COGNITO_APP_CLIENT_ID: placeholder
+
+  # ─── Job 2: Build Docker Image + Push to ECR ─────────
+  # Runs on: push to dev or main (not PRs)
+  build:
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image
+        run: |
+          docker build -f Dockerfile.web \
+            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
+            --build-arg VITE_COGNITO_REGION=${{ secrets.VITE_COGNITO_REGION }} \
+            --build-arg VITE_COGNITO_USER_POOL_ID=${{ secrets.VITE_COGNITO_USER_POOL_ID }} \
+            --build-arg VITE_COGNITO_APP_CLIENT_ID=${{ secrets.VITE_COGNITO_APP_CLIENT_ID }} \
+            -t $ECR_REPO:latest \
+            -t $ECR_REPO:${{ github.sha }} .
+          docker push $ECR_REPO:latest
+          docker push $ECR_REPO:${{ github.sha }}
+
+  # ─── Job 3: Deploy to EC2 ────────────────────────────
+  # Runs on: push to main ONLY (not development, not PRs)
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to EC2 via SSM
+        id: ssm
+        run: |
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --parameters '{"commands":["cd ~/easyinventory && ./deploy.sh"]}' \
+            --comment "Deploy from GitHub Actions ${{ github.sha }}" \
+            --query "Command.CommandId" \
+            --output text)
+          echo "command_id=$COMMAND_ID" >> $GITHUB_OUTPUT
+          echo "SSM Command ID: $COMMAND_ID"
+
+      - name: Wait for SSM command to complete
+        run: |
+          aws ssm wait command-executed \
+            --command-id "${{ steps.ssm.outputs.command_id }}" \
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}"
+
+      - name: Check SSM command status and print output
+        if: always()
+        run: |
+          RESULT=$(aws ssm get-command-invocation \
+            --command-id "${{ steps.ssm.outputs.command_id }}" \
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}")
+          STATUS=$(echo "$RESULT" | jq -r '.StatusDetails')
+          echo "--- Deploy status: $STATUS ---"
+          echo "--- stdout ---"
+          echo "$RESULT" | jq -r '.StandardOutputContent'
+          echo "--- stderr ---"
+          echo "$RESULT" | jq -r '.StandardErrorContent'
+          if [ "$STATUS" != "Success" ]; then
+            echo "Deploy failed with status: $STATUS"
+            exit 1
+          fi
