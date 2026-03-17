@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createOrg } from "../../api/adminApi";
+import { ErrorBanner, SuccessBanner } from "../ui";
 import { extractApiError } from "../../utils";
-import "./CreateOrgForm.css";
 
 interface CreateOrgFormProps {
   onCreated: () => void;
@@ -36,11 +36,11 @@ export default function CreateOrgForm({ onCreated }: CreateOrgFormProps) {
   };
 
   return (
-    <div className="create-org-form">
-      <div className="create-org-form__title">Onboard new client</div>
+    <div className="create-org-form form-card">
+      <div className="create-org-form__title form-card__title">Onboard new client</div>
       <form onSubmit={handleSubmit}>
-        <div className="create-org-form__row">
-          <div className="create-org-form__field">
+        <div className="create-org-form__row form-card__row">
+          <div className="create-org-form__field form-card__field">
             <label htmlFor="org-name">Organization name</label>
             <input
               id="org-name"
@@ -51,7 +51,7 @@ export default function CreateOrgForm({ onCreated }: CreateOrgFormProps) {
               required
             />
           </div>
-          <div className="create-org-form__field">
+          <div className="create-org-form__field form-card__field">
             <label htmlFor="owner-email">Owner email</label>
             <input
               id="owner-email"
@@ -64,17 +64,17 @@ export default function CreateOrgForm({ onCreated }: CreateOrgFormProps) {
           </div>
           <button
             type="submit"
-            className="create-org-form__submit"
+            className="create-org-form__submit form-card__submit"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Creating..." : "Create"}
           </button>
         </div>
-        <p className="create-org-form__hint">
+        <p className="create-org-form__hint form-card__hint">
           If the owner email is new, they'll receive a Cognito invite with a temporary password.
         </p>
-        {error && <div className="create-org-form__error">{error}</div>}
-        {success && <div className="create-org-form__success">{success}</div>}
+        {error && <ErrorBanner message={error} />}
+        {success && <SuccessBanner message={success} />}
       </form>
     </div>
   );
