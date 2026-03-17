@@ -11,7 +11,7 @@ import { extractApiError } from "../../utils";
 import "./MemberRow.css";
 
 interface MemberRowProps {
-            <div className="member-row__meta member-row__error">
+  member: OrgMember;
   actorRole: string;
   currentUserEmail: string;
   onUpdated: () => void;
