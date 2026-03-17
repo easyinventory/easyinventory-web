@@ -6,7 +6,7 @@ import {
   activateMember,
   removeMember,
 } from "../../api/orgApi";
-import { OrgRole } from "../../constants/roles";
+import { OrgRole, formatRoleLabel } from "../../constants/roles";
 import "./MemberRow.css";
 
 interface MemberRowProps {
@@ -160,7 +160,7 @@ export default function MemberRow({
           </select>
         ) : (
           <span style={{ fontSize: 11, color: "var(--color-text-secondary)" }}>
-            {member.org_role.replace("ORG_", "").toLowerCase()}
+            {formatRoleLabel(member.org_role)}
           </span>
         )}
 

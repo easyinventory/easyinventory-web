@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { inviteMember } from "../../api/orgApi";
-import { OrgRole } from "../../constants/roles";
+import { OrgRole, formatRoleLabel } from "../../constants/roles";
 import "./InviteForm.css";
 
 interface InviteFormProps {
@@ -25,7 +25,7 @@ export default function InviteForm({ actorRole, onInvited }: InviteFormProps) {
 
     try {
       await inviteMember({ email, org_role: role });
-      setSuccess(`Invited ${email} as ${role.replace("ORG_", "").toLowerCase()}`);
+      setSuccess(`Invited ${email} as ${formatRoleLabel(role)}`);
       setEmail("");
       setRole(OrgRole.EMPLOYEE);
       onInvited();

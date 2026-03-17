@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
-import { OrgRole, SystemRole } from "../../constants/roles";
+import { OrgRole, SystemRole, formatRoleLabel } from "../../constants/roles";
 import "./Sidebar.css";
 
 interface NavItem {
@@ -43,7 +43,7 @@ export default function Sidebar() {
     if (item.requiredOrgRoles) {
       return (
         profile?.org_role != null &&
-        item.requiredOrgRoles.includes(profile.org_role)
+        item.requiredOrgRoles.includes(profile.org_role as OrgRole)
       );
     }
     if (item.requiredSystemRole) {
@@ -54,7 +54,7 @@ export default function Sidebar() {
 
   // Format org role for display
   const roleLabel = profile?.org_role
-    ? profile.org_role.replace("ORG_", "").toLowerCase()
+    ? formatRoleLabel(profile.org_role)
     : "member";
 
   const isOrgAdmin =
