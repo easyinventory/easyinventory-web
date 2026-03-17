@@ -5,14 +5,17 @@ import {
   type CognitoUserSession,
 } from "amazon-cognito-identity-js";
 
+export type PendingCognitoUser = CognitoUser;
+export type AuthSession = CognitoUserSession;
+
 export interface NewPasswordRequiredResult {
   type: "newPasswordRequired";
-  cognitoUser: CognitoUser;
+  cognitoUser: PendingCognitoUser;
 }
 
 export interface AuthenticatedSessionResult {
   type: "success";
-  session: CognitoUserSession;
+  session: AuthSession;
 }
 
 export type AuthenticateUserResult =
@@ -61,9 +64,9 @@ export function authenticateUser(
 }
 
 export function completeNewPasswordChallenge(
-  cognitoUser: CognitoUser,
+  cognitoUser: PendingCognitoUser,
   newPassword: string
-): Promise<CognitoUserSession> {
+): Promise<AuthSession> {
   return new Promise((resolve, reject) => {
     cognitoUser.completeNewPasswordChallenge(newPassword, {}, {
       onSuccess: (session: CognitoUserSession) => {

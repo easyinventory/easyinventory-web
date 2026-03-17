@@ -4,12 +4,10 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import {
-  CognitoUser,
-  CognitoUserSession,
-} from "amazon-cognito-identity-js";
 import apiClient, { setAuthToken } from "../api/client";
 import {
+  type AuthSession,
+  type PendingCognitoUser,
   authenticateUser as authenticateCognitoUser,
   completeNewPasswordChallenge as completeCognitoNewPasswordChallenge,
   confirmForgotPassword as confirmCognitoForgotPassword,
@@ -25,7 +23,7 @@ import {
 } from "./auth-context";
 
 // ── Helper: extract user info from session ──
-function extractUser(session: CognitoUserSession): AuthUser {
+function extractUser(session: AuthSession): AuthUser {
   const idToken = session.getIdToken();
   return {
     email: idToken.payload["email"] as string,
@@ -40,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [pendingUser, setPendingUser] = useState<CognitoUser | null>(null);
+  const [pendingUser, setPendingUser] = useState<PendingCognitoUser | null>(null);
   const [needsNewPassword, setNeedsNewPassword] = useState(false);
 
   async function fetchProfile(jwt: string): Promise<UserProfile | null> {
@@ -67,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const handleAuthenticatedSession = useCallback(
-    async (session: CognitoUserSession) => {
+    async (session: AuthSession) => {
       const jwt = session.getIdToken().getJwtToken();
       setUser(extractUser(session));
       setToken(jwt);
