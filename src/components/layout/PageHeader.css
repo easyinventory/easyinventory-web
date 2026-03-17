@@ -1,19 +1,25 @@
+/* ═══════════════════════════════════════════════════════
+   PageHeader — Page title + subtitle + actions slot
+   ═══════════════════════════════════════════════════════ */
+
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .page-header__title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--color-text);
 }
 
 .page-header__subtitle {
   font-size: 13px;
-  color: var(--color-text-secondary);
-  margin-top: 2px;
+  color: var(--color-text-tertiary);
+  margin-top: 3px;
 }
 
 .page-header__actions {

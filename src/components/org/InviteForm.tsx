@@ -42,11 +42,11 @@ export default function InviteForm({ actorRole, onInvited }: InviteFormProps) {
   };
 
   return (
-    <div className="invite-form form-card">
-      <div className="invite-form__title form-card__title">Invite a team member</div>
+    <div className="invite-form">
+      <div className="invite-form__title">Invite a team member</div>
       <form onSubmit={handleSubmit}>
-        <div className="invite-form__row form-card__row">
-          <div className="invite-form__field form-card__field">
+        <div className="invite-form__row">
+          <div className="invite-form__field">
             <label htmlFor="invite-email">Email</label>
             <input
               id="invite-email"
@@ -57,7 +57,7 @@ export default function InviteForm({ actorRole, onInvited }: InviteFormProps) {
               required
             />
           </div>
-          <div className="invite-form__field invite-form__field--role form-card__field">
+          <div className="invite-form__field invite-form__field--role">
             <label htmlFor="invite-role">Role</label>
             <select
               id="invite-role"
@@ -71,13 +71,13 @@ export default function InviteForm({ actorRole, onInvited }: InviteFormProps) {
           </div>
           <button
             type="submit"
-            className="invite-form__submit form-card__submit"
+            className="invite-form__submit"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Sending..." : "Send invite"}
           </button>
         </div>
-        <p className="invite-form__hint form-card__hint">
+        <p className="invite-form__hint">
           They'll get access when they sign up with this email.
         </p>
         {error && <ErrorBanner message={error} />}

@@ -1,7 +1,13 @@
+/* ═══════════════════════════════════════════════════════
+   PlaceholderPage — Stub pages (Dashboard, Products, etc.)
+   ═══════════════════════════════════════════════════════ */
+
 .placeholder-box {
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 48px;
+  box-shadow: var(--shadow-xs);
+  padding: 64px 48px;
   text-align: center;
   color: var(--color-text-tertiary);
   font-size: 14px;
