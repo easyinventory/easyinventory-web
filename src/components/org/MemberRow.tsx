@@ -7,6 +7,7 @@ import {
   removeMember,
 } from "../../api/orgApi";
 import { OrgRole, formatRoleLabel } from "../../constants/roles";
+import { extractApiError } from "../../utils";
 import "./MemberRow.css";
 
 interface MemberRowProps {
@@ -49,12 +50,7 @@ export default function MemberRow({
       await updateMemberRole(member.id, { org_role: newRole });
       onUpdated();
     } catch (err: unknown) {
-      if (
-        typeof err === "object" && err !== null && "response" in err
-      ) {
-        const axiosErr = err as { response: { data: { detail: string } } };
-        setError(axiosErr.response.data.detail);
-      }
+      setError(extractApiError(err));
     } finally {
       setIsLoading(false);
     }
@@ -71,12 +67,7 @@ export default function MemberRow({
       }
       onUpdated();
     } catch (err: unknown) {
-      if (
-        typeof err === "object" && err !== null && "response" in err
-      ) {
-        const axiosErr = err as { response: { data: { detail: string } } };
-        setError(axiosErr.response.data.detail);
-      }
+      setError(extractApiError(err));
     } finally {
       setIsLoading(false);
     }
@@ -90,12 +81,7 @@ export default function MemberRow({
       await removeMember(member.id);
       onUpdated();
     } catch (err: unknown) {
-      if (
-        typeof err === "object" && err !== null && "response" in err
-      ) {
-        const axiosErr = err as { response: { data: { detail: string } } };
-        setError(axiosErr.response.data.detail);
-      }
+      setError(extractApiError(err));
     } finally {
       setIsLoading(false);
     }
