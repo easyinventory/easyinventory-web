@@ -56,26 +56,3 @@
   color: var(--color-text-tertiary);
   font-size: 12px;
 }
-
-.org-table__loading {
-  text-align: center;
-  padding: 24px;
-  color: var(--color-text-tertiary);
-  font-size: 13px;
-}
-
-.org-table__empty {
-  text-align: center;
-  padding: 24px;
-  color: var(--color-text-tertiary);
-  font-size: 13px;
-}
-
-.org-table__error {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
-  font-size: 12px;
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
-  margin-bottom: 12px;
-}

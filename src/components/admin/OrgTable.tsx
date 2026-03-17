@@ -1,7 +1,9 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback } from "react";
 import { listOrgs } from "../../api/adminApi";
 import type { OrgListItem } from "../../api/adminApi";
+import { useApiData } from "../../hooks/useApiData";
 import { formatDate } from "../../utils";
+import { EmptyState, ErrorBanner, LoadingState } from "../ui";
 import "./OrgTable.css";
 
 interface OrgTableProps {
@@ -9,39 +11,24 @@ interface OrgTableProps {
 }
 
 export default function OrgTable({ refreshKey }: OrgTableProps) {
-  const [orgs, setOrgs] = useState<OrgListItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchOrgs = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await listOrgs();
-      setOrgs(data);
-    } catch {
-      setError("Failed to load organizations.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchOrgs();
-  }, [fetchOrgs, refreshKey]);
+  const fetchOrgs = useCallback(() => listOrgs(), []);
+  const {
+    data: orgsData,
+    isLoading,
+    error,
+  } = useApiData<OrgListItem[]>(fetchOrgs, [refreshKey]);
+  const orgs = orgsData ?? [];
 
   return (
     <div className="org-table">
       <div className="org-table__title">All organizations ({orgs.length})</div>
 
-      {error && <div className="org-table__error">{error}</div>}
+      {error && <ErrorBanner message={error} />}
 
       {isLoading ? (
-        <div className="org-table__loading">Loading organizations...</div>
+        <LoadingState text="Loading organizations..." />
       ) : orgs.length === 0 ? (
-        <div className="org-table__empty">
-          No organizations yet. Create one above.
-        </div>
+        <EmptyState message="No organizations yet. Create one above." />
       ) : (
         <>
           <div className="org-table__header">
