@@ -1,27 +1,38 @@
+/* ═══════════════════════════════════════════════════════
+   OrgTable — System admin org list
+   ═══════════════════════════════════════════════════════ */
+
 .org-table {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 16px 20px;
+  box-shadow: var(--shadow-xs);
+  padding: 20px 24px;
 }
 
 .org-table__title {
   font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 12px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 16px;
 }
 
 .org-table__header {
   display: grid;
   grid-template-columns: 2fr 1.5fr 0.8fr 1fr;
   gap: 8px;
-  padding: 8px 0;
+  padding: 8px 12px;
   font-size: 11px;
-  color: var(--color-text-secondary);
-  border-bottom: 1px solid var(--color-border);
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  margin-bottom: 4px;
 }
 
-.org-table__header-center {
+.org-table__header span:nth-child(3) {
   text-align: center;
 }
 
@@ -29,14 +40,19 @@
   display: grid;
   grid-template-columns: 2fr 1.5fr 0.8fr 1fr;
   gap: 8px;
-  padding: 10px 0;
+  padding: 12px;
   font-size: 13px;
-  border-bottom: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   align-items: center;
+  transition: background 0.12s;
 }
 
-.org-table__row:last-child {
-  border-bottom: none;
+.org-table__row:hover {
+  background: var(--color-bg-secondary);
+}
+
+.org-table__row + .org-table__row {
+  border-top: 1px solid var(--color-border);
 }
 
 .org-table__org-name {
@@ -59,4 +75,28 @@
 .org-table__date {
   color: var(--color-text-tertiary);
   font-size: 12px;
+}
+
+.org-table__loading {
+  text-align: center;
+  padding: 32px;
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+}
+
+.org-table__empty {
+  text-align: center;
+  padding: 32px;
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+}
+
+.org-table__error {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-danger);
+  margin-bottom: 16px;
 }

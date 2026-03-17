@@ -210,8 +210,8 @@ export default function Sidebar() {
       {/* ── Logo Area ── */}
       <div className="sidebar__header">
         <div className="sidebar__logo">
-          <img src="/favicon-ez.svg" className="sidebar__logo-icon" alt="EasyInventory" />
-          <span className="sidebar__logo-text">EasyInventory</span>
+          <img src="/favicon-ez.svg" className="sidebar__logo-icon" alt="EZInventory" />
+          <span className="sidebar__logo-text">EZInventory</span>
         </div>
       </div>
 
