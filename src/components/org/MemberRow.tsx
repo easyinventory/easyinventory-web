@@ -11,7 +11,7 @@ import { extractApiError } from "../../utils";
 import "./MemberRow.css";
 
 interface MemberRowProps {
-  member: OrgMember;
+            <div className="member-row__meta member-row__error">
   actorRole: string;
   currentUserEmail: string;
   onUpdated: () => void;
@@ -145,7 +145,7 @@ export default function MemberRow({
             <option value={OrgRole.VIEWER}>Viewer</option>
           </select>
         ) : (
-          <span style={{ fontSize: 11, color: "var(--color-text-secondary)" }}>
+          <span className="member-row__role-label">
             {formatRoleLabel(member.org_role)}
           </span>
         )}
