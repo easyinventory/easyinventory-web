@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
 import { navItems } from "../../constants/navigation";
-import { OrgRole, formatRoleLabel } from "../../constants/roles";
+import { OrgRole, formatRoleLabel, isOrgAdmin } from "../../constants/roles";
 import "./Sidebar.css";
 
 export default function Sidebar() {
@@ -32,11 +32,7 @@ export default function Sidebar() {
     ? formatRoleLabel(profile.org_role)
     : "member";
 
-  const isOrgAdmin =
-    profile?.org_role === OrgRole.OWNER ||
-    profile?.org_role === OrgRole.ADMIN;
-
-  const roleClass = isOrgAdmin
+  const roleClass = isOrgAdmin(profile?.org_role)
     ? "sidebar__role-badge--admin"
     : "sidebar__role-badge--user";
 
