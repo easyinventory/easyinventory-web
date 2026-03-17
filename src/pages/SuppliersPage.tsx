@@ -6,7 +6,6 @@ import {
   updateSupplier,
   type Supplier,
   type SupplierCreateRequest,
-  type SupplierUpdateRequest,
 } from "../api/supplierApi";
 import { useAuth } from "../auth/useAuth";
 import PageHeader from "../components/layout/PageHeader";
@@ -58,7 +57,6 @@ export default function SuppliersPage() {
     data: suppliersData,
     isLoading,
     error,
-    refetch,
   } = useApiData<Supplier[]>(fetchSuppliers, [refreshKey]);
 
   const suppliers = useMemo(() => suppliersData ?? [], [suppliersData]);
