@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { inviteMember } from "../../api/orgApi";
+import { OrgRole, formatRoleLabel } from "../../constants/roles";
 import "./InviteForm.css";
 
 interface InviteFormProps {
@@ -9,12 +10,12 @@ interface InviteFormProps {
 
 export default function InviteForm({ actorRole, onInvited }: InviteFormProps) {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("ORG_EMPLOYEE");
+  const [role, setRole] = useState<OrgRole>(OrgRole.EMPLOYEE);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isOwner = actorRole === "ORG_OWNER";
+  const isOwner = actorRole === OrgRole.OWNER;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,9 +25,9 @@ export default function InviteForm({ actorRole, onInvited }: InviteFormProps) {
 
     try {
       await inviteMember({ email, org_role: role });
-      setSuccess(`Invited ${email} as ${role.replace("ORG_", "").toLowerCase()}`);
+      setSuccess(`Invited ${email} as ${formatRoleLabel(role)}`);
       setEmail("");
-      setRole("ORG_EMPLOYEE");
+      setRole(OrgRole.EMPLOYEE);
       onInvited();
 
       // Clear success message after 4 seconds
@@ -67,11 +68,11 @@ export default function InviteForm({ actorRole, onInvited }: InviteFormProps) {
             <select
               id="invite-role"
               value={role}
-              onChange={(e) => setRole(e.target.value)}
+              onChange={(e) => setRole(e.target.value as OrgRole)}
             >
-              <option value="ORG_EMPLOYEE">Employee</option>
-              <option value="ORG_VIEWER">Viewer</option>
-              {isOwner && <option value="ORG_ADMIN">Admin</option>}
+              <option value={OrgRole.EMPLOYEE}>Employee</option>
+              <option value={OrgRole.VIEWER}>Viewer</option>
+              {isOwner && <option value={OrgRole.ADMIN}>Admin</option>}
             </select>
           </div>
           <button

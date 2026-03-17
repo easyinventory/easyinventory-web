@@ -17,6 +17,7 @@ import SuppliersPage from "./pages/SuppliersPage";
 import OrgSettingsPage from "./pages/OrgSettingsPage";
 import AdminPage from "./pages/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import { OrgRole, SystemRole } from "./constants/roles";
 
 export default function App() {
   return (
@@ -41,7 +42,7 @@ export default function App() {
                 <Route
                   path="/org-settings"
                   element={
-                    <RoleRoute allowedRoles={["ORG_OWNER", "ORG_ADMIN"]} roleField="org_role">
+                    <RoleRoute allowedRoles={[OrgRole.OWNER, OrgRole.ADMIN]} roleField="org_role">
                       <OrgSettingsPage />
                     </RoleRoute>
                   }
@@ -50,7 +51,7 @@ export default function App() {
                 <Route
                   path="/admin"
                   element={
-                    <RoleRoute allowedRoles={["SYSTEM_ADMIN"]} roleField="system_role">
+                    <RoleRoute allowedRoles={[SystemRole.ADMIN]} roleField="system_role">
                       <AdminPage />
                     </RoleRoute>
                   }
