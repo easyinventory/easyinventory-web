@@ -6,6 +6,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  padding: 16px 20px;
   margin-bottom: 28px;
 }
 
