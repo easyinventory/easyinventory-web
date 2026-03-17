@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
-import "./LoginPage.css";
+import AuthLayout from "../components/layout/AuthLayout";
 
 export default function LoginPage() {
   const {
@@ -74,23 +74,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-card">
-        <h1 className="login-card__title">EasyInventory</h1>
-
+    <AuthLayout>
+      <div className="auth-card">
         {needsNewPassword ? (
           <>
-            <p className="login-card__subtitle">
-              Set a new password to continue
+            <h1 className="auth-card__title">Set new password</h1>
+            <p className="auth-card__subtitle">
+              Your temporary password has expired. Choose a new password to
+              continue.
             </p>
-            <form className="login-form" onSubmit={handleNewPassword}>
+
+            <form className="auth-form" onSubmit={handleNewPassword}>
               {(authError || localError) && (
-                <div className="login-form__error">
+                <div className="auth-form__error">
                   {localError || authError}
                 </div>
               )}
 
-              <div className="login-form__field">
+              <div className="auth-form__field">
                 <label htmlFor="newPassword">New password</label>
                 <input
                   id="newPassword"
@@ -102,12 +103,13 @@ export default function LoginPage() {
                   minLength={8}
                   autoFocus
                 />
-                <p className="login-form__hint">
-                  Must include uppercase, lowercase, number, and special character.
+                <p className="auth-form__hint">
+                  Must include uppercase, lowercase, number, and special
+                  character.
                 </p>
               </div>
 
-              <div className="login-form__field">
+              <div className="auth-form__field">
                 <label htmlFor="confirmPassword">Confirm password</label>
                 <input
                   id="confirmPassword"
@@ -122,7 +124,7 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className="login-form__submit"
+                className="auth-form__submit"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Setting password..." : "Set password & sign in"}
@@ -131,15 +133,17 @@ export default function LoginPage() {
           </>
         ) : (
           <>
-            <p className="login-card__subtitle">
+            <h1 className="auth-card__title">Welcome back</h1>
+            <p className="auth-card__subtitle">
               Sign in to manage your inventory
             </p>
-            <form className="login-form" onSubmit={handleLogin}>
+
+            <form className="auth-form" onSubmit={handleLogin}>
               {authError && (
-                <div className="login-form__error">{authError}</div>
+                <div className="auth-form__error">{authError}</div>
               )}
 
-              <div className="login-form__field">
+              <div className="auth-form__field">
                 <label htmlFor="email">Email</label>
                 <input
                   id="email"
@@ -152,7 +156,7 @@ export default function LoginPage() {
                 />
               </div>
 
-              <div className="login-form__field">
+              <div className="auth-form__field">
                 <label htmlFor="password">Password</label>
                 <input
                   id="password"
@@ -164,13 +168,16 @@ export default function LoginPage() {
                 />
               </div>
 
-              <Link to="/forgot-password" className="login-form__forgot">
+              <Link
+                to="/forgot-password"
+                className="auth-form__link auth-form__link--forgot"
+              >
                 Forgot password?
               </Link>
 
               <button
                 type="submit"
-                className="login-form__submit"
+                className="auth-form__submit"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Signing in..." : "Sign in"}
@@ -179,6 +186,6 @@ export default function LoginPage() {
           </>
         )}
       </div>
-    </div>
+    </AuthLayout>
   );
 }

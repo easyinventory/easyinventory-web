@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
-import "./ForgotPasswordPage.css";
+import AuthLayout from "../components/layout/AuthLayout";
 
 export default function ForgotPasswordPage() {
   const { forgotPassword } = useAuth();
@@ -38,17 +38,17 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="forgot-page">
-      <div className="forgot-card">
-        <h1 className="forgot-card__title">Reset password</h1>
-        <p className="forgot-card__subtitle">
+    <AuthLayout>
+      <div className="auth-card">
+        <h1 className="auth-card__title">Reset password</h1>
+        <p className="auth-card__subtitle">
           Enter your email and we'll send you a verification code.
         </p>
 
-        <form className="forgot-form" onSubmit={handleSubmit}>
-          {error && <div className="forgot-form__error">{error}</div>}
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {error && <div className="auth-form__error">{error}</div>}
 
-          <div className="forgot-form__field">
+          <div className="auth-form__field">
             <label htmlFor="email">Email</label>
             <input
               id="email"
@@ -63,17 +63,17 @@ export default function ForgotPasswordPage() {
 
           <button
             type="submit"
-            className="forgot-form__submit"
+            className="auth-form__submit"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Sending code..." : "Send verification code"}
           </button>
 
-          <Link to="/login" className="forgot-form__back">
+          <Link to="/login" className="auth-form__link">
             Back to sign in
           </Link>
         </form>
       </div>
-    </div>
+    </AuthLayout>
   );
 }
