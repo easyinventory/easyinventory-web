@@ -1,5 +1,5 @@
 import apiClient from "./client";
-import type { OrgListItem, CreateOrgRequest } from "../types/admin";
+import type { OrgListItem, CreateOrgRequest } from "../types";
 
 export type { OrgListItem, CreateOrgRequest };
 

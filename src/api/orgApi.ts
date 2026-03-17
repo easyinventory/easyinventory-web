@@ -1,5 +1,5 @@
 import apiClient from "./client";
-import type { OrgMember, InviteRequest, UpdateRoleRequest } from "../types/org";
+import type { OrgMember, InviteRequest, UpdateRoleRequest } from "../types";
 
 export type { OrgMember, InviteRequest, UpdateRoleRequest };
 
