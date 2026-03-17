@@ -1,5 +1,9 @@
 export function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString();
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 export function formatRoleLabel(role: string | null | undefined): string {

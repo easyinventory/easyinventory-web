@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { listOrgs } from "../../api/adminApi";
 import type { OrgListItem } from "../../api/adminApi";
+import { formatDate } from "../../utils";
 import "./OrgTable.css";
 
 interface OrgTableProps {
@@ -28,14 +29,6 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
   useEffect(() => {
     fetchOrgs();
   }, [fetchOrgs, refreshKey]);
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
 
   return (
     <div className="org-table">
