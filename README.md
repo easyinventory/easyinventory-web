@@ -28,17 +28,69 @@ React frontend for the EasyInventory inventory management platform.
 ## Project Structure
 ```
 src/
-├── api/             # Axios client + API functions
-├── auth/            # Auth context + Cognito integration (PR-09)
+├── api/               # Axios client + API functions
+│   ├── client.ts      # Axios instance, interceptors
+│   ├── orgApi.ts      # Org member API calls
+│   └── adminApi.ts    # System admin API calls
+├── auth/              # Auth context + Cognito integration
+│   ├── auth-context.ts    # Context + type definition
+│   ├── AuthContext.tsx    # Provider state orchestration
+│   ├── cognito-service.ts # Cognito SDK interactions
+│   └── useAuth.ts         # Hook to consume auth context
 ├── components/
-│   ├── layout/      # Sidebar, AppLayout, PageHeader
-│   └── ui/          # Shared UI components
-├── hooks/           # Custom React hooks
-├── pages/           # Route-level page components
-├── App.tsx          # Router + route definitions
-├── main.tsx         # Entry point
-└── index.css        # Global styles + CSS variables
+│   ├── admin/         # Admin-specific components
+│   ├── auth/          # ProtectedRoute, RequireOrg, RoleRoute
+│   ├── layout/        # Sidebar, AppLayout, PageHeader
+│   ├── org/           # Org settings components
+│   └── ui/            # Shared UI feedback components
+├── constants/         # Role enums, nav config, app constants
+│   ├── roles.ts
+│   └── navigation.ts
+├── hooks/             # Custom React hooks
+│   ├── useApiData.ts  # Generic data-fetching hook
+│   └── index.ts       # Hook barrel export
+├── pages/             # Route-level page components
+├── types/             # Shared TypeScript interfaces
+│   ├── auth.ts
+│   ├── org.ts
+│   ├── admin.ts
+│   └── index.ts
+├── utils/             # Error handling and formatting helpers
+│   ├── errors.ts
+│   ├── format.ts
+│   └── index.ts
+├── App.tsx            # Router + route definitions
+├── main.tsx           # Entry point
+└── index.css          # Global styles + CSS variables + shared form classes
 ```
+
+## Conventions
+
+### Types
+- Put shared interfaces and request/response types in `src/types/`.
+- Import shared types instead of redefining interfaces inline in components or API files.
+
+### Constants
+- Add new role constants and role helpers in `src/constants/roles.ts`.
+- Add reusable navigation metadata in `src/constants/navigation.ts`.
+- Avoid magic role strings in components.
+
+### Data fetching
+- Use `useApiData()` from `src/hooks/useApiData.ts` for components that load async list or page data.
+- Prefer the hook for standard loading, error, and refetch behavior instead of repeating `useState` + `useEffect` boilerplate.
+
+### Shared UI feedback
+- Use shared UI components from `src/components/ui/` for common feedback states:
+   - `LoadingState`
+   - `ErrorBanner`
+   - `SuccessBanner`
+   - `EmptyState`
+- Reuse these components before creating new one-off loading, error, or empty state markup.
+
+### CSS
+- Keep shared form styles in `src/index.css`.
+- Use BEM-style class names for component styles.
+- Do not use inline styles when a CSS class can express the same styling.
 
 ## CSS Approach
 
@@ -170,3 +222,15 @@ The "System Admin" link appears in the sidebar only for users
 with `system_role = SYSTEM_ADMIN`. The route is also enforced
 by `RoleRoute` — manually navigating to `/admin` as a regular
 user redirects to the dashboard.
+
+## PR Review Checklist
+
+- [ ] `npm run dev` starts without errors
+- [ ] `npm run build` succeeds
+- [ ] `npm run lint` passes
+- [ ] All existing functionality works identically
+- [ ] No new inline styles introduced
+- [ ] No magic role strings introduced
+- [ ] Types imported from `src/types/`, not defined inline
+- [ ] Data-fetching uses `useApiData()` where applicable
+- [ ] API errors handled via `extractApiError`
