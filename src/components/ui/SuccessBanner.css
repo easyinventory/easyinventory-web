@@ -1,0 +1,8 @@
+.success-banner {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+}
