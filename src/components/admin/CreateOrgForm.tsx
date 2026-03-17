@@ -2,7 +2,6 @@ import { useState } from "react";
 import { createOrg } from "../../api/adminApi";
 import { ErrorBanner, SuccessBanner } from "../ui";
 import { extractApiError } from "../../utils";
-import "./CreateOrgForm.css";
 
 interface CreateOrgFormProps {
   onCreated: () => void;
