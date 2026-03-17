@@ -34,7 +34,7 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
           <div className="org-table__header">
             <span>Organization</span>
             <span>Owner</span>
-            <span style={{ textAlign: "center" }}>Members</span>
+            <span className="org-table__header-center">Members</span>
             <span>Created</span>
           </div>
           {orgs.map((org) => (

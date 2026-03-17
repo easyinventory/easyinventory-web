@@ -117,7 +117,7 @@ export default function MemberRow({
           <div className="member-row__email">
             {member.email}
             {isSelf && (
-              <span style={{ color: "var(--color-text-tertiary)", fontSize: 11, marginLeft: 6 }}>
+              <span className="member-row__self-label">
                 — you
               </span>
             )}
@@ -145,7 +145,7 @@ export default function MemberRow({
             <option value={OrgRole.VIEWER}>Viewer</option>
           </select>
         ) : (
-          <span style={{ fontSize: 11, color: "var(--color-text-secondary)" }}>
+          <span className="member-row__role-label">
             {formatRoleLabel(member.org_role)}
           </span>
         )}

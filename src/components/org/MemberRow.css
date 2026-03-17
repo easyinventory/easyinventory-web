@@ -52,10 +52,20 @@
   white-space: nowrap;
 }
 
+.member-row__self-label {
+  color: var(--color-text-tertiary);
+  font-size: 11px;
+  margin-left: 6px;
+}
+
 .member-row__meta {
   font-size: 11px;
   color: var(--color-text-tertiary);
   margin-top: 1px;
+}
+
+.member-row__error {
+  color: var(--color-danger);
 }
 
 .member-row__controls {
@@ -74,6 +84,11 @@
   border-radius: var(--radius-sm);
   background: var(--color-bg);
   color: var(--color-text);
+}
+
+.member-row__role-label {
+  font-size: 11px;
+  color: var(--color-text-secondary);
 }
 
 .member-row__status {
