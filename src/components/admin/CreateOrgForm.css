@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════════════════════
-   InviteForm — Org member invite form
+   CreateOrgForm — Admin org creation form
    ═══════════════════════════════════════════════════════ */
 
-.invite-form {
+.create-org-form {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -11,24 +11,24 @@
   margin-bottom: 20px;
 }
 
-.invite-form__title {
+.create-org-form__title {
   font-size: 14px;
   font-weight: 600;
   color: var(--color-text);
   margin-bottom: 16px;
 }
 
-.invite-form__row {
+.create-org-form__row {
   display: flex;
   gap: 10px;
   align-items: flex-end;
 }
 
-.invite-form__field {
+.create-org-form__field {
   flex: 1;
 }
 
-.invite-form__field label {
+.create-org-form__field label {
   display: block;
   font-size: 12px;
   font-weight: 500;
@@ -36,8 +36,7 @@
   margin-bottom: 5px;
 }
 
-.invite-form__field input,
-.invite-form__field select {
+.create-org-form__field input {
   width: 100%;
   padding: 9px 12px;
   font-size: 13px;
@@ -52,21 +51,16 @@
   outline: none;
 }
 
-.invite-form__field input::placeholder {
+.create-org-form__field input::placeholder {
   color: var(--color-text-tertiary);
 }
 
-.invite-form__field input:focus,
-.invite-form__field select:focus {
+.create-org-form__field input:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-bg);
 }
 
-.invite-form__field--role {
-  flex: 0 0 150px;
-}
-
-.invite-form__submit {
+.create-org-form__submit {
   height: 38px;
   padding: 0 20px;
   font-size: 13px;
@@ -81,22 +75,22 @@
   transition: background 0.15s;
 }
 
-.invite-form__submit:hover {
+.create-org-form__submit:hover {
   background: #0c447c;
 }
 
-.invite-form__submit:disabled {
+.create-org-form__submit:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-.invite-form__hint {
+.create-org-form__hint {
   font-size: 12px;
   color: var(--color-text-tertiary);
   margin-top: 10px;
 }
 
-.invite-form__error {
+.create-org-form__error {
   background: var(--color-danger-bg);
   color: var(--color-danger);
   font-size: 13px;
@@ -106,7 +100,7 @@
   margin-top: 12px;
 }
 
-.invite-form__success {
+.create-org-form__success {
   background: var(--color-success-bg);
   color: var(--color-success);
   font-size: 13px;

@@ -57,8 +57,8 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       {/* ── Branded left panel ── */}
       <div className="auth-page__brand">
         <div className="auth-page__brand-logo">
-          <img src="/favicon-ez.svg" className="auth-page__brand-mark" alt="EasyInventory" />
-          <span className="auth-page__brand-name">EasyInventory</span>
+          <img src="/favicon-ez.svg" className="auth-page__brand-mark" alt="EZInventory" />
+          <span className="auth-page__brand-name">EZInventory</span>
         </div>
 
         <p className="auth-page__brand-tagline">

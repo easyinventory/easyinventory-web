@@ -123,7 +123,7 @@ export default function MemberRow({
             )}
           </div>
           {error && (
-            <div className="member-row__meta" style={{ color: "var(--color-danger)" }}>
+            <div className="member-row__error-text">
               {error}
             </div>
           )}

@@ -1,8 +1,13 @@
+/* ═══════════════════════════════════════════════════════
+   ProtectedRoute — Loading state while checking auth
+   ═══════════════════════════════════════════════════════ */
+
 .protected-loading {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--color-bg-page);
   color: var(--color-text-tertiary);
   font-size: 14px;
 }

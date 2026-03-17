@@ -1,23 +1,53 @@
+/* ═══════════════════════════════════════════════════════
+   MemberList — Org member list container
+   ═══════════════════════════════════════════════════════ */
+
 .member-list {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 16px 20px;
+  box-shadow: var(--shadow-xs);
+  padding: 20px 24px;
 }
 
 .member-list__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .member-list__title {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .member-list__count {
   font-size: 12px;
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
+}
+
+.member-list__empty {
+  text-align: center;
+  padding: 32px;
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+}
+
+.member-list__loading {
+  text-align: center;
+  padding: 32px;
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+}
+
+.member-list__error {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-danger);
+  margin-bottom: 16px;
 }
