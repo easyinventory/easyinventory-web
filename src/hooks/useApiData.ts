@@ -49,7 +49,7 @@ export function useApiData<T>(
     return () => {
       isCancelled = true;
     };
-  }, [fetchFn, refetchKey, ...deps]);
+  }, [fetchFn, refetchKey, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { data, isLoading, error, refetch };
 }
