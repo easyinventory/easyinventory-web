@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════════════
+   AppLayout — Main layout with sidebar + content area
+   ═══════════════════════════════════════════════════════ */
+
 .app-layout {
   display: flex;
   min-height: 100vh;
@@ -6,6 +10,7 @@
 
 .app-layout__main {
   flex: 1;
-  padding: 24px 28px;
+  padding: 28px 32px;
   min-width: 0;
+  transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
