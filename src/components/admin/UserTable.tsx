@@ -4,7 +4,7 @@ import type { UserListItem } from "../../types";
 import { useApiData } from "../../hooks/useApiData";
 import { usePagination } from "../../hooks/usePagination";
 import { formatDate } from "../../utils";
-import { EmptyState, ErrorBanner, LoadingState } from "../ui";
+import { EmptyState, ErrorBanner, LoadingState, Pagination } from "../ui";
 import DeleteUserModal from "./DeleteUserModal";
 import "./UserTable.css";
 
@@ -35,11 +35,13 @@ export default function UserTable({ refreshKey, currentUserEmail }: UserTablePro
   const {
     paginatedItems: users,
     page,
+    pageSize,
+    pageSizeOptions,
     totalPages,
-    nextPage,
-    prevPage,
     totalItems,
-  } = usePagination(filteredUsers, 25);
+    setPage,
+    setPageSize,
+  } = usePagination(filteredUsers);
 
   const handleDeleteSuccess = () => {
     setDeleteTarget(null);
@@ -117,27 +119,16 @@ export default function UserTable({ refreshKey, currentUserEmail }: UserTablePro
             );
           })}
 
-          {totalPages > 1 && (
-            <div className="user-table__pagination">
-              <button
-                className="user-table__page-btn"
-                onClick={prevPage}
-                disabled={page === 1}
-              >
-                ← Prev
-              </button>
-              <span className="user-table__page-info">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                className="user-table__page-btn"
-                onClick={nextPage}
-                disabled={page === totalPages}
-              >
-                Next →
-              </button>
-            </div>
-          )}
+          <Pagination
+            inline
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            pageSizeOptions={pageSizeOptions}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+          />
         </>
       )}
 

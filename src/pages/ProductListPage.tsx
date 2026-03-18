@@ -4,10 +4,9 @@ import { listProducts, type Product } from "../api/productApi";
 import PageHeader from "../components/layout/PageHeader";
 import { ProductTable } from "../components/products";
 import { useApiData } from "../hooks/useApiData";
-import { EmptyState, ErrorBanner, LoadingState } from "../components/ui";
+import { usePagination } from "../hooks/usePagination";
+import { EmptyState, ErrorBanner, LoadingState, Pagination } from "../components/ui";
 import "./ProductListPage.css";
-
-const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
 
 export default function ProductListPage() {
   const navigate = useNavigate();
@@ -17,8 +16,6 @@ export default function ProductListPage() {
   const products = useMemo(() => productsData ?? [], [productsData]);
 
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
 
   /* ── Filter products by search query ── */
   const filtered = useMemo(() => {
@@ -32,21 +29,20 @@ export default function ProductListPage() {
   }, [products, search]);
 
   /* ── Pagination ── */
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const safePage = Math.min(page, totalPages);
-  const pageSlice = useMemo(
-    () => filtered.slice((safePage - 1) * pageSize, safePage * pageSize),
-    [filtered, safePage, pageSize]
-  );
+  const {
+    paginatedItems: pageSlice,
+    page,
+    pageSize,
+    pageSizeOptions,
+    totalPages,
+    totalItems,
+    setPage,
+    setPageSize,
+  } = usePagination(filtered);
 
-  /* Reset to page 1 when search or page size change */
+  /* Reset to page 1 when search changes */
   const handleSearchChange = (value: string) => {
     setSearch(value);
-    setPage(1);
-  };
-
-  const handlePageSizeChange = (size: number) => {
-    setPageSize(size);
     setPage(1);
   };
 
@@ -92,46 +88,15 @@ export default function ProductListPage() {
             <>
               <ProductTable products={pageSlice} onRowClick={handleRowClick} />
 
-              {/* ── Pagination ── */}
-              <div className="products-page__pagination">
-                <div className="products-page__page-size">
-                  <span className="products-page__page-size-label">Rows:</span>
-                  {PAGE_SIZE_OPTIONS.map((size) => (
-                    <button
-                      key={size}
-                      className={`products-page__page-size-btn${
-                        pageSize === size ? " products-page__page-size-btn--active" : ""
-                      }`}
-                      onClick={() => handlePageSizeChange(size)}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="products-page__page-info">
-                  {(safePage - 1) * pageSize + 1}–
-                  {Math.min(safePage * pageSize, filtered.length)} of{" "}
-                  {filtered.length}
-                </div>
-
-                <div className="products-page__page-nav">
-                  <button
-                    className="products-page__page-btn"
-                    disabled={safePage <= 1}
-                    onClick={() => setPage((p) => p - 1)}
-                  >
-                    ‹ Prev
-                  </button>
-                  <button
-                    className="products-page__page-btn"
-                    disabled={safePage >= totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                  >
-                    Next ›
-                  </button>
-                </div>
-              </div>
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                pageSize={pageSize}
+                pageSizeOptions={pageSizeOptions}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+              />
             </>
           )}
         </>

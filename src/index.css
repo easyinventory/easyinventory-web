@@ -127,3 +127,13 @@ a:hover {
   background: var(--color-danger-bg);
   color: var(--color-danger);
 }
+
+/* ── Mobile: scrollable tables ── */
+
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

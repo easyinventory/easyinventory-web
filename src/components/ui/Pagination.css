@@ -1,0 +1,119 @@
+/* ═══════════════════════════════════════════════════════
+   Pagination — Shared table pagination bar
+   ═══════════════════════════════════════════════════════ */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 20px;
+  margin-top: 16px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+/* ── Inline variant (inside a card, no border/shadow) ── */
+
+.pagination--inline {
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 12px 0 0;
+  margin-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ── Page-size selector ── */
+
+.pagination__page-size {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pagination__page-size-label {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  margin-right: 4px;
+}
+
+.pagination__page-size-btn {
+  height: 28px;
+  min-width: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border-hover);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.pagination__page-size-btn:hover {
+  background: var(--color-bg-secondary);
+}
+
+.pagination__page-size-btn--active {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+.pagination__page-size-btn--active:hover {
+  background: #0c447c;
+  border-color: #0c447c;
+}
+
+/* ── Info text ("1–10 of 42") ── */
+
+.pagination__info {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+/* ── Prev / Next buttons ── */
+
+.pagination__nav {
+  display: flex;
+  gap: 6px;
+}
+
+.pagination__nav-btn {
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border-hover);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.pagination__nav-btn:hover:not(:disabled) {
+  background: var(--color-bg-secondary);
+}
+
+.pagination__nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Mobile ── */
+
+@media (max-width: 600px) {
+  .pagination {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

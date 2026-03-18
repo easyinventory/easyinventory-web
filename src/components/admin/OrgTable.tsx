@@ -1,9 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { listOrgs } from "../../api/adminApi";
 import type { OrgListItem } from "../../api/adminApi";
 import { useApiData } from "../../hooks/useApiData";
+import { usePagination } from "../../hooks/usePagination";
 import { formatDate } from "../../utils";
-import { EmptyState, ErrorBanner, LoadingState } from "../ui";
+import { EmptyState, ErrorBanner, LoadingState, Pagination } from "../ui";
 import OrgMembersModal from "./OrgMembersModal";
 import RenameOrgModal from "./RenameOrgModal";
 import DeleteOrgModal from "./DeleteOrgModal";
@@ -28,7 +29,18 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
     error,
     refetch,
   } = useApiData<OrgListItem[]>(fetchOrgs, [refreshKey]);
-  const orgs = orgsData ?? [];
+  const orgs = useMemo(() => orgsData ?? [], [orgsData]);
+
+  const {
+    paginatedItems: pagedOrgs,
+    page,
+    pageSize,
+    pageSizeOptions,
+    totalPages,
+    totalItems,
+    setPage,
+    setPageSize,
+  } = usePagination(orgs);
 
   const [viewMembersOrg, setViewMembersOrg] = useState<OrgListItem | null>(null);
   const [modal, setModal] = useState<ModalState>(null);
@@ -50,7 +62,7 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
 
   return (
     <div className="org-table">
-      <div className="org-table__title">All organizations ({orgs.length})</div>
+      <div className="org-table__title">All organizations ({totalItems})</div>
 
       {error && <ErrorBanner message={error} />}
 
@@ -67,7 +79,7 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
             <span>Created</span>
             <span className="org-table__header-center">Actions</span>
           </div>
-          {orgs.map((org) => (
+          {pagedOrgs.map((org) => (
             <div key={org.id} className="org-table__row">
               <span className="org-table__org-name">{org.name}</span>
               <span className="org-table__owner">
@@ -109,6 +121,17 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
               </span>
             </div>
           ))}
+
+          <Pagination
+            inline
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            pageSizeOptions={pageSizeOptions}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+          />
         </>
       )}
 
