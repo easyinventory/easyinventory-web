@@ -1,0 +1,107 @@
+.product-form {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+
+.product-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.product-form__field {
+  min-width: 0;
+}
+
+.product-form__field--full {
+  grid-column: span 2;
+}
+
+.product-form__field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 5px;
+}
+
+.product-form__field input,
+.product-form__field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  border: 1px solid var(--color-border-hover);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.product-form__field input {
+  height: 38px;
+  padding: 9px 12px;
+}
+
+.product-form__field textarea {
+  padding: 9px 12px;
+  resize: vertical;
+}
+
+.product-form__field input:focus,
+.product-form__field textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+
+.product-form__field input::placeholder,
+.product-form__field textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.product-form__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  margin-bottom: 12px;
+}
+
+.product-form__actions button {
+  height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-bg);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+.product-form__actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.product-form__secondary-btn {
+  background: var(--color-surface, var(--color-bg-secondary));
+  color: var(--color-text);
+  border: 1px solid var(--color-border-hover);
+}
+
+@media (max-width: 900px) {
+  .product-form__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .product-form__field--full {
+    grid-column: auto;
+  }
+}
