@@ -1,0 +1,24 @@
+.products-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.products-page__add-btn {
+  height: 38px;
+  padding: 0 18px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-bg);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.products-page__add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

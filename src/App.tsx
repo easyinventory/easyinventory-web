@@ -9,7 +9,9 @@ import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import DashboardPage from "./pages/DashboardPage";
-import ProductsPage from "./pages/ProductsPage";
+import ProductListPage from "./pages/ProductListPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
+import ProductFormPage from "./pages/ProductFormPage";
 import InventoryPage from "./pages/InventoryPage";
 import StoreLayoutPage from "./pages/StoreLayoutPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
@@ -34,7 +36,10 @@ export default function App() {
             <Route element={<RequireOrg />}>
               <Route element={<AppLayout />}>
                 <Route path="/" element={<DashboardPage />} />
-                <Route path="/products" element={<ProductsPage />} />
+                <Route path="/products" element={<ProductListPage />} />
+                <Route path="/products/new" element={<ProductFormPage />} />
+                <Route path="/products/:id" element={<ProductDetailPage />} />
+                <Route path="/products/:id/edit" element={<ProductFormPage />} />
                 <Route path="/inventory" element={<InventoryPage />} />
                 <Route path="/store-layout" element={<StoreLayoutPage />} />
                 <Route path="/analytics" element={<AnalyticsPage />} />
