@@ -6,3 +6,12 @@ export type {
   SupplierCreateRequest,
   SupplierUpdateRequest,
 } from "./supplier";
+export type {
+  Product,
+  ProductWithSuppliers,
+  ProductSupplierLink,
+  ProductCreateRequest,
+  ProductUpdateRequest,
+  AddSupplierToProductRequest,
+  ToggleProductSupplierRequest,
+} from "./product";
