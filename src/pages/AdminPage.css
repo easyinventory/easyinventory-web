@@ -5,3 +5,7 @@
 .admin-page {
   max-width: 840px;
 }
+
+.admin-page__members {
+  margin-top: 28px;
+}
