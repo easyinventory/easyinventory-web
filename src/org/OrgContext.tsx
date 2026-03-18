@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo, type ReactNode } from "react";
+import { useState, useCallback, useMemo, type ReactNode } from "react";
 import { setSelectedOrgId } from "../api/client";
 import type { OrgMembership } from "../types";
 import { OrgContext, type OrgContextType } from "./org-context";
@@ -8,32 +8,33 @@ interface OrgProviderProps {
   children: ReactNode;
 }
 
+/**
+ * Compute the org ID to use given memberships and the user's explicit choice.
+ * Returns the explicit choice if still valid, otherwise the first membership.
+ */
+function resolveOrgId(
+  memberships: OrgMembership[],
+  explicitOrgId: string | null
+): string | null {
+  if (explicitOrgId && memberships.some((m) => m.org_id === explicitOrgId)) {
+    return explicitOrgId;
+  }
+  return memberships.length > 0 ? memberships[0].org_id : null;
+}
+
 export function OrgProvider({ memberships, children }: OrgProviderProps) {
-  const [selectedOrgId, setSelectedOrgIdState] = useState<string | null>(null);
+  const [explicitOrgId, setExplicitOrgId] = useState<string | null>(null);
 
-  // Sync selectedOrgId when memberships load or change
-  useEffect(() => {
-    if (memberships.length === 0) {
-      setSelectedOrgIdState(null);
-      setSelectedOrgId(null);
-      return;
-    }
+  const selectedOrgId = resolveOrgId(memberships, explicitOrgId);
 
-    // If current selection is still valid, keep it
-    const stillValid = memberships.some((m) => m.org_id === selectedOrgId);
-    if (selectedOrgId && stillValid) return;
-
-    // Otherwise, select the first membership
-    const firstOrgId = memberships[0].org_id;
-    setSelectedOrgIdState(firstOrgId);
-    setSelectedOrgId(firstOrgId);
-  }, [memberships]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Keep API client header in sync
+  setSelectedOrgId(selectedOrgId);
 
   const switchOrg = useCallback(
     (orgId: string) => {
       const membership = memberships.find((m) => m.org_id === orgId);
       if (!membership) return;
-      setSelectedOrgIdState(orgId);
+      setExplicitOrgId(orgId);
       setSelectedOrgId(orgId);
     },
     [memberships]

@@ -31,10 +31,7 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
 
   const [modal, setModal] = useState<ModalState>(null);
 
-  const handleRenameSuccess = (newName: string) => {
-    if (modal?.type === "rename") {
-      modal.org.name = newName;
-    }
+  const handleRenameSuccess = () => {
     setModal(null);
     refetch();
   };
@@ -44,10 +41,7 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
     refetch();
   };
 
-  const handleTransferSuccess = (newOwnerEmail: string) => {
-    if (modal?.type === "transfer") {
-      modal.org.owner_email = newOwnerEmail;
-    }
+  const handleTransferSuccess = () => {
     setModal(null);
     refetch();
   };
