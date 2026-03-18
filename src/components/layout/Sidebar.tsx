@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
 import { useOrg } from "../../org/useOrg";
 import { navItems } from "../../constants/navigation";
@@ -37,7 +37,12 @@ function IconLogout() {
 
 /* ── Sidebar Component ── */
 
-export default function Sidebar() {
+interface SidebarProps {
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
+
+export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
   const { user, profile, logout } = useAuth();
   const { selectedOrgRole } = useOrg();
   const navigate = useNavigate();
@@ -47,6 +52,22 @@ export default function Sidebar() {
     logout();
     navigate("/login");
   };
+
+  // Close mobile drawer on route change (but not on mount)
+  const location = useLocation();
+  const prevPathRef = useRef(location.pathname);
+  const onMobileCloseRef = useRef(onMobileClose);
+
+  useEffect(() => {
+    onMobileCloseRef.current = onMobileClose;
+  }, [onMobileClose]);
+
+  useEffect(() => {
+    if (prevPathRef.current !== location.pathname) {
+      prevPathRef.current = location.pathname;
+      onMobileCloseRef.current?.();
+    }
+  }, [location.pathname]);
 
   // Filter nav items based on org/system roles
   const visibleItems = navItems.filter((item) => {
@@ -81,7 +102,13 @@ export default function Sidebar() {
     : "—";
 
   return (
-    <aside className={`sidebar ${collapsed ? "sidebar--collapsed" : ""}`}>
+    <>
+      {/* Mobile backdrop */}
+      {mobileOpen && (
+        <div className="sidebar__backdrop" onClick={onMobileClose} />
+      )}
+
+      <aside className={`sidebar ${collapsed ? "sidebar--collapsed" : ""}${mobileOpen ? " sidebar--mobile-open" : ""}`}>
       {/* ── Logo Area ── */}
       <div className="sidebar__header">
         <div className="sidebar__logo">
@@ -170,5 +197,6 @@ export default function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }
