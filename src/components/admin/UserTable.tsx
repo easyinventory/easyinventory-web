@@ -21,7 +21,7 @@ export default function UserTable({ refreshKey, currentUserEmail }: UserTablePro
     error,
     refetch,
   } = useApiData<UserListItem[]>(fetchUsers, [refreshKey]);
-  const allUsers = usersData ?? [];
+  const allUsers = useMemo(() => usersData ?? [], [usersData]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<UserListItem | null>(null);
