@@ -2,6 +2,8 @@ import { useState } from "react";
 import type { JSX } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
+import { useOrg } from "../../org/useOrg";
+import OrgSwitcher from "./OrgSwitcher";
 import "./Sidebar.css";
 
 /* ── SVG Icon Components ── */
@@ -165,6 +167,7 @@ const navItems: NavItem[] = [
 
 export default function Sidebar() {
   const { user, profile, logout } = useAuth();
+  const { selectedOrgRole } = useOrg();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -177,8 +180,8 @@ export default function Sidebar() {
   const visibleItems = navItems.filter((item) => {
     if (item.requiredOrgRoles) {
       return (
-        profile?.org_role != null &&
-        item.requiredOrgRoles.includes(profile.org_role)
+        selectedOrgRole != null &&
+        item.requiredOrgRoles.includes(selectedOrgRole)
       );
     }
     if (item.requiredSystemRole) {
@@ -188,13 +191,13 @@ export default function Sidebar() {
   });
 
   // Format org role for display
-  const roleLabel = profile?.org_role
-    ? profile.org_role.replace("ORG_", "").toLowerCase()
+  const roleLabel = selectedOrgRole
+    ? selectedOrgRole.replace("ORG_", "").toLowerCase()
     : "member";
 
   const isOrgAdmin =
-    profile?.org_role === "ORG_OWNER" ||
-    profile?.org_role === "ORG_ADMIN";
+    selectedOrgRole === "ORG_OWNER" ||
+    selectedOrgRole === "ORG_ADMIN";
 
   const roleClass = isOrgAdmin
     ? "sidebar__role-badge--admin"
@@ -214,6 +217,9 @@ export default function Sidebar() {
           <span className="sidebar__logo-text">EZInventory</span>
         </div>
       </div>
+
+      {/* ── Org Switcher ── */}
+      <OrgSwitcher />
 
       {/* ── Navigation ── */}
       <nav className="sidebar__nav">
