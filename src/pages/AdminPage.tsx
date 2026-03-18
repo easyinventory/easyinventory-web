@@ -3,11 +3,14 @@ import { useAuth } from "../auth/useAuth";
 import PageHeader from "../components/layout/PageHeader";
 import CreateOrgForm from "../components/admin/CreateOrgForm";
 import OrgTable from "../components/admin/OrgTable";
-import MemberList from "../components/org/MemberList";
+import UserTable from "../components/admin/UserTable";
 import "./AdminPage.css";
 
+type AdminTab = "organizations" | "users";
+
 export default function AdminPage() {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<AdminTab>("organizations");
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleCreated = () => {
@@ -21,22 +24,36 @@ export default function AdminPage() {
         subtitle="Manage organizations and onboard new clients"
       />
 
-      <CreateOrgForm onCreated={handleCreated} />
-      <OrgTable refreshKey={refreshKey} />
+      <nav className="admin-page__tabs">
+        <button
+          className={`admin-page__tab ${activeTab === "organizations" ? "admin-page__tab--active" : ""}`}
+          onClick={() => setActiveTab("organizations")}
+        >
+          Organizations
+        </button>
+        <button
+          className={`admin-page__tab ${activeTab === "users" ? "admin-page__tab--active" : ""}`}
+          onClick={() => setActiveTab("users")}
+        >
+          Users
+        </button>
+      </nav>
 
-      <div className="admin-page__members">
-        <PageHeader
-          title="Users"
-          subtitle="Manage users in your current organization and permanently delete accounts"
-        />
-        <MemberList
-          actorRole={profile?.org_role || ""}
-          actorSystemRole={profile?.system_role || ""}
-          currentUserId={profile?.id || ""}
-          currentUserEmail={user?.email || ""}
-          refreshKey={refreshKey}
-        />
-      </div>
+      {activeTab === "organizations" && (
+        <div className="admin-page__panel">
+          <CreateOrgForm onCreated={handleCreated} />
+          <OrgTable refreshKey={refreshKey} />
+        </div>
+      )}
+
+      {activeTab === "users" && (
+        <div className="admin-page__panel">
+          <UserTable
+            refreshKey={refreshKey}
+            currentUserEmail={user?.email || ""}
+          />
+        </div>
+      )}
     </div>
   );
 }

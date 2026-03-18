@@ -4,6 +4,7 @@ import type { OrgListItem } from "../../api/adminApi";
 import { useApiData } from "../../hooks/useApiData";
 import { formatDate } from "../../utils";
 import { EmptyState, ErrorBanner, LoadingState } from "../ui";
+import OrgMembersModal from "./OrgMembersModal";
 import RenameOrgModal from "./RenameOrgModal";
 import DeleteOrgModal from "./DeleteOrgModal";
 import TransferOwnershipModal from "./TransferOwnershipModal";
@@ -29,6 +30,7 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
   } = useApiData<OrgListItem[]>(fetchOrgs, [refreshKey]);
   const orgs = orgsData ?? [];
 
+  const [viewMembersOrg, setViewMembersOrg] = useState<OrgListItem | null>(null);
   const [modal, setModal] = useState<ModalState>(null);
 
   const handleRenameSuccess = () => {
@@ -78,6 +80,13 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
               <span className="org-table__actions">
                 <button
                   className="org-table__action-btn"
+                  title="View Members"
+                  onClick={() => setViewMembersOrg(org)}
+                >
+                  👥
+                </button>
+                <button
+                  className="org-table__action-btn"
                   title="Rename"
                   onClick={() => setModal({ type: "rename", org })}
                 >
@@ -101,6 +110,14 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
             </div>
           ))}
         </>
+      )}
+
+      {viewMembersOrg && (
+        <OrgMembersModal
+          orgId={viewMembersOrg.id}
+          orgName={viewMembersOrg.name}
+          onClose={() => setViewMembersOrg(null)}
+        />
       )}
 
       {/* Modals */}

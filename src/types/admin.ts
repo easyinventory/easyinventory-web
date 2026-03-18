@@ -18,3 +18,21 @@ export interface UpdateOrgRequest {
 export interface TransferOwnershipRequest {
   new_owner_email: string;
 }
+
+export interface UserListItem {
+  id: string;
+  email: string;
+  system_role: string;
+  is_active: boolean;
+  created_at: string;
+  org_count: number;
+}
+
+export interface OrgMemberDetail {
+  id: string;
+  user_id: string;
+  email: string;
+  org_role: string;
+  is_active: boolean;
+  joined_at: string;
+}
