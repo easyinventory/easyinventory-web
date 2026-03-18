@@ -21,6 +21,8 @@ import {
   type AuthUser,
   type UserProfile,
 } from "./auth-context";
+import { OrgProvider } from "../org/OrgContext";
+import type { OrgMembership } from "../types";
 
 // ── Helper: extract user info from session ──
 function extractUser(session: AuthSession): AuthUser {
@@ -35,13 +37,14 @@ function extractUser(session: AuthSession): AuthUser {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [memberships, setMemberships] = useState<OrgMembership[]>([]);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pendingUser, setPendingUser] = useState<PendingCognitoUser | null>(null);
   const [needsNewPassword, setNeedsNewPassword] = useState(false);
 
-  async function fetchProfile(jwt: string): Promise<UserProfile | null> {
+  async function fetchProfile(jwt: string): Promise<{ profile: UserProfile | null; memberships: OrgMembership[] }> {
     try {
       setAuthToken(jwt);
 
@@ -52,15 +55,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ]);
 
       const user = userRes.data;
-      const memberships = orgsRes.data;
+      const memberships: OrgMembership[] = orgsRes.data;
 
       // Get the first active membership's org_role (or null if no memberships)
       const orgRole =
         memberships.length > 0 ? memberships[0].org_role : null;
 
-      return { ...user, org_role: orgRole } as UserProfile;
+      return {
+        profile: { ...user, org_role: orgRole } as UserProfile,
+        memberships,
+      };
     } catch {
-      return null;
+      return { profile: null, memberships: [] };
     }
   }
 
@@ -71,8 +77,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(jwt);
       setAuthToken(jwt);
 
-      const userProfile = await fetchProfile(jwt);
-      setProfile(userProfile);
+      const result = await fetchProfile(jwt);
+      setProfile(result.profile);
+      setMemberships(result.memberships);
     },
     []
   );
@@ -138,6 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setToken(null);
     setProfile(null);
+    setMemberships([]);
     setPendingUser(null);
     setNeedsNewPassword(false);
     setAuthToken(null);
@@ -191,8 +199,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshProfile = useCallback(async () => {
     if (!token) return;
-    const userProfile = await fetchProfile(token);
-    setProfile(userProfile);
+    const result = await fetchProfile(token);
+    setProfile(result.profile);
+    setMemberships(result.memberships);
   }, [token]);
 
   const value: AuthContextType = {
@@ -211,5 +220,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     completeNewPassword,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      <OrgProvider memberships={memberships}>
+        {children}
+      </OrgProvider>
+    </AuthContext.Provider>
+  );
 }
