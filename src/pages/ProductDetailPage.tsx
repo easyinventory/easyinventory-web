@@ -40,7 +40,7 @@ export default function ProductDetailPage() {
 
   const { data: allSuppliers } = useApiData<Supplier[]>(fetchSuppliers);
 
-  const suppliers = useMemo(() => product?.suppliers ?? [], [product]);
+  const suppliers = useMemo(() => product?.product_suppliers ?? [], [product]);
   const orgSuppliers = useMemo(() => allSuppliers ?? [], [allSuppliers]);
 
   /* ── Action state ── */

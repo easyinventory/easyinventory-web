@@ -10,7 +10,7 @@ export interface Product {
 }
 
 export interface ProductWithSuppliers extends Product {
-  suppliers: ProductSupplierLink[];
+  product_suppliers: ProductSupplierLink[];
 }
 
 export interface ProductSupplierLink {
