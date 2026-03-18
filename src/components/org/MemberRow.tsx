@@ -6,30 +6,40 @@ import {
   activateMember,
   removeMember,
 } from "../../api/orgApi";
-import { OrgRole, formatRoleLabel } from "../../constants/roles";
+import { OrgRole, SystemRole, formatRoleLabel } from "../../constants/roles";
 import { extractApiError } from "../../utils";
+import DeleteUserModal from "../admin/DeleteUserModal";
 import "./MemberRow.css";
 
 interface MemberRowProps {
   member: OrgMember;
   actorRole: string;
+  actorSystemRole: string;
+  currentUserId: string;
   currentUserEmail: string;
   onUpdated: () => void;
+  onSystemDeleted: (email: string) => void;
 }
 
 export default function MemberRow({
   member,
   actorRole,
+  actorSystemRole,
+  currentUserId,
   currentUserEmail,
   onUpdated,
+  onSystemDeleted,
 }: MemberRowProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const isOwner = member.org_role === OrgRole.OWNER;
   const isAdmin = member.org_role === OrgRole.ADMIN;
   const isSelf = member.email === currentUserEmail;
+  const isSelfById = !!currentUserId && currentUserId === member.user_id;
   const actorIsOwner = actorRole === OrgRole.OWNER;
+  const actorIsSystemAdmin = actorSystemRole === SystemRole.ADMIN;
   const isPending = !member.is_active && member.email.includes("@");
 
   // Can this actor modify this member?
@@ -37,6 +47,7 @@ export default function MemberRow({
     !isOwner &&          // nobody modifies the owner
     !isSelf &&           // can't modify yourself
     (actorIsOwner || (!isAdmin));  // admin can't touch other admins
+  const canDeleteSystemUser = actorIsSystemAdmin && !isSelfById;
 
   const initials = member.email
     .split("@")[0]
@@ -85,6 +96,13 @@ export default function MemberRow({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDeleted = () => {
+    setIsDeleteModalOpen(false);
+    setError(null);
+    onSystemDeleted(member.email);
+    onUpdated();
   };
 
   // Determine status
@@ -173,7 +191,27 @@ export default function MemberRow({
             Remove
           </button>
         )}
+
+        {canDeleteSystemUser && (
+          <button
+            className="member-row__action member-row__action--danger"
+            onClick={() => setIsDeleteModalOpen(true)}
+            disabled={isLoading}
+            title="Delete user from system"
+          >
+            Delete User
+          </button>
+        )}
       </div>
+
+      {isDeleteModalOpen && (
+        <DeleteUserModal
+          userId={member.user_id}
+          userEmail={member.email}
+          onSuccess={handleDeleted}
+          onCancel={() => setIsDeleteModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

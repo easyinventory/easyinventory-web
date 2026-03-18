@@ -39,6 +39,8 @@ export default function OrgSettingsPage() {
 
       <MemberList
         actorRole={actorRole}
+        actorSystemRole={profile?.system_role || ""}
+        currentUserId={profile?.id || ""}
         currentUserEmail={user?.email || ""}
         refreshKey={refreshKey}
       />
