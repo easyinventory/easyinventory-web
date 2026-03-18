@@ -11,6 +11,14 @@ export interface CreateOrgRequest {
   owner_email: string;
 }
 
+export interface UpdateOrgRequest {
+  name: string;
+}
+
+export interface TransferOwnershipRequest {
+  new_owner_email: string;
+}
+
 export interface UserListItem {
   id: string;
   email: string;

@@ -5,11 +5,20 @@ import { useApiData } from "../../hooks/useApiData";
 import { formatDate } from "../../utils";
 import { EmptyState, ErrorBanner, LoadingState } from "../ui";
 import OrgMembersModal from "./OrgMembersModal";
+import RenameOrgModal from "./RenameOrgModal";
+import DeleteOrgModal from "./DeleteOrgModal";
+import TransferOwnershipModal from "./TransferOwnershipModal";
 import "./OrgTable.css";
 
 interface OrgTableProps {
   refreshKey: number;
 }
+
+type ModalState =
+  | { type: "rename"; org: OrgListItem }
+  | { type: "delete"; org: OrgListItem }
+  | { type: "transfer"; org: OrgListItem }
+  | null;
 
 export default function OrgTable({ refreshKey }: OrgTableProps) {
   const fetchOrgs = useCallback(() => listOrgs(), []);
@@ -17,10 +26,27 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
     data: orgsData,
     isLoading,
     error,
+    refetch,
   } = useApiData<OrgListItem[]>(fetchOrgs, [refreshKey]);
   const orgs = orgsData ?? [];
 
   const [viewMembersOrg, setViewMembersOrg] = useState<OrgListItem | null>(null);
+  const [modal, setModal] = useState<ModalState>(null);
+
+  const handleRenameSuccess = () => {
+    setModal(null);
+    refetch();
+  };
+
+  const handleDeleteSuccess = () => {
+    setModal(null);
+    refetch();
+  };
+
+  const handleTransferSuccess = () => {
+    setModal(null);
+    refetch();
+  };
 
   return (
     <div className="org-table">
@@ -59,6 +85,27 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
                 >
                   👥
                 </button>
+                <button
+                  className="org-table__action-btn"
+                  title="Rename"
+                  onClick={() => setModal({ type: "rename", org })}
+                >
+                  ✏️
+                </button>
+                <button
+                  className="org-table__action-btn"
+                  title="Transfer Ownership"
+                  onClick={() => setModal({ type: "transfer", org })}
+                >
+                  🔄
+                </button>
+                <button
+                  className="org-table__action-btn org-table__action-btn--danger"
+                  title="Delete"
+                  onClick={() => setModal({ type: "delete", org })}
+                >
+                  🗑️
+                </button>
               </span>
             </div>
           ))}
@@ -70,6 +117,32 @@ export default function OrgTable({ refreshKey }: OrgTableProps) {
           orgId={viewMembersOrg.id}
           orgName={viewMembersOrg.name}
           onClose={() => setViewMembersOrg(null)}
+        />
+      )}
+
+      {/* Modals */}
+      {modal?.type === "rename" && (
+        <RenameOrgModal
+          orgId={modal.org.id}
+          currentName={modal.org.name}
+          onSuccess={handleRenameSuccess}
+          onCancel={() => setModal(null)}
+        />
+      )}
+      {modal?.type === "delete" && (
+        <DeleteOrgModal
+          orgId={modal.org.id}
+          orgName={modal.org.name}
+          onSuccess={handleDeleteSuccess}
+          onCancel={() => setModal(null)}
+        />
+      )}
+      {modal?.type === "transfer" && (
+        <TransferOwnershipModal
+          orgId={modal.org.id}
+          orgName={modal.org.name}
+          onSuccess={handleTransferSuccess}
+          onCancel={() => setModal(null)}
         />
       )}
     </div>

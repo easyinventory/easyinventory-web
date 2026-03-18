@@ -131,3 +131,7 @@
   opacity: 1;
   background: var(--color-bg-secondary);
 }
+
+.org-table__action-btn--danger:hover {
+  background: var(--color-danger-bg);
+}

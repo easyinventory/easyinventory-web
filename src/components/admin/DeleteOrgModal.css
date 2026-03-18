@@ -1,0 +1,88 @@
+/* ═══════════════════════════════════════════════════════
+   DeleteOrgModal — Confirmation dialog for deleting an org
+   ═══════════════════════════════════════════════════════ */
+
+.delete-org-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 16px;
+}
+
+.delete-org-modal__content {
+  width: 100%;
+  max-width: 500px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+}
+
+.delete-org-modal__title {
+  margin: 0;
+  font-size: 18px;
+  color: var(--color-text);
+}
+
+.delete-org-modal__copy {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.delete-org-modal__warning {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-danger-bg);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.delete-org-modal__actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.delete-org-modal__btn {
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.delete-org-modal__btn--secondary {
+  border-color: var(--color-border-hover);
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+}
+
+.delete-org-modal__btn--secondary:hover {
+  background: var(--color-bg-secondary);
+}
+
+.delete-org-modal__btn--danger {
+  color: var(--color-bg);
+  background: var(--color-danger);
+}
+
+.delete-org-modal__btn--danger:hover {
+  filter: brightness(0.95);
+}
+
+.delete-org-modal__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
