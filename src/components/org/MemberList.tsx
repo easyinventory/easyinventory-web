@@ -1,8 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { listMembers } from "../../api/orgApi";
 import type { OrgMember } from "../../api/orgApi";
 import { useApiData } from "../../hooks/useApiData";
-import { EmptyState, ErrorBanner, LoadingState, SuccessBanner } from "../ui";
+import { usePagination } from "../../hooks/usePagination";
+import { EmptyState, ErrorBanner, LoadingState, Pagination, SuccessBanner } from "../ui";
 import MemberRow from "./MemberRow";
 import "./MemberList.css";
 
@@ -29,7 +30,18 @@ export default function MemberList({
     error,
     refetch,
   } = useApiData<OrgMember[]>(fetchMembers, [refreshKey]);
-  const members = membersData ?? [];
+  const members = useMemo(() => membersData ?? [], [membersData]);
+
+  const {
+    paginatedItems: pagedMembers,
+    page,
+    pageSize,
+    pageSizeOptions,
+    totalPages,
+    totalItems,
+    setPage,
+    setPageSize,
+  } = usePagination(members);
 
   const activeCount = members.filter((m) => m.is_active).length;
   const pendingCount = members.filter((m) => !m.is_active).length;
@@ -53,20 +65,33 @@ export default function MemberList({
       ) : members.length === 0 ? (
         <EmptyState message="No members yet. Invite someone above." />
       ) : (
-        members.map((member) => (
-          <MemberRow
-            key={member.id}
-            member={member}
-            actorRole={actorRole}
-            actorSystemRole={actorSystemRole}
-            currentUserId={currentUserId}
-            currentUserEmail={currentUserEmail}
-            onUpdated={refetch}
-            onSystemDeleted={(email) => {
-              setSuccessMessage(`User ${email} deleted successfully.`);
-            }}
+        <>
+          {pagedMembers.map((member) => (
+            <MemberRow
+              key={member.id}
+              member={member}
+              actorRole={actorRole}
+              actorSystemRole={actorSystemRole}
+              currentUserId={currentUserId}
+              currentUserEmail={currentUserEmail}
+              onUpdated={refetch}
+              onSystemDeleted={(email) => {
+                setSuccessMessage(`User ${email} deleted successfully.`);
+              }}
+            />
+          ))}
+
+          <Pagination
+            inline
+            page={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            pageSizeOptions={pageSizeOptions}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
           />
-        ))
+        </>
       )}
     </div>
   );

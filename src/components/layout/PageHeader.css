@@ -48,3 +48,22 @@
   display: flex;
   gap: 8px;
 }
+
+/* ── Mobile ── */
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+
+  .page-header__title {
+    font-size: 18px;
+  }
+
+  .page-header__actions {
+    width: 100%;
+  }
+}

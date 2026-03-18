@@ -116,6 +116,41 @@
   position: relative;
 }
 
+/* Disabled nav items */
+.sidebar__link--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.sidebar--collapsed .sidebar__link--disabled {
+  pointer-events: auto;
+  cursor: not-allowed;
+}
+
+.sidebar__link--disabled:hover {
+  background: none;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.sidebar__coming-soon {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.sidebar--collapsed .sidebar__coming-soon {
+  display: none;
+}
+
 .sidebar__link--admin::after {
   content: "";
   position: absolute;
@@ -138,6 +173,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.sidebar__link-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .sidebar__link-label {
@@ -311,4 +351,77 @@
 .sidebar__toggle:hover {
   background: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Mobile (≤ 768px) — Sidebar becomes a slide-out drawer
+   ═══════════════════════════════════════════════════════ */
+
+.sidebar__backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 50;
+  }
+
+  .sidebar--collapsed {
+    width: 260px;
+  }
+
+  /* When open on mobile, slide in */
+  .sidebar--mobile-open {
+    transform: translateX(0);
+  }
+
+  /* Hide collapse toggle on mobile */
+  .sidebar__toggle {
+    display: none;
+  }
+
+  /* Always show labels on mobile (never collapsed) */
+  .sidebar__link-label,
+  .sidebar__logo-text,
+  .sidebar__user-info {
+    opacity: 1 !important;
+    width: auto !important;
+    pointer-events: auto !important;
+  }
+
+  .sidebar__link {
+    justify-content: flex-start !important;
+    padding: 0 12px !important;
+  }
+
+  .sidebar__logout {
+    justify-content: flex-start !important;
+    padding: 0 12px !important;
+  }
+
+  .sidebar__user {
+    justify-content: flex-start !important;
+  }
+
+  /* Backdrop overlay */
+  .sidebar__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Disable collapsed tooltips on mobile */
+  .sidebar--collapsed .sidebar__link:hover::after {
+    display: none;
+  }
 }
