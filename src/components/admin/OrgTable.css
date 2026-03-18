@@ -19,7 +19,7 @@
 
 .org-table__header {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 0.8fr 1fr;
+  grid-template-columns: 2fr 1.5fr 0.8fr 1fr 0.8fr;
   gap: 8px;
   padding: 8px 12px;
   font-size: 11px;
@@ -38,7 +38,7 @@
 
 .org-table__row {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 0.8fr 1fr;
+  grid-template-columns: 2fr 1.5fr 0.8fr 1fr 0.8fr;
   gap: 8px;
   padding: 12px;
   font-size: 13px;
@@ -99,4 +99,35 @@
   border-radius: var(--radius-md);
   border-left: 3px solid var(--color-danger);
   margin-bottom: 16px;
+}
+
+/* ── Actions ── */
+
+.org-table__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.org-table__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.12s, background 0.12s;
+}
+
+.org-table__action-btn:hover {
+  opacity: 1;
+  background: var(--color-bg-secondary);
 }

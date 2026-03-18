@@ -3,11 +3,11 @@ import { useAuth } from "../auth/useAuth";
 import PageHeader from "../components/layout/PageHeader";
 import CreateOrgForm from "../components/admin/CreateOrgForm";
 import OrgTable from "../components/admin/OrgTable";
-import MemberList from "../components/org/MemberList";
+import UserTable from "../components/admin/UserTable";
 import "./AdminPage.css";
 
 export default function AdminPage() {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleCreated = () => {
@@ -27,14 +27,11 @@ export default function AdminPage() {
       <div className="admin-page__members">
         <PageHeader
           title="Users"
-          subtitle="Manage users in your current organization and permanently delete accounts"
+          subtitle="Manage all users across the system and permanently delete accounts"
         />
-        <MemberList
-          actorRole={profile?.org_role || ""}
-          actorSystemRole={profile?.system_role || ""}
-          currentUserId={profile?.id || ""}
-          currentUserEmail={user?.email || ""}
+        <UserTable
           refreshKey={refreshKey}
+          currentUserEmail={user?.email || ""}
         />
       </div>
     </div>
