@@ -10,3 +10,11 @@ export interface CreateOrgRequest {
   name: string;
   owner_email: string;
 }
+
+export interface UpdateOrgRequest {
+  name: string;
+}
+
+export interface TransferOwnershipRequest {
+  new_owner_email: string;
+}
