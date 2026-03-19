@@ -1,13 +1,14 @@
 import {
-  useState,
   useEffect,
   useCallback,
+  useMemo,
+  useReducer,
+  useRef,
   type ReactNode,
 } from "react";
-import apiClient, { setAuthToken } from "../../../shared/api/client";
+import { setAuthToken } from "../../../shared/api/client";
 import {
   type AuthSession,
-  type PendingCognitoUser,
   authenticateUser as authenticateCognitoUser,
   completeNewPasswordChallenge as completeCognitoNewPasswordChallenge,
   confirmForgotPassword as confirmCognitoForgotPassword,
@@ -23,63 +24,27 @@ import {
 } from "./auth-context";
 import { OrgProvider } from "../../org/context/OrgContext";
 import type { OrgMembership } from "../../../shared/types";
-
-// ── Helper: extract user info from session ──
-function extractUser(session: AuthSession): AuthUser {
-  const idToken = session.getIdToken();
-  return {
-    email: idToken.payload["email"] as string,
-    sub: idToken.payload["sub"] as string,
-  };
-}
+import { authReducer, initialState, extractUser, fetchProfile } from "./auth-reducer";
 
 // ── Provider ──
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [memberships, setMemberships] = useState<OrgMembership[]>([]);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [pendingUser, setPendingUser] = useState<PendingCognitoUser | null>(null);
-  const [needsNewPassword, setNeedsNewPassword] = useState(false);
+  const [state, dispatch] = useReducer(authReducer, initialState);
 
-  async function fetchProfile(jwt: string): Promise<{ profile: UserProfile | null; memberships: OrgMembership[] }> {
-    try {
-      setAuthToken(jwt);
+  // Refs let stable callbacks access latest values without re-creating
+  const tokenRef = useRef(state.token);
+  const pendingUserRef = useRef(state.pendingUser);
 
-      // Fetch user record and org memberships in parallel
-      const [userRes, orgsRes] = await Promise.all([
-        apiClient.get("/api/me"),
-        apiClient.get("/api/orgs/me"),
-      ]);
-
-      const user = userRes.data;
-      const memberships: OrgMembership[] = orgsRes.data;
-
-      // Get the first active membership's org_role (or null if no memberships)
-      const orgRole =
-        memberships.length > 0 ? memberships[0].org_role : null;
-
-      return {
-        profile: { ...user, org_role: orgRole } as UserProfile,
-        memberships,
-      };
-    } catch {
-      return { profile: null, memberships: [] };
-    }
-  }
+  useEffect(() => { tokenRef.current = state.token; }, [state.token]);
+  useEffect(() => { pendingUserRef.current = state.pendingUser; }, [state.pendingUser]);
 
   const handleAuthenticatedSession = useCallback(
-    async (session: AuthSession) => {
+    async (session: AuthSession): Promise<{ user: AuthUser; token: string; profile: UserProfile | null; memberships: OrgMembership[] }> => {
       const jwt = session.getIdToken().getJwtToken();
-      setUser(extractUser(session));
-      setToken(jwt);
+      const user = extractUser(session);
       setAuthToken(jwt);
 
       const result = await fetchProfile(jwt);
-      setProfile(result.profile);
-      setMemberships(result.memberships);
+      return { user, token: jwt, profile: result.profile, memberships: result.memberships };
     },
     []
   );
@@ -90,12 +55,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const session = await getCurrentSession();
 
       if (!session) {
-        setIsLoading(false);
+        dispatch({ type: "SESSION_RESTORE_FAILED" });
         return;
       }
 
-      await handleAuthenticatedSession(session);
-      setIsLoading(false);
+      const result = await handleAuthenticatedSession(session);
+      dispatch({ type: "SESSION_RESTORED", ...result });
     };
 
     void restoreSession();
@@ -104,21 +69,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Login
   const login = useCallback(
     async (email: string, password: string): Promise<void> => {
-      setError(null);
+      dispatch({ type: "LOGIN_START" });
 
       try {
         const result = await authenticateCognitoUser(email, password);
 
         if (result.type === "newPasswordRequired") {
-          setPendingUser(result.cognitoUser);
-          setNeedsNewPassword(true);
-          setError(null);
-          setIsLoading(false);
+          dispatch({ type: "LOGIN_NEW_PASSWORD", pendingUser: result.cognitoUser });
           return;
         }
 
-        await handleAuthenticatedSession(result.session);
-        setError(null);
+        const sessionData = await handleAuthenticatedSession(result.session);
+        dispatch({ type: "LOGIN_SUCCESS", ...sessionData });
       } catch (err: unknown) {
         let message = "Login failed. Please try again.";
 
@@ -132,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
 
-        setError(message);
+        dispatch({ type: "LOGIN_ERROR", error: message });
         throw new Error(message);
       }
     },
@@ -142,46 +104,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Logout
   const logout = useCallback(() => {
     signOutCognitoUser();
-    setUser(null);
-    setToken(null);
-    setProfile(null);
-    setMemberships([]);
-    setPendingUser(null);
-    setNeedsNewPassword(false);
     setAuthToken(null);
-    setError(null);
+    dispatch({ type: "LOGOUT" });
   }, []);
 
   // Complete new-password challenge
   const completeNewPassword = useCallback(
     async (newPassword: string): Promise<void> => {
-      if (!pendingUser) {
+      const pending = pendingUserRef.current;
+      if (!pending) {
         return Promise.reject(new Error("No pending password challenge"));
       }
 
       try {
         const session = await completeCognitoNewPasswordChallenge(
-          pendingUser,
+          pending,
           newPassword
         );
 
-        await handleAuthenticatedSession(session);
-        setPendingUser(null);
-        setNeedsNewPassword(false);
-        setError(null);
+        const sessionData = await handleAuthenticatedSession(session);
+        dispatch({ type: "NEW_PASSWORD_SUCCESS", ...sessionData });
       } catch (err: unknown) {
         if (err instanceof Error && err.name === "InvalidPasswordException") {
-          setError(
-            "Password must include uppercase, lowercase, number, and special character."
-          );
+          dispatch({
+            type: "NEW_PASSWORD_ERROR",
+            error: "Password must include uppercase, lowercase, number, and special character.",
+          });
         } else if (err instanceof Error) {
-          setError(err.message);
+          dispatch({ type: "NEW_PASSWORD_ERROR", error: err.message });
         }
 
         throw err;
       }
     },
-    [handleAuthenticatedSession, pendingUser]
+    [handleAuthenticatedSession]
   );
 
   // Forgot password — sends verification code to email
@@ -198,31 +154,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const refreshProfile = useCallback(async () => {
-    if (!token) return;
-    const result = await fetchProfile(token);
-    setProfile(result.profile);
-    setMemberships(result.memberships);
-  }, [token]);
+    const currentToken = tokenRef.current;
+    if (!currentToken) return;
+    const result = await fetchProfile(currentToken);
+    dispatch({ type: "PROFILE_REFRESHED", ...result });
+  }, []);
 
-  const value: AuthContextType = {
-    user,
-    profile,
-    token,
-    isLoading,
-    isAuthenticated: !!user && !!token,
-    login,
-    logout,
-    error,
-    forgotPassword,
-    confirmResetPassword,
-    refreshProfile,
-    needsNewPassword,
-    completeNewPassword,
-  };
+  const value: AuthContextType = useMemo(
+    () => ({
+      user: state.user,
+      profile: state.profile,
+      token: state.token,
+      isLoading: state.isLoading,
+      isAuthenticated: !!state.user && !!state.token,
+      login,
+      logout,
+      error: state.error,
+      forgotPassword,
+      confirmResetPassword,
+      refreshProfile,
+      needsNewPassword: state.needsNewPassword,
+      completeNewPassword,
+    }),
+    [
+      state.user,
+      state.profile,
+      state.token,
+      state.isLoading,
+      state.error,
+      state.needsNewPassword,
+      login,
+      logout,
+      forgotPassword,
+      confirmResetPassword,
+      refreshProfile,
+      completeNewPassword,
+    ]
+  );
 
   return (
     <AuthContext.Provider value={value}>
-      <OrgProvider memberships={memberships}>
+      <OrgProvider memberships={state.memberships}>
         {children}
       </OrgProvider>
     </AuthContext.Provider>
