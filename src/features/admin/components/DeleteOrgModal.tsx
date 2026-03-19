@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useCallback } from "react";
 import { deleteOrg } from "../api/adminApi";
-import { extractApiError } from "../../../shared/utils";
+import { useAsyncAction } from "../../../shared/hooks";
 import ErrorBanner from "../../../shared/components/ui/ErrorBanner";
 import "./DeleteOrgModal.css";
 
@@ -17,22 +17,12 @@ export default function DeleteOrgModal({
   onSuccess,
   onCancel,
 }: DeleteOrgModalProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const action = useCallback(async () => {
+    await deleteOrg(orgId);
+    onSuccess();
+  }, [orgId, onSuccess]);
 
-  const handleDelete = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      await deleteOrg(orgId);
-      onSuccess();
-    } catch (err: unknown) {
-      setError(extractApiError(err));
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { execute: handleDelete, isLoading, error } = useAsyncAction(action);
 
   return (
     <div className="delete-org-modal__overlay" role="dialog" aria-modal="true">

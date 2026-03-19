@@ -1,40 +1,36 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import { useAsyncAction } from "../../../shared/hooks";
 import AuthLayout from "../../../shared/components/layout/AuthLayout";
+
+function extractForgotPasswordError(err: unknown): string {
+  if (err instanceof Error) {
+    if (err.name === "UserNotFoundException") return "No account found with this email.";
+    if (err.name === "LimitExceededException") return "Too many attempts. Please try again later.";
+    return err.message;
+  }
+  return "An unexpected error occurred.";
+}
 
 export default function ForgotPasswordPage() {
   const { forgotPassword } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const action = useCallback(async () => {
+    await forgotPassword(email);
+    navigate("/reset-password", { state: { email } });
+  }, [forgotPassword, email, navigate]);
+
+  const { execute, isLoading: isSubmitting, error } = useAsyncAction(action, {
+    extractError: extractForgotPasswordError,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setIsSubmitting(true);
-
-    try {
-      await forgotPassword(email);
-      // Navigate to reset page, pass email via router state
-      navigate("/reset-password", { state: { email } });
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.name === "UserNotFoundException") {
-          setError("No account found with this email.");
-        } else if (err.name === "LimitExceededException") {
-          setError("Too many attempts. Please try again later.");
-        } else {
-          setError(err.message);
-        }
-      } else {
-        setError("An unexpected error occurred.");
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
+    void execute();
   };
 
   return (

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { inviteMember } from "../api/orgApi";
 import { OrgRole, formatRoleLabel } from "../../../shared/constants/roles";
-import { extractApiError } from "../../../shared/utils";
+import { useAsyncAction } from "../../../shared/hooks";
 import { ErrorBanner, SuccessBanner } from "../../../shared/components/ui";
 import "./InviteForm.css";
 
@@ -13,32 +13,25 @@ interface InviteFormProps {
 export default function InviteForm({ actorRole, onInvited }: InviteFormProps) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<OrgRole>(OrgRole.EMPLOYEE);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isOwner = actorRole === OrgRole.OWNER;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const action = useCallback(async () => {
+    await inviteMember({ email, org_role: role });
+    const msg = `Invited ${email} as ${formatRoleLabel(role)}`;
+    setEmail("");
+    setRole(OrgRole.EMPLOYEE);
+    onInvited();
+    return msg;
+  }, [email, role, onInvited]);
+
+  const { execute, isLoading: isSubmitting, error, success } = useAsyncAction(action, {
+    successTimeout: 4000,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
-    setIsSubmitting(true);
-
-    try {
-      await inviteMember({ email, org_role: role });
-      setSuccess(`Invited ${email} as ${formatRoleLabel(role)}`);
-      setEmail("");
-      setRole(OrgRole.EMPLOYEE);
-      onInvited();
-
-      // Clear success message after 4 seconds
-      setTimeout(() => setSuccess(null), 4000);
-    } catch (err: unknown) {
-      setError(extractApiError(err));
-    } finally {
-      setIsSubmitting(false);
-    }
+    void execute();
   };
 
   return (

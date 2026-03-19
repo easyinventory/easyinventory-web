@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { createOrg } from "../api/adminApi";
 import { ErrorBanner, SuccessBanner } from "../../../shared/components/ui";
-import { extractApiError } from "../../../shared/utils";
+import { useAsyncAction } from "../../../shared/hooks";
 import "./CreateOrgForm.css";
 
 interface CreateOrgFormProps {
@@ -11,29 +11,23 @@ interface CreateOrgFormProps {
 export default function CreateOrgForm({ onCreated }: CreateOrgFormProps) {
   const [name, setName] = useState("");
   const [ownerEmail, setOwnerEmail] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const action = useCallback(async () => {
+    await createOrg({ name, owner_email: ownerEmail });
+    const msg = `Created "${name}" with owner ${ownerEmail}`;
+    setName("");
+    setOwnerEmail("");
+    onCreated();
+    return msg;
+  }, [name, ownerEmail, onCreated]);
+
+  const { execute, isLoading: isSubmitting, error, success } = useAsyncAction(action, {
+    successTimeout: 4000,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
-    setIsSubmitting(true);
-
-    try {
-      await createOrg({ name, owner_email: ownerEmail });
-      setSuccess(`Created "${name}" with owner ${ownerEmail}`);
-      setName("");
-      setOwnerEmail("");
-      onCreated();
-
-      setTimeout(() => setSuccess(null), 4000);
-    } catch (err: unknown) {
-      setError(extractApiError(err));
-    } finally {
-      setIsSubmitting(false);
-    }
+    void execute();
   };
 
   return (

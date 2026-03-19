@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { renameOrg } from "../api/adminApi";
-import { extractApiError } from "../../../shared/utils";
+import { useAsyncAction } from "../../../shared/hooks";
 import ErrorBanner from "../../../shared/components/ui/ErrorBanner";
 import "./RenameOrgModal.css";
 
@@ -18,25 +18,19 @@ export default function RenameOrgModal({
   onCancel,
 }: RenameOrgModalProps) {
   const [name, setName] = useState(currentName);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const action = useCallback(async () => {
     const trimmed = name.trim();
     if (!trimmed || trimmed === currentName) return;
+    const updated = await renameOrg(orgId, trimmed);
+    onSuccess(updated.name);
+  }, [name, orgId, currentName, onSuccess]);
 
-    setIsLoading(true);
-    setError(null);
+  const { execute, isLoading, error } = useAsyncAction(action);
 
-    try {
-      const updated = await renameOrg(orgId, trimmed);
-      onSuccess(updated.name);
-    } catch (err: unknown) {
-      setError(extractApiError(err));
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void execute();
   };
 
   return (
