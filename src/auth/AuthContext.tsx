@@ -4,7 +4,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import apiClient, { setAuthToken } from "../api/client";
+import apiClient, { setAuthToken } from "../shared/api/client";
 import {
   type AuthSession,
   type PendingCognitoUser,

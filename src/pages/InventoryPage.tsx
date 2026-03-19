@@ -1,4 +1,4 @@
-import PageHeader from "../components/layout/PageHeader";
+import PageHeader from "../shared/components/layout/PageHeader";
 import "./PlaceholderPage.css";
 
 export default function InventoryPage() {

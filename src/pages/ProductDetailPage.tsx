@@ -10,7 +10,7 @@ import {
 } from "../api/productApi";
 import { listSuppliers, type Supplier } from "../api/supplierApi";
 import { useAuth } from "../auth/useAuth";
-import PageHeader from "../components/layout/PageHeader";
+import PageHeader from "../shared/components/layout/PageHeader";
 import {
   ProductSupplierTable,
   AddSupplierModal,
@@ -18,7 +18,7 @@ import {
 import { isOrgAdmin } from "../constants/roles";
 import { useApiData } from "../hooks/useApiData";
 import { extractApiError, formatDate } from "../utils";
-import { EmptyState, ErrorBanner, LoadingState } from "../components/ui";
+import { EmptyState, ErrorBanner, LoadingState } from "../shared/components/ui";
 import "./ProductDetailPage.css";
 
 export default function ProductDetailPage() {

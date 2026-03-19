@@ -4,7 +4,7 @@ import { AuthProvider } from "./auth/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import RequireOrg from "./components/auth/RequireOrg";
 import RoleRoute from "./components/auth/RoleRoute";
-import AppLayout from "./components/layout/AppLayout";
+import AppLayout from "./shared/components/layout/AppLayout";
 import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";

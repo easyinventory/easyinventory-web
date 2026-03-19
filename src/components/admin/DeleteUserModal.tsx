@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { deleteSystemUser } from "../../api/adminApi";
-import ErrorBanner from "../ui/ErrorBanner";
+import ErrorBanner from "../../shared/components/ui/ErrorBanner";
 import "./DeleteUserModal.css";
 
 interface DeleteUserModalProps {

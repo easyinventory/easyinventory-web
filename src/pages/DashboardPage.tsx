@@ -3,7 +3,7 @@ import { useAuth } from "../auth/useAuth";
 import { useOrg } from "../org/useOrg";
 import { navItems } from "../constants/navigation";
 import type { OrgRole } from "../constants/roles";
-import PageHeader from "../components/layout/PageHeader";
+import PageHeader from "../shared/components/layout/PageHeader";
 import "./DashboardPage.css";
 
 export default function DashboardPage() {

@@ -3,7 +3,7 @@ import { listMembers } from "../../api/orgApi";
 import type { OrgMember } from "../../api/orgApi";
 import { useApiData } from "../../hooks/useApiData";
 import { usePagination } from "../../hooks/usePagination";
-import { EmptyState, ErrorBanner, LoadingState, Pagination, SuccessBanner } from "../ui";
+import { EmptyState, ErrorBanner, LoadingState, Pagination, SuccessBanner } from "../../shared/components/ui";
 import MemberRow from "./MemberRow";
 import "./MemberList.css";
 

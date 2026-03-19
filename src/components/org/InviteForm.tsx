@@ -2,7 +2,7 @@ import { useState } from "react";
 import { inviteMember } from "../../api/orgApi";
 import { OrgRole, formatRoleLabel } from "../../constants/roles";
 import { extractApiError } from "../../utils";
-import { ErrorBanner, SuccessBanner } from "../ui";
+import { ErrorBanner, SuccessBanner } from "../../shared/components/ui";
 import "./InviteForm.css";
 
 interface InviteFormProps {

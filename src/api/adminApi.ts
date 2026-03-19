@@ -1,4 +1,4 @@
-import apiClient from "./client";
+import apiClient from "../shared/api/client";
 import type { OrgListItem, CreateOrgRequest, UserListItem, OrgMemberDetail } from "../types";
 import type { OrgMember } from "../types";
 

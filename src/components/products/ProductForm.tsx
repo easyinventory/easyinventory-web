@@ -1,4 +1,4 @@
-import { ErrorBanner, SuccessBanner } from "../ui";
+import { ErrorBanner, SuccessBanner } from "../../shared/components/ui";
 import "./ProductForm.css";
 
 export interface ProductFormValues {

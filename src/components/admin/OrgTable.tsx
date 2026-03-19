@@ -4,7 +4,7 @@ import type { OrgListItem } from "../../api/adminApi";
 import { useApiData } from "../../hooks/useApiData";
 import { usePagination } from "../../hooks/usePagination";
 import { formatDate } from "../../utils";
-import { EmptyState, ErrorBanner, LoadingState, Pagination } from "../ui";
+import { EmptyState, ErrorBanner, LoadingState, Pagination } from "../../shared/components/ui";
 import OrgMembersModal from "./OrgMembersModal";
 import RenameOrgModal from "./RenameOrgModal";
 import DeleteOrgModal from "./DeleteOrgModal";

@@ -4,7 +4,7 @@ import type { UserListItem } from "../../types";
 import { useApiData } from "../../hooks/useApiData";
 import { usePagination } from "../../hooks/usePagination";
 import { formatDate } from "../../utils";
-import { EmptyState, ErrorBanner, LoadingState, Pagination } from "../ui";
+import { EmptyState, ErrorBanner, LoadingState, Pagination } from "../../shared/components/ui";
 import DeleteUserModal from "./DeleteUserModal";
 import "./UserTable.css";
 

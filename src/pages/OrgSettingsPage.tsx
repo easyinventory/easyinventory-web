@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../auth/useAuth";
 import { useOrg } from "../org/useOrg";
-import PageHeader from "../components/layout/PageHeader";
+import PageHeader from "../shared/components/layout/PageHeader";
 import InviteForm from "../components/org/InviteForm";
 import MemberList from "../components/org/MemberList";
 import { formatRoleLabel, type OrgRole } from "../constants/roles";

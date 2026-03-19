@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createOrg } from "../../api/adminApi";
-import { ErrorBanner, SuccessBanner } from "../ui";
+import { ErrorBanner, SuccessBanner } from "../../shared/components/ui";
 import { extractApiError } from "../../utils";
 import "./CreateOrgForm.css";
 
