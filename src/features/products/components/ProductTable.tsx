@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { Product } from "../../../shared/types";
 import { formatDate } from "../../../shared/utils";
 import "./ProductTable.css";
@@ -7,7 +8,7 @@ interface ProductTableProps {
   onRowClick: (product: Product) => void;
 }
 
-export default function ProductTable({
+export default memo(function ProductTable({
   products,
   onRowClick,
 }: ProductTableProps) {
@@ -47,4 +48,4 @@ export default function ProductTable({
       </table>
     </div>
   );
-}
+});

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import "./Pagination.css";
 
 const DEFAULT_PAGE_SIZES = [10, 25, 50] as const;
@@ -21,7 +22,7 @@ interface PaginationProps {
   inline?: boolean;
 }
 
-export default function Pagination({
+export default memo(function Pagination({
   page,
   totalPages,
   totalItems,
@@ -79,4 +80,4 @@ export default function Pagination({
       </div>
     </div>
   );
-}
+});

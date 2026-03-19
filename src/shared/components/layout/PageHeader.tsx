@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Link } from "react-router-dom";
 import "./PageHeader.css";
 
@@ -8,7 +9,7 @@ interface PageHeaderProps {
   children?: React.ReactNode;
 }
 
-export default function PageHeader({
+export default memo(function PageHeader({
   title,
   subtitle,
   backTo,
@@ -32,4 +33,4 @@ export default function PageHeader({
       )}
     </div>
   );
-}
+});

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { ProductSupplierLink } from "../../../shared/types";
 import "./ProductSupplierTable.css";
 
@@ -10,7 +11,7 @@ interface ProductSupplierTableProps {
   onRemove: (supplierId: string, supplierName: string) => void;
 }
 
-export default function ProductSupplierTable({
+export default memo(function ProductSupplierTable({
   suppliers,
   canDelete,
   togglingId,
@@ -77,4 +78,4 @@ export default function ProductSupplierTable({
       </table>
     </div>
   );
-}
+});

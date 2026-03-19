@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useCallback } from "react";
 import { deleteSystemUser } from "../api/adminApi";
+import { useAsyncAction } from "../../../shared/hooks";
 import ErrorBanner from "../../../shared/components/ui/ErrorBanner";
 import "./DeleteUserModal.css";
 
@@ -38,22 +39,14 @@ export default function DeleteUserModal({
   onSuccess,
   onCancel,
 }: DeleteUserModalProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const action = useCallback(async () => {
+    await deleteSystemUser(userId);
+    onSuccess();
+  }, [userId, onSuccess]);
 
-  const handleDelete = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      await deleteSystemUser(userId);
-      onSuccess();
-    } catch (err: unknown) {
-      setError(getDeleteErrorMessage(err));
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { execute: handleDelete, isLoading, error } = useAsyncAction(action, {
+    extractError: getDeleteErrorMessage,
+  });
 
   return (
     <div className="delete-user-modal__overlay" role="dialog" aria-modal="true">

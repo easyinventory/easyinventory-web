@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { transferOwnership } from "../api/adminApi";
-import { extractApiError } from "../../../shared/utils";
+import { useAsyncAction } from "../../../shared/hooks";
 import ErrorBanner from "../../../shared/components/ui/ErrorBanner";
 import "./TransferOwnershipModal.css";
 
@@ -18,25 +18,19 @@ export default function TransferOwnershipModal({
   onCancel,
 }: TransferOwnershipModalProps) {
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const action = useCallback(async () => {
     const trimmed = email.trim();
     if (!trimmed) return;
+    await transferOwnership(orgId, trimmed);
+    onSuccess(trimmed);
+  }, [email, orgId, onSuccess]);
 
-    setIsLoading(true);
-    setError(null);
+  const { execute, isLoading, error } = useAsyncAction(action);
 
-    try {
-      await transferOwnership(orgId, trimmed);
-      onSuccess(trimmed);
-    } catch (err: unknown) {
-      setError(extractApiError(err));
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void execute();
   };
 
   return (
