@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../../auth/useAuth";
-import { useOrg } from "../../../org/useOrg";
+import { useAuth } from "../../../features/auth/context/useAuth";
+import { useOrg } from "../../../features/org/context/useOrg";
 import { navItems } from "../../constants/navigation";
 import type { OrgRole } from "../../constants/roles";
 import OrgSwitcher from "./OrgSwitcher";
