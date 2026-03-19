@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { useOrg } from "../../../org/useOrg";
+import { useOrg } from "../../../features/org/context/useOrg";
 import Sidebar from "./Sidebar";
 import "./AppLayout.css";
 

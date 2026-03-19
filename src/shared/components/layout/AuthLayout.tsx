@@ -1,4 +1,4 @@
-import "../../../pages/AuthPage.css";
+import "../../../features/auth/pages/AuthPage.css";
 
 /* ── SVG Icons for feature list ── */
 

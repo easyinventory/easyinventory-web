@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useOrg } from "../../../org/useOrg";
+import { useOrg } from "../../../features/org/context/useOrg";
 import "./OrgSwitcher.css";
 
 export default function OrgSwitcher() {
