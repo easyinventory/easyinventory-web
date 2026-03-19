@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
-import AuthLayout from "../components/layout/AuthLayout";
+import AuthLayout from "../shared/components/layout/AuthLayout";
 
 export default function LoginPage() {
   const {

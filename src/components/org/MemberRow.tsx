@@ -6,8 +6,8 @@ import {
   activateMember,
   removeMember,
 } from "../../api/orgApi";
-import { OrgRole, SystemRole, formatRoleLabel } from "../../constants/roles";
-import { extractApiError } from "../../utils";
+import { OrgRole, SystemRole, formatRoleLabel } from "../../shared/constants/roles";
+import { extractApiError } from "../../shared/utils";
 import DeleteUserModal from "../admin/DeleteUserModal";
 import "./MemberRow.css";
 

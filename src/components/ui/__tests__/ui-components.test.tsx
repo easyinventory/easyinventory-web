@@ -6,7 +6,7 @@ import {
   SuccessBanner,
   EmptyState,
   Pagination,
-} from "../index";
+} from "../../../shared/components/ui";
 
 describe("LoadingState", () => {
   it("renders default loading text", () => {

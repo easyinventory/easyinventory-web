@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { renameOrg } from "../../api/adminApi";
-import { extractApiError } from "../../utils";
-import ErrorBanner from "../ui/ErrorBanner";
+import { extractApiError } from "../../shared/utils";
+import ErrorBanner from "../../shared/components/ui/ErrorBanner";
 import "./RenameOrgModal.css";
 
 interface RenameOrgModalProps {

@@ -4,7 +4,7 @@ import { AuthProvider } from "./auth/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import RequireOrg from "./components/auth/RequireOrg";
 import RoleRoute from "./components/auth/RoleRoute";
-import AppLayout from "./components/layout/AppLayout";
+import AppLayout from "./shared/components/layout/AppLayout";
 import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
@@ -19,7 +19,7 @@ import SuppliersPage from "./pages/SuppliersPage";
 import OrgSettingsPage from "./pages/OrgSettingsPage";
 import AdminPage from "./pages/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
-import { OrgRole, SystemRole } from "./constants/roles";
+import { OrgRole, SystemRole } from "./shared/constants/roles";
 
 export default function App() {
   return (

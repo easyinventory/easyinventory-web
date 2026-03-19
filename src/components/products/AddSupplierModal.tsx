@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Supplier } from "../../types";
 import type { ProductSupplierLink } from "../../types";
-import { ErrorBanner } from "../ui";
+import { ErrorBanner } from "../../shared/components/ui";
 import "./AddSupplierModal.css";
 
 interface AddSupplierModalProps {

@@ -1,5 +1,5 @@
 import type { Product } from "../../types";
-import { formatDate } from "../../utils";
+import { formatDate } from "../../shared/utils";
 import "./ProductTable.css";
 
 interface ProductTableProps {

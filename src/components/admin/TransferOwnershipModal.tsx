@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { transferOwnership } from "../../api/adminApi";
-import { extractApiError } from "../../utils";
-import ErrorBanner from "../ui/ErrorBanner";
+import { extractApiError } from "../../shared/utils";
+import ErrorBanner from "../../shared/components/ui/ErrorBanner";
 import "./TransferOwnershipModal.css";
 
 interface TransferOwnershipModalProps {

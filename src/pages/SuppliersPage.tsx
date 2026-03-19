@@ -8,16 +8,16 @@ import {
   type SupplierCreateRequest,
 } from "../api/supplierApi";
 import { useAuth } from "../auth/useAuth";
-import PageHeader from "../components/layout/PageHeader";
+import PageHeader from "../shared/components/layout/PageHeader";
 import {
   SupplierForm,
   SupplierSearchSelect,
   type SupplierFormValues,
 } from "../components/suppliers";
-import { isOrgAdmin } from "../constants/roles";
-import { useApiData } from "../hooks/useApiData";
-import { extractApiError } from "../utils";
-import { ErrorBanner, LoadingState } from "../components/ui";
+import { isOrgAdmin } from "../shared/constants/roles";
+import { useApiData } from "../shared/hooks/useApiData";
+import { extractApiError } from "../shared/utils";
+import { ErrorBanner, LoadingState } from "../shared/components/ui";
 import "./SuppliersPage.css";
 
 const EMPTY_FORM: SupplierFormValues = {

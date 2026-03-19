@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../auth/useAuth";
-import PageHeader from "../components/layout/PageHeader";
+import PageHeader from "../shared/components/layout/PageHeader";
 import CreateOrgForm from "../components/admin/CreateOrgForm";
 import OrgTable from "../components/admin/OrgTable";
 import UserTable from "../components/admin/UserTable";

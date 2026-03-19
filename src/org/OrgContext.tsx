@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, type ReactNode } from "react";
-import { setSelectedOrgId } from "../api/client";
+import { setSelectedOrgId } from "../shared/api/client";
 import type { OrgMembership } from "../types";
 import { OrgContext, type OrgContextType } from "./org-context";
 
