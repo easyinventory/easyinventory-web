@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
 import { listOrgs } from "../../api/adminApi";
 import type { OrgListItem } from "../../api/adminApi";
-import { useApiData } from "../../hooks/useApiData";
-import { usePagination } from "../../hooks/usePagination";
-import { formatDate } from "../../utils";
+import { useApiData } from "../../shared/hooks/useApiData";
+import { usePagination } from "../../shared/hooks/usePagination";
+import { formatDate } from "../../shared/utils";
 import { EmptyState, ErrorBanner, LoadingState, Pagination } from "../../shared/components/ui";
 import OrgMembersModal from "./OrgMembersModal";
 import RenameOrgModal from "./RenameOrgModal";

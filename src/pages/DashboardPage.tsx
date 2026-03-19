@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import { useOrg } from "../org/useOrg";
-import { navItems } from "../constants/navigation";
-import type { OrgRole } from "../constants/roles";
+import { navItems } from "../shared/constants/navigation";
+import type { OrgRole } from "../shared/constants/roles";
 import PageHeader from "../shared/components/layout/PageHeader";
 import "./DashboardPage.css";
 

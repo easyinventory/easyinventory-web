@@ -19,7 +19,7 @@ import SuppliersPage from "./pages/SuppliersPage";
 import OrgSettingsPage from "./pages/OrgSettingsPage";
 import AdminPage from "./pages/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
-import { OrgRole, SystemRole } from "./constants/roles";
+import { OrgRole, SystemRole } from "./shared/constants/roles";
 
 export default function App() {
   return (

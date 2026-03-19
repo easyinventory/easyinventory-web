@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
-import type { OrgRole, SystemRole } from "../../constants/roles";
+import type { OrgRole, SystemRole } from "../../shared/constants/roles";
 
 interface RoleRouteProps {
   allowedRoles: Array<OrgRole | SystemRole>;

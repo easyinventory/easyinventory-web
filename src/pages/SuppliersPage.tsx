@@ -14,9 +14,9 @@ import {
   SupplierSearchSelect,
   type SupplierFormValues,
 } from "../components/suppliers";
-import { isOrgAdmin } from "../constants/roles";
-import { useApiData } from "../hooks/useApiData";
-import { extractApiError } from "../utils";
+import { isOrgAdmin } from "../shared/constants/roles";
+import { useApiData } from "../shared/hooks/useApiData";
+import { extractApiError } from "../shared/utils";
 import { ErrorBanner, LoadingState } from "../shared/components/ui";
 import "./SuppliersPage.css";
 

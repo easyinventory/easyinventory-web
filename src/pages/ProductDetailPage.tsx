@@ -15,9 +15,9 @@ import {
   ProductSupplierTable,
   AddSupplierModal,
 } from "../components/products";
-import { isOrgAdmin } from "../constants/roles";
-import { useApiData } from "../hooks/useApiData";
-import { extractApiError, formatDate } from "../utils";
+import { isOrgAdmin } from "../shared/constants/roles";
+import { useApiData } from "../shared/hooks/useApiData";
+import { extractApiError, formatDate } from "../shared/utils";
 import { EmptyState, ErrorBanner, LoadingState } from "../shared/components/ui";
 import "./ProductDetailPage.css";
 

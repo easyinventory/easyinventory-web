@@ -8,8 +8,8 @@ import {
 } from "../api/productApi";
 import PageHeader from "../shared/components/layout/PageHeader";
 import { ProductForm, type ProductFormValues } from "../components/products";
-import { useApiData } from "../hooks/useApiData";
-import { extractApiError } from "../utils";
+import { useApiData } from "../shared/hooks/useApiData";
+import { extractApiError } from "../shared/utils";
 import { ErrorBanner, LoadingState } from "../shared/components/ui";
 
 const EMPTY_FORM: ProductFormValues = {

@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { listOrgMembers } from "../../api/adminApi";
 import type { OrgMemberDetail } from "../../types";
-import { useApiData } from "../../hooks/useApiData";
-import { formatDate } from "../../utils";
+import { useApiData } from "../../shared/hooks/useApiData";
+import { formatDate } from "../../shared/utils";
 import { ErrorBanner, LoadingState } from "../../shared/components/ui";
 import "./OrgMembersModal.css";
 

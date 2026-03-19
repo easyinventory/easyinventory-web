@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { renameOrg } from "../../api/adminApi";
-import { extractApiError } from "../../utils";
+import { extractApiError } from "../../shared/utils";
 import ErrorBanner from "../../shared/components/ui/ErrorBanner";
 import "./RenameOrgModal.css";
 

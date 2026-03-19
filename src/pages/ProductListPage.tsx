@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { listProducts, type Product } from "../api/productApi";
 import PageHeader from "../shared/components/layout/PageHeader";
 import { ProductTable } from "../components/products";
-import { useApiData } from "../hooks/useApiData";
-import { usePagination } from "../hooks/usePagination";
+import { useApiData } from "../shared/hooks/useApiData";
+import { usePagination } from "../shared/hooks/usePagination";
 import { EmptyState, ErrorBanner, LoadingState, Pagination } from "../shared/components/ui";
 import "./ProductListPage.css";
 
