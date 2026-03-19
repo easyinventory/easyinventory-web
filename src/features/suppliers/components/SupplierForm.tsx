@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ErrorBanner, SuccessBanner } from "../../../shared/components/ui";
 import "./SupplierForm.css";
 
@@ -24,7 +25,7 @@ interface SupplierFormProps {
   onFieldChange: (field: keyof SupplierFormValues, nextValue: string) => void;
 }
 
-export default function SupplierForm({
+export default memo(function SupplierForm({
   formId,
   value,
   isEditing,
@@ -136,4 +137,4 @@ export default function SupplierForm({
       </form>
     </div>
   );
-}
+});

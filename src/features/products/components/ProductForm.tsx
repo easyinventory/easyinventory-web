@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ErrorBanner, SuccessBanner } from "../../../shared/components/ui";
 import "./ProductForm.css";
 
@@ -19,7 +20,7 @@ interface ProductFormProps {
   onFieldChange: (field: keyof ProductFormValues, nextValue: string) => void;
 }
 
-export default function ProductForm({
+export default memo(function ProductForm({
   value,
   isSubmitting,
   actionError,
@@ -95,4 +96,4 @@ export default function ProductForm({
       </form>
     </div>
   );
-}
+});

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 import "./EmptyState.css";
 
 interface EmptyStateProps {
@@ -7,7 +7,7 @@ interface EmptyStateProps {
   action?: ReactNode;
 }
 
-export default function EmptyState({ message, icon, action }: EmptyStateProps) {
+export default memo(function EmptyState({ message, icon, action }: EmptyStateProps) {
   return (
     <div className="empty-state">
       {icon && <div className="empty-state__icon">{icon}</div>}
@@ -15,4 +15,4 @@ export default function EmptyState({ message, icon, action }: EmptyStateProps) {
       {action && <div className="empty-state__action">{action}</div>}
     </div>
   );
-}
+});
