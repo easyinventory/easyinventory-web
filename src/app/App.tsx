@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { AuthProvider } from "../features/auth/context/AuthContext";
+import { ErrorBoundary } from "../shared/components/ui";
 import ProtectedRoute from "../features/auth/components/ProtectedRoute";
 import RequireOrg from "../features/auth/components/RequireOrg";
 import RoleRoute from "../features/auth/components/RoleRoute";
@@ -23,8 +24,9 @@ import { OrgRole, SystemRole } from "../shared/constants/roles";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
         <Routes>
           {/* Public routes — no auth needed */}
           <Route path="/login" element={<LoginPage />} />
@@ -70,5 +72,6 @@ export default function App() {
         </Routes>
       </AuthProvider>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }
