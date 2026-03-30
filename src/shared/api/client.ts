@@ -36,8 +36,16 @@ export function setSelectedOrgId(id: string | null) {
 
 apiClient.interceptors.request.use(async (config) => {
   // Prefer the getter (auto-refreshes expired tokens) over the static value.
-  const token = tokenGetter ? await tokenGetter() : authToken;
+  let token: string | null = null;
 
+  if (tokenGetter) {
+    token = await tokenGetter();
+  }
+
+  // If the getter is not set or returns null, fall back to the static token.
+  if (!token && authToken) {
+    token = authToken;
+  }
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
