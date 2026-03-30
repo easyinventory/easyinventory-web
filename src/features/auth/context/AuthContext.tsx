@@ -6,7 +6,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import { setAuthToken } from "../../../shared/api/client";
+import { setAuthToken, setTokenGetter } from "../../../shared/api/client";
 import {
   type AuthSession,
   authenticateUser as authenticateCognitoUser,
@@ -48,6 +48,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     []
   );
+
+  // Wire up the token getter so every API request auto-refreshes the
+  // Cognito session when the current ID token has expired.
+  useEffect(() => {
+    setTokenGetter(async () => {
+      const session = await getCurrentSession();
+      return session ? session.getIdToken().getJwtToken() : null;
+    });
+    return () => setTokenGetter(null);
+  }, []);
 
   // Check for existing session on mount (page refresh)
   useEffect(() => {
@@ -105,6 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     signOutCognitoUser();
     setAuthToken(null);
+    setTokenGetter(null);
     dispatch({ type: "LOGOUT" });
   }, []);
 
