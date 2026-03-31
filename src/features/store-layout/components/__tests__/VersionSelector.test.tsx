@@ -62,6 +62,7 @@ describe("VersionSelector", () => {
       makeLayout({
         id: "l2",
         is_active: false,
+        version_number: 2,
         created_at: "2024-07-01T12:00:00Z",
       }),
     ];
@@ -81,6 +82,7 @@ describe("VersionSelector", () => {
       makeLayout({
         id: "l2",
         is_active: false,
+        version_number: 2,
         rows: 10,
         cols: 12,
         created_at: "2024-07-01T12:00:00Z",
@@ -107,7 +109,7 @@ describe("VersionSelector", () => {
     const onActivate = vi.fn();
     const layouts = [
       makeLayout({ id: "l1", is_active: true, created_at: "2024-06-01T12:00:00Z" }),
-      makeLayout({ id: "l2", is_active: false, created_at: "2024-07-01T12:00:00Z" }),
+      makeLayout({ id: "l2", is_active: false, version_number: 2, created_at: "2024-07-01T12:00:00Z" }),
     ];
     render(
       <VersionSelector
@@ -127,7 +129,7 @@ describe("VersionSelector", () => {
   it("disables activate button when isActivating", async () => {
     const layouts = [
       makeLayout({ id: "l1", is_active: true, created_at: "2024-06-01T12:00:00Z" }),
-      makeLayout({ id: "l2", is_active: false, created_at: "2024-07-01T12:00:00Z" }),
+      makeLayout({ id: "l2", is_active: false, version_number: 2, created_at: "2024-07-01T12:00:00Z" }),
     ];
     render(
       <VersionSelector

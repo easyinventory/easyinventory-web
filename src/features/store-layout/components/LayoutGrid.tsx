@@ -168,10 +168,11 @@ const LayoutGrid = memo(function LayoutGrid({
 
       if (!isPlacing) return;
 
-      freeformMouseDown.current = true;
       const key = ck(r, c);
       // Don't paint on occupied cells
       if (cellMap.get(key)?.isOccupied) return;
+
+      freeformMouseDown.current = true;
       // Toggle
       if (freeformKeySet.has(key)) {
         onFreeformCellsChange(

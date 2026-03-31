@@ -32,10 +32,19 @@ export default function ZoneNameModal({
       <form
         className="layout-modal-dialog"
         style={{ width: 380 }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="zone-name-modal-title"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            e.stopPropagation();
+            onCancel();
+          }
+        }}
         onSubmit={handleSubmit}
       >
-        <h3 className="layout-modal-title">Name this Zone</h3>
+        <h3 id="zone-name-modal-title" className="layout-modal-title">Name this Zone</h3>
 
         <div className="layout-modal-section">
           <label className="layout-modal-label" htmlFor="zone-name-input">

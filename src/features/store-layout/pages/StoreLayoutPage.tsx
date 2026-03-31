@@ -60,25 +60,26 @@ export default function StoreLayoutPage() {
   /* ── Layout version actions ── */
   const createLayoutAction = useAsyncAction(
     async (rows: number, cols: number) => {
-      await createLayout(selectedStoreId!, rows, cols);
+      if (!selectedStoreId) return;
+      await createLayout(selectedStoreId, rows, cols);
       setShowNewVersionForm(false);
       refetchLayouts();
     },
-    { successTimeout: 3000 },
   );
 
   const activateAction = useAsyncAction(
     async (layoutId: string) => {
-      await activateLayout(selectedStoreId!, layoutId);
+      if (!selectedStoreId) return;
+      await activateLayout(selectedStoreId, layoutId);
       refetchLayouts();
     },
-    { successTimeout: 2000 },
   );
 
   /* ── Zone CRUD ── */
   const createZoneAction = useAsyncAction(
     async (name: string, color: string, cells: Cell[], isFreeform: boolean) => {
-      await createZone(selectedStoreId!, activeLayout!.id, {
+      if (!selectedStoreId || !activeLayout) return;
+      await createZone(selectedStoreId, activeLayout.id, {
         name,
         color,
         cells,
@@ -91,14 +92,16 @@ export default function StoreLayoutPage() {
 
   const updateZoneAction = useAsyncAction(
     async (zoneId: string, updates: { name?: string; color?: string }) => {
-      await updateZone(selectedStoreId!, activeLayout!.id, zoneId, updates);
+      if (!selectedStoreId || !activeLayout) return;
+      await updateZone(selectedStoreId, activeLayout.id, zoneId, updates);
       editor.closeDetailAfterUpdate("zone");
       refetchLayouts();
     },
   );
 
   const deleteZoneAction = useAsyncAction(async (zoneId: string) => {
-    await deleteZone(selectedStoreId!, activeLayout!.id, zoneId);
+    if (!selectedStoreId || !activeLayout) return;
+    await deleteZone(selectedStoreId, activeLayout.id, zoneId);
     editor.resetAfterDelete();
     refetchLayouts();
   });
@@ -106,7 +109,8 @@ export default function StoreLayoutPage() {
   /* ── Fixture CRUD ── */
   const createFixtureAction = useAsyncAction(
     async (name: string, fixtureType: FixtureType, cells: Cell[]) => {
-      await createFixture(selectedStoreId!, activeLayout!.id, {
+      if (!selectedStoreId || !activeLayout) return;
+      await createFixture(selectedStoreId, activeLayout.id, {
         name,
         fixture_type: fixtureType,
         cells,
@@ -121,27 +125,29 @@ export default function StoreLayoutPage() {
       fixtureId: string,
       updates: { name?: string; fixture_type?: FixtureType },
     ) => {
-      await updateFixture(selectedStoreId!, activeLayout!.id, fixtureId, updates);
+      if (!selectedStoreId || !activeLayout) return;
+      await updateFixture(selectedStoreId, activeLayout.id, fixtureId, updates);
       editor.closeDetailAfterUpdate("fixture");
       refetchLayouts();
     },
   );
 
   const deleteFixtureAction = useAsyncAction(async (fixtureId: string) => {
-    await deleteFixture(selectedStoreId!, activeLayout!.id, fixtureId);
+    if (!selectedStoreId || !activeLayout) return;
+    await deleteFixture(selectedStoreId, activeLayout.id, fixtureId);
     editor.resetAfterDelete();
     refetchLayouts();
   });
 
   /* ── Edit-shape save ── */
   const saveShapeAction = useAsyncAction(async () => {
-    if (!editor.editingId || !editor.editingType) return;
+    if (!editor.editingId || !editor.editingType || !selectedStoreId || !activeLayout) return;
     if (editor.editingType === "zone") {
-      await updateZone(selectedStoreId!, activeLayout!.id, editor.editingId, {
+      await updateZone(selectedStoreId, activeLayout.id, editor.editingId, {
         cells: editor.editingCells,
       });
     } else {
-      await updateFixture(selectedStoreId!, activeLayout!.id, editor.editingId, {
+      await updateFixture(selectedStoreId, activeLayout.id, editor.editingId, {
         cells: editor.editingCells,
       });
     }

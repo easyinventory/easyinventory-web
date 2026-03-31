@@ -120,4 +120,15 @@ describe("isRectangle", () => {
     ];
     expect(isRectangle(cells)).toBe(true);
   });
+
+  it("returns false when duplicate cells mask a missing cell", () => {
+    // 2×2 bounding box but (1,1) is missing and (0,0) is duplicated
+    const cells = [
+      { row: 0, col: 0 },
+      { row: 0, col: 0 },
+      { row: 0, col: 1 },
+      { row: 1, col: 0 },
+    ];
+    expect(isRectangle(cells)).toBe(false);
+  });
 });

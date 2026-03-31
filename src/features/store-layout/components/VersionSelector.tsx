@@ -32,8 +32,7 @@ const VersionSelector = memo(function VersionSelector({
     [layouts],
   );
 
-  const activeIndex = sorted.findIndex((l) => l.is_active);
-  const active = sorted[activeIndex] ?? sorted[0];
+  const active = sorted.find((l) => l.is_active) ?? sorted[0];
   const others = sorted.filter((l) => l.id !== active?.id);
 
   if (!active) return null;
@@ -47,7 +46,7 @@ const VersionSelector = memo(function VersionSelector({
         <div className="version-selector__active-info">
           <span className="version-selector__active-badge">Active</span>
           <span className="version-selector__version-label">
-            Version {activeIndex + 1}
+            Version {active.version_number}
           </span>
           <span className="version-selector__dims">
             {active.rows} rows &times; {active.cols} columns
@@ -76,12 +75,10 @@ const VersionSelector = memo(function VersionSelector({
       {open && others.length > 0 && (
         <div className="version-selector__dropdown">
           {others.map((layout) => {
-            const versionNum =
-              sorted.findIndex((l) => l.id === layout.id) + 1;
             return (
               <div key={layout.id} className="version-selector__dropdown-row">
                 <span className="version-selector__version-label">
-                  Version {versionNum}
+                  Version {layout.version_number}
                 </span>
                 <span className="version-selector__dims">
                   {layout.rows} rows &times; {layout.cols} columns

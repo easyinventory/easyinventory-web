@@ -45,14 +45,23 @@ export default function FixtureDetailModal({
       <div
         className="layout-modal-dialog"
         style={{ width: 420 }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="fixture-detail-modal-title"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            e.stopPropagation();
+            onClose();
+          }
+        }}
       >
         <div className="layout-modal-header">
           <span style={{ fontSize: "1.5rem", flexShrink: 0 }}>
             {currentDef.icon}
           </span>
-          <h3 className="layout-modal-title">{fixture.name}</h3>
-          <button className="layout-modal-close" onClick={onClose}>
+          <h3 id="fixture-detail-modal-title" className="layout-modal-title">{fixture.name}</h3>
+          <button className="layout-modal-close" aria-label="Close" onClick={onClose}>
             ✕
           </button>
         </div>

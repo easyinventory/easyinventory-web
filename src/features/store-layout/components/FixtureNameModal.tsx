@@ -32,10 +32,19 @@ export default function FixtureNameModal({
       <form
         className="layout-modal-dialog"
         style={{ width: 420 }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="fixture-name-modal-title"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            e.stopPropagation();
+            onCancel();
+          }
+        }}
         onSubmit={handleSubmit}
       >
-        <h3 className="layout-modal-title">Add Fixture</h3>
+        <h3 id="fixture-name-modal-title" className="layout-modal-title">Add Fixture</h3>
 
         <div className="layout-modal-section">
           <label className="layout-modal-label" htmlFor="fixture-name-input">

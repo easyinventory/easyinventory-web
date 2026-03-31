@@ -134,7 +134,7 @@ describe("FixtureDetailModal", () => {
     const onClose = vi.fn();
     render(<FixtureDetailModal {...defaultProps} onClose={onClose} />);
     const user = userEvent.setup();
-    await user.click(screen.getByText("✕"));
+    await user.click(screen.getByLabelText("Close"));
     expect(onClose).toHaveBeenCalledOnce();
   });
 });

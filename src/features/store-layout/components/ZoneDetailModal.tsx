@@ -37,7 +37,16 @@ export default function ZoneDetailModal({
       <div
         className="layout-modal-dialog"
         style={{ width: 400 }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="zone-detail-modal-title"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            e.stopPropagation();
+            onClose();
+          }
+        }}
       >
         <div className="layout-modal-header">
           <span
@@ -49,8 +58,8 @@ export default function ZoneDetailModal({
               backgroundColor: zone.color,
             }}
           />
-          <h3 className="layout-modal-title">{zone.name}</h3>
-          <button className="layout-modal-close" onClick={onClose}>
+          <h3 id="zone-detail-modal-title" className="layout-modal-title">{zone.name}</h3>
+          <button className="layout-modal-close" aria-label="Close" onClick={onClose}>
             ✕
           </button>
         </div>

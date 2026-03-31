@@ -131,7 +131,7 @@ describe("ZoneDetailModal", () => {
     const onClose = vi.fn();
     render(<ZoneDetailModal {...defaultProps} onClose={onClose} />);
     const user = userEvent.setup();
-    await user.click(screen.getByText("✕"));
+    await user.click(screen.getByLabelText("Close"));
     expect(onClose).toHaveBeenCalledOnce();
   });
 });

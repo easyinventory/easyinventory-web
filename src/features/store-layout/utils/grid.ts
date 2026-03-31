@@ -36,7 +36,8 @@ function getBounds(cells: Cell[]): {
  */
 export function isRectangle(cells: Cell[]): boolean {
   if (cells.length === 0) return false;
+  const unique = cellsToKeySet(cells);
   const { minRow, maxRow, minCol, maxCol } = getBounds(cells);
   const expectedCount = (maxRow - minRow + 1) * (maxCol - minCol + 1);
-  return cells.length === expectedCount;
+  return unique.size === expectedCount;
 }

@@ -269,7 +269,7 @@ export function useLayoutEditor(
   fixtureList: LayoutFixture[],
 ): LayoutEditorState {
   // State groups
-  const [placementMode, setPlacementMode] = useState<PlacementMode>(null);
+  const [placementMode, setPlacementMode] = useState<PlacementMode>("none");
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   // ... more state
 
