@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { useStore } from "../context/useStore";
 import { listLayouts, createLayout, activateLayout } from "../api/storeApi";
+import type { StoreLayout } from "../../../shared/types";
 import {
   CreateLayoutForm,
   LayoutGrid,
@@ -17,7 +18,8 @@ export default function StoreLayoutPage() {
   const [showNewVersionForm, setShowNewVersionForm] = useState(false);
 
   const fetchLayouts = useCallback(
-    () => listLayouts(selectedStoreId!),
+    (): Promise<StoreLayout[]> =>
+      selectedStoreId ? listLayouts(selectedStoreId) : Promise.resolve([]),
     [selectedStoreId]
   );
 

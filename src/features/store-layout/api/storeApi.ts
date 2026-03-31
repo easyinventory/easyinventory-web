@@ -29,7 +29,7 @@ export async function activateLayout(
   storeId: string,
   layoutId: string
 ): Promise<StoreLayout> {
-  const response = await apiClient.put(
+  const response = await apiClient.post(
     `/api/stores/${storeId}/layouts/${layoutId}/activate`
   );
   return response.data;
