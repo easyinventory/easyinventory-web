@@ -21,6 +21,7 @@ vi.mock("../../shared/api/client", () => ({
     delete: vi.fn(),
   },
   setAuthToken: vi.fn(),
+  setTokenGetter: vi.fn(),
   setSelectedOrgId: vi.fn(),
 }));
 
