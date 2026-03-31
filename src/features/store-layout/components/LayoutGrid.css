@@ -51,7 +51,13 @@
 /* ── Fixture cell ── */
 
 .layout-grid__cell--fixture {
-  background: #6b7280;
+  background: repeating-linear-gradient(
+    -45deg,
+    #6b7280,
+    #6b7280 4px,
+    #7f8694 4px,
+    #7f8694 8px
+  );
 }
 
 .layout-grid__cell--fixture-wall {
@@ -67,7 +73,10 @@
 /* ── Selected item highlight ── */
 
 .layout-grid__cell--selected-item {
-  box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.7);
+  outline: 2.5px solid rgba(59, 130, 246, 0.85);
+  outline-offset: -1px;
+  box-shadow: 0 0 8px 2px rgba(59, 130, 246, 0.45);
+  z-index: 1;
 }
 
 /* ── Freeform mode ── */
