@@ -21,6 +21,7 @@ import OrgSettingsPage from "../features/org/pages/OrgSettingsPage";
 import AdminPage from "../features/admin/pages/AdminPage";
 import NotFoundPage from "./NotFoundPage";
 import { OrgRole, SystemRole } from "../shared/constants/roles";
+import { StoreProvider } from "../features/store-layout/context/StoreContext";
 
 export default function App() {
   return (
@@ -36,7 +37,7 @@ export default function App() {
           {/* Protected routes — must be logged in */}
           <Route element={<ProtectedRoute />}>
             <Route element={<RequireOrg />}>
-              <Route element={<AppLayout />}>
+              <Route element={<StoreProvider><AppLayout /></StoreProvider>}>
                 <Route path="/" element={<DashboardPage />} />
                 <Route path="/products" element={<ProductListPage />} />
                 <Route path="/products/new" element={<ProductFormPage />} />
