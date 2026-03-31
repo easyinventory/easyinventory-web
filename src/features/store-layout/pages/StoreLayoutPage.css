@@ -88,7 +88,16 @@
 
 /* ── Responsive ─── */
 @media (max-width: 900px) {
+  .store-layout-page {
+    height: auto;
+    overflow: auto;
+  }
+
   .store-layout-page__editor-layout {
     grid-template-columns: 1fr;
+  }
+
+  .store-layout-page__grid-scroll {
+    min-height: 50vw;
   }
 }
