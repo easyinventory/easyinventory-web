@@ -16,9 +16,10 @@
 6. [Products](#products)
 7. [Product–Supplier Links](#productsupplier-links)
 8. [Suppliers](#suppliers)
-9. [System Admin — Organizations](#system-admin--organizations)
-10. [System Admin — Users](#system-admin--users)
-11. [TypeScript Types Reference](#typescript-types-reference)
+9. [Stores](#stores)
+10. [System Admin — Organizations](#system-admin--organizations)
+11. [System Admin — Users](#system-admin--users)
+12. [TypeScript Types Reference](#typescript-types-reference)
 
 ---
 
@@ -235,6 +236,29 @@ interface SupplierUpdateRequest {
 
 ---
 
+## Stores
+
+List physical store locations within the currently selected organization. The selected `store_id` is read from `StoreContext` by downstream pages and passed explicitly in their API calls.
+
+| Method | Endpoint | Description | Request Body | Response |
+| ------ | -------- | ----------- | ------------ | -------- |
+| `GET` | `/api/stores` | List all stores for the current org | — | `Store[]` |
+
+### Types
+
+```typescript
+interface Store {
+  id: string;
+  name: string;
+  org_id: string;
+  created_at: string;
+}
+```
+
+> **Note:** The stores list is scoped to the org identified by the `X-Org-Id` header, which is automatically injected by the Axios request interceptor.
+
+---
+
 ## System Admin — Organizations
 
 Platform-wide organization management. Requires `SYSTEM_ADMIN` system role.
@@ -308,6 +332,7 @@ All request/response types are defined in `src/shared/types/` and exported throu
 | `org.ts` | `OrgMember`, `OrgMembership`, `InviteRequest`, `UpdateRoleRequest` |
 | `product.ts` | `Product`, `ProductWithSuppliers`, `ProductSupplierLink`, `ProductCreateRequest`, `ProductUpdateRequest`, `LinkSupplierRequest` |
 | `supplier.ts` | `Supplier`, `SupplierCreateRequest`, `SupplierUpdateRequest` |
+| `store.ts` | `Store` |
 | `admin.ts` | `OrgListItem`, `CreateOrgRequest`, `RenameOrgRequest`, `TransferOwnershipRequest`, `UserListItem` |
 | `index.ts` | Re-exports all of the above |
 

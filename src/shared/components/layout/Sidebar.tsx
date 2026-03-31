@@ -5,6 +5,7 @@ import { useOrg } from "../../../features/org/context/useOrg";
 import { navItems } from "../../constants/navigation";
 import type { OrgRole } from "../../constants/roles";
 import OrgSwitcher from "./OrgSwitcher";
+import StoreSwitcher from "./StoreSwitcher";
 import "./Sidebar.css";
 
 /* ── Sidebar-only icons (not part of nav config) ── */
@@ -119,6 +120,9 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
 
       {/* ── Org Switcher ── */}
       <OrgSwitcher />
+
+      {/* ── Store Switcher ── */}
+      <StoreSwitcher />
 
       {/* ── Navigation ── */}
       <nav className="sidebar__nav">
