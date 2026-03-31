@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo, type ReactNode } from "react";
+import { useState, useCallback, useMemo, type ReactNode } from "react";
 import { useOrg } from "../../org/context/useOrg";
 import { useApiData } from "../../../shared/hooks";
 import { listStores } from "../api/storeApi";
@@ -8,37 +8,43 @@ interface StoreProviderProps {
   children: ReactNode;
 }
 
+/**
+ * Tracks an explicit store selection scoped to a specific org.
+ * When the org changes the selection is automatically invalidated
+ * without needing a useEffect + setState.
+ */
+interface ExplicitSelection {
+  orgId: string;
+  storeId: string;
+}
+
 export function StoreProvider({ children }: StoreProviderProps) {
   const { selectedOrgId } = useOrg();
-  const [explicitStoreId, setExplicitStoreId] = useState<string | null>(null);
+  const [explicitSelection, setExplicitSelection] = useState<ExplicitSelection | null>(null);
 
-  const {
-    data: stores,
-    isLoading,
-  } = useApiData(listStores, [selectedOrgId]);
+  const { data: stores, isLoading } = useApiData(listStores, [selectedOrgId]);
 
-  const resolvedStores = stores ?? [];
+  const resolvedStores = useMemo(() => stores ?? [], [stores]);
 
-  // When the stores list changes (org switch or first load), reset to the first store
-  useEffect(() => {
-    setExplicitStoreId(null);
-  }, [selectedOrgId]);
+  // Only honour the explicit selection when it belongs to the current org
+  const effectiveStoreId =
+    explicitSelection?.orgId === selectedOrgId ? explicitSelection.storeId : null;
 
   const selectedStore = useMemo(() => {
     if (resolvedStores.length === 0) return null;
-    if (explicitStoreId) {
-      return resolvedStores.find((s) => s.id === explicitStoreId) ?? resolvedStores[0];
+    if (effectiveStoreId) {
+      return resolvedStores.find((s) => s.id === effectiveStoreId) ?? resolvedStores[0];
     }
     return resolvedStores[0];
-  }, [resolvedStores, explicitStoreId]);
+  }, [resolvedStores, effectiveStoreId]);
 
   const switchStore = useCallback(
     (storeId: string) => {
-      if (resolvedStores.find((s) => s.id === storeId)) {
-        setExplicitStoreId(storeId);
+      if (selectedOrgId && resolvedStores.find((s) => s.id === storeId)) {
+        setExplicitSelection({ orgId: selectedOrgId, storeId });
       }
     },
-    [resolvedStores]
+    [resolvedStores, selectedOrgId]
   );
 
   const value: StoreContextType = useMemo(
