@@ -4,11 +4,9 @@ import {
   listLayouts,
   createLayout,
   activateLayout,
-  listZones,
   createZone,
   updateZone,
   deleteZone,
-  listFixtures,
   createFixture,
   updateFixture,
   deleteFixture,
@@ -16,8 +14,6 @@ import {
 import type {
   StoreLayout,
   Cell,
-  LayoutZone,
-  LayoutFixture,
   FixtureType,
 } from "../../../shared/types";
 import type { PlacementMode, DrawMode } from "../components/LayoutGrid";
@@ -44,7 +40,7 @@ export default function StoreLayoutPage() {
   const { selectedStoreId, selectedStoreName } = useStore();
   const [showNewVersionForm, setShowNewVersionForm] = useState(false);
 
-  /* ── Layout data ── */
+  /* ── Layout data (zones & fixtures are eagerly loaded) ── */
   const fetchLayouts = useCallback(
     (): Promise<StoreLayout[]> =>
       selectedStoreId ? listLayouts(selectedStoreId) : Promise.resolve([]),
@@ -61,33 +57,9 @@ export default function StoreLayoutPage() {
     layouts?.find((l) => l.is_active) ?? layouts?.[0] ?? null;
   const hasLayouts = layouts && layouts.length > 0;
 
-  /* ── Zone + Fixture data ── */
-  const fetchZones = useCallback(
-    (): Promise<LayoutZone[]> =>
-      selectedStoreId && activeLayout
-        ? listZones(selectedStoreId, activeLayout.id)
-        : Promise.resolve([]),
-    [selectedStoreId, activeLayout],
-  );
-  const fetchFixtures = useCallback(
-    (): Promise<LayoutFixture[]> =>
-      selectedStoreId && activeLayout
-        ? listFixtures(selectedStoreId, activeLayout.id)
-        : Promise.resolve([]),
-    [selectedStoreId, activeLayout],
-  );
-
-  const {
-    data: zones,
-    refetch: refetchZones,
-  } = useApiData(fetchZones, [selectedStoreId, activeLayout?.id]);
-  const {
-    data: fixtures,
-    refetch: refetchFixtures,
-  } = useApiData(fetchFixtures, [selectedStoreId, activeLayout?.id]);
-
-  const zoneList = zones ?? [];
-  const fixtureList = fixtures ?? [];
+  /* Derive zones & fixtures directly from the active layout */
+  const zoneList = activeLayout?.zones ?? [];
+  const fixtureList = activeLayout?.fixtures ?? [];
 
   /* ── Layout CRUD actions ── */
   const createLayoutAction = useAsyncAction(
@@ -227,7 +199,7 @@ export default function StoreLayoutPage() {
       setShowZoneModal(false);
       setPendingCells(null);
       setFreeformCells([]);
-      refetchZones();
+      refetchLayouts();
     },
   );
 
@@ -235,7 +207,7 @@ export default function StoreLayoutPage() {
     async (zoneId: string, updates: { name?: string; color?: string }) => {
       await updateZone(selectedStoreId!, activeLayout!.id, zoneId, updates);
       setShowZoneDetail(false);
-      refetchZones();
+      refetchLayouts();
     },
   );
 
@@ -244,7 +216,7 @@ export default function StoreLayoutPage() {
     setShowZoneDetail(false);
     setSelectedItemId(null);
     setSelectedItemType(null);
-    refetchZones();
+    refetchLayouts();
   });
 
   /* ── Fixture CRUD actions ── */
@@ -258,7 +230,7 @@ export default function StoreLayoutPage() {
       setShowFixtureModal(false);
       setPendingCells(null);
       setFreeformCells([]);
-      refetchFixtures();
+      refetchLayouts();
     },
   );
 
@@ -274,7 +246,7 @@ export default function StoreLayoutPage() {
         updates,
       );
       setShowFixtureDetail(false);
-      refetchFixtures();
+      refetchLayouts();
     },
   );
 
@@ -283,7 +255,7 @@ export default function StoreLayoutPage() {
     setShowFixtureDetail(false);
     setSelectedItemId(null);
     setSelectedItemType(null);
-    refetchFixtures();
+    refetchLayouts();
   });
 
   /* ── Edit-shape handlers ── */
@@ -311,12 +283,12 @@ export default function StoreLayoutPage() {
       await updateZone(selectedStoreId!, activeLayout!.id, editingId, {
         cells: editingCells,
       });
-      refetchZones();
+      refetchLayouts();
     } else {
       await updateFixture(selectedStoreId!, activeLayout!.id, editingId, {
         cells: editingCells,
       });
-      refetchFixtures();
+      refetchLayouts();
     }
     setEditingId(null);
     setEditingType(null);

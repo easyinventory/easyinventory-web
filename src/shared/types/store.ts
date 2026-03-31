@@ -8,10 +8,14 @@ export interface Store {
 export interface StoreLayout {
   id: string;
   store_id: string;
+  version_number: number;
   rows: number;
   cols: number;
   is_active: boolean;
   created_at: string;
+  updated_at: string;
+  zones: LayoutZone[];
+  fixtures: LayoutFixture[];
 }
 
 /* ── Grid cell ── */
@@ -29,7 +33,7 @@ export interface LayoutZone {
   name: string;
   color: string; // hex e.g. "#3B82F6"
   cells: Cell[];
-  is_freeform: boolean;
+  is_freeform?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -38,7 +42,7 @@ export interface ZoneCreateRequest {
   name: string;
   color: string;
   cells: Cell[];
-  is_freeform: boolean;
+  is_freeform?: boolean;
 }
 
 export interface ZoneUpdateRequest {
@@ -62,7 +66,7 @@ export type FixtureType =
 export interface LayoutFixture {
   id: string;
   layout_version_id: string;
-  zone_id: string | null;
+  zone_id?: string | null;
   name: string;
   fixture_type: FixtureType;
   cells: Cell[];

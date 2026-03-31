@@ -49,14 +49,6 @@ export async function activateLayout(
 const zonePath = (storeId: string, layoutId: string) =>
   `/api/stores/${storeId}/layouts/${layoutId}/zones`;
 
-export async function listZones(
-  storeId: string,
-  layoutId: string,
-): Promise<LayoutZone[]> {
-  const response = await apiClient.get(zonePath(storeId, layoutId));
-  return response.data;
-}
-
 export async function createZone(
   storeId: string,
   layoutId: string,
@@ -91,14 +83,6 @@ export async function deleteZone(
 
 const fixturePath = (storeId: string, layoutId: string) =>
   `/api/stores/${storeId}/layouts/${layoutId}/fixtures`;
-
-export async function listFixtures(
-  storeId: string,
-  layoutId: string,
-): Promise<LayoutFixture[]> {
-  const response = await apiClient.get(fixturePath(storeId, layoutId));
-  return response.data;
-}
 
 export async function createFixture(
   storeId: string,
