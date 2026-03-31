@@ -153,6 +153,7 @@ export default function StoreLayoutPage() {
 
   function handleFreeformCancel() {
     setFreeformCells([]);
+    setPlacementMode("none");
   }
 
   // Item click in grid — highlight only

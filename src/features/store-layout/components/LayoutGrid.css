@@ -55,7 +55,13 @@
 }
 
 .layout-grid__cell--fixture-wall {
-  background: #4b5563;
+  background: repeating-linear-gradient(
+    -45deg,
+    #4b5563,
+    #4b5563 4px,
+    #6b7280 4px,
+    #6b7280 8px
+  );
 }
 
 /* ── Selected item highlight ── */

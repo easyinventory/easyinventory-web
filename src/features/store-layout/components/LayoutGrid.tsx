@@ -46,6 +46,8 @@ interface CellInfo {
   zoneName?: string;
   fixtureId?: string;
   fixtureIcon?: string;
+  fixtureName?: string;
+  fixtureType?: string;
   isOccupied: boolean;
 }
 
@@ -79,6 +81,8 @@ function buildCellMap(
         ...existing,
         fixtureId: f.id,
         fixtureIcon: ftDef.icon,
+        fixtureName: f.name,
+        fixtureType: f.fixture_type,
         isOccupied: true,
       });
     }
@@ -291,7 +295,7 @@ const LayoutGrid = memo(function LayoutGrid({
 
           /* Label to show in every cell of the zone/fixture */
           const cellLabel = info?.fixtureId
-            ? info.fixtureIcon
+            ? info.fixtureName
             : info?.zoneName;
           const cellLabelType = info?.fixtureId ? "fixture" : "zone";
 
