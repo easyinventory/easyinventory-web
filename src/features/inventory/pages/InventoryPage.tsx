@@ -39,13 +39,15 @@ export default function InventoryPage() {
   const [showStockModal, setShowStockModal] = useState(false);
 
   /* ── Debounce search input ── */
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
   useEffect(() => {
     debounceRef.current = setTimeout(() => {
       setDebouncedSearch(search);
       setPage(1);
     }, DEBOUNCE_MS);
-    return () => clearTimeout(debounceRef.current);
+    return () => {
+      if (debounceRef.current != null) clearTimeout(debounceRef.current);
+    };
   }, [search]);
 
   /* ── Fetch paginated inventory (server-side) ── */
