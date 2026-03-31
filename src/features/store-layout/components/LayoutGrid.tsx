@@ -4,11 +4,14 @@ import "./LayoutGrid.css";
 interface LayoutGridProps {
   rows: number;
   cols: number;
+  showCoords?: boolean;
 }
 
-const LayoutGrid = memo(function LayoutGrid({ rows, cols }: LayoutGridProps) {
-  const cellCount = rows * cols;
-
+const LayoutGrid = memo(function LayoutGrid({
+  rows,
+  cols,
+  showCoords = true,
+}: LayoutGridProps) {
   return (
     <div
       className="layout-grid"
@@ -19,9 +22,17 @@ const LayoutGrid = memo(function LayoutGrid({ rows, cols }: LayoutGridProps) {
         } as React.CSSProperties
       }
     >
-      {Array.from({ length: cellCount }, (_, i) => (
-        <div key={i} className="layout-grid__cell" />
-      ))}
+      {Array.from({ length: rows }, (_, r) =>
+        Array.from({ length: cols }, (_, c) => (
+          <div key={`${r}-${c}`} className="layout-grid__cell">
+            {showCoords && (
+              <span className="layout-grid__cell-coord">
+                {r + 1},{c + 1}
+              </span>
+            )}
+          </div>
+        ))
+      )}
     </div>
   );
 });

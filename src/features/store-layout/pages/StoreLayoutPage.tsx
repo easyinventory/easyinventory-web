@@ -1,14 +1,20 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useStore } from "../context/useStore";
 import { listLayouts, createLayout, activateLayout } from "../api/storeApi";
-import { CreateLayoutForm, LayoutGrid, VersionSelector } from "../components";
+import {
+  CreateLayoutForm,
+  LayoutGrid,
+  LayoutObjectsPanel,
+  VersionSelector,
+} from "../components";
 import PageHeader from "../../../shared/components/layout/PageHeader";
 import { ErrorBanner, LoadingState } from "../../../shared/components/ui";
 import { useApiData, useAsyncAction } from "../../../shared/hooks";
 import "./StoreLayoutPage.css";
 
 export default function StoreLayoutPage() {
-  const { selectedStoreId } = useStore();
+  const { selectedStoreId, selectedStoreName } = useStore();
+  const [showNewVersionForm, setShowNewVersionForm] = useState(false);
 
   const fetchLayouts = useCallback(
     () => listLayouts(selectedStoreId!),
@@ -25,6 +31,7 @@ export default function StoreLayoutPage() {
   const createAction = useAsyncAction(
     async (rows: number, cols: number) => {
       await createLayout(selectedStoreId!, rows, cols);
+      setShowNewVersionForm(false);
       refetch();
     },
     { successTimeout: 3000 }
@@ -41,19 +48,34 @@ export default function StoreLayoutPage() {
   const activeLayout =
     layouts?.find((l) => l.is_active) ?? layouts?.[0] ?? null;
 
+  const hasLayouts = layouts && layouts.length > 0;
+
   return (
     <div className="store-layout-page">
       <PageHeader
         title="Store Layout"
-        subtitle="Design and manage your store floor plan grid"
-      />
+        subtitle={
+          selectedStoreName
+            ? `${selectedStoreName} · Design and manage your store zones and fixtures`
+            : "Design and manage your store zones and fixtures"
+        }
+      >
+        {hasLayouts && (
+          <button
+            className="store-layout-page__new-version-btn"
+            onClick={() => setShowNewVersionForm((v) => !v)}
+          >
+            {showNewVersionForm ? "Cancel" : "+ New Version"}
+          </button>
+        )}
+      </PageHeader>
 
       {isLoading && <LoadingState text="Loading layouts..." />}
       {error && <ErrorBanner message={error} />}
 
       {!isLoading && !error && (
         <>
-          {layouts && layouts.length > 0 ? (
+          {hasLayouts ? (
             <>
               <VersionSelector
                 layouts={layouts}
@@ -63,29 +85,47 @@ export default function StoreLayoutPage() {
               {activateAction.error && (
                 <ErrorBanner message={activateAction.error} />
               )}
+
+              {showNewVersionForm && (
+                <CreateLayoutForm
+                  variant="panel"
+                  onSubmit={(rows, cols) =>
+                    void createAction.execute(rows, cols)
+                  }
+                  isLoading={createAction.isLoading}
+                  error={createAction.error}
+                  onCancel={() => setShowNewVersionForm(false)}
+                />
+              )}
+
               {activeLayout && (
-                <div className="store-layout-page__grid-wrapper">
-                  <LayoutGrid
-                    rows={activeLayout.rows}
-                    cols={activeLayout.cols}
-                  />
-                  <p className="store-layout-page__grid-label">
-                    {activeLayout.rows} rows × {activeLayout.cols} columns
-                  </p>
+                <div className="store-layout-page__editor-layout">
+                  <div className="store-layout-page__grid-card">
+                    <div className="store-layout-page__grid-card-header">
+                      <span className="store-layout-page__grid-card-title">
+                        Grid Editor
+                      </span>
+                      <span className="store-layout-page__grid-card-hint">
+                        Click to select
+                      </span>
+                    </div>
+                    <LayoutGrid
+                      rows={activeLayout.rows}
+                      cols={activeLayout.cols}
+                    />
+                  </div>
+                  <LayoutObjectsPanel />
                 </div>
               )}
             </>
           ) : (
-            <div className="store-layout-page__empty-hint">
-              <p>No layouts yet. Create your first layout below.</p>
-            </div>
+            <CreateLayoutForm
+              variant="empty-state"
+              onSubmit={(rows, cols) => void createAction.execute(rows, cols)}
+              isLoading={createAction.isLoading}
+              error={createAction.error}
+            />
           )}
-
-          <CreateLayoutForm
-            onSubmit={(rows, cols) => void createAction.execute(rows, cols)}
-            isLoading={createAction.isLoading}
-            error={createAction.error}
-          />
         </>
       )}
     </div>

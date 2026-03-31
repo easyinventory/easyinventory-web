@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import type { StoreLayout } from "../../../shared/types";
 import "./VersionSelector.css";
 
@@ -21,24 +21,40 @@ const VersionSelector = memo(function VersionSelector({
   onActivate,
   isActivating,
 }: VersionSelectorProps) {
+  // Sort by created_at ascending to assign stable version numbers
+  const sorted = useMemo(
+    () =>
+      [...layouts].sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      ),
+    [layouts]
+  );
+
   return (
     <div className="version-selector">
-      <div className="version-selector__label">Layout versions</div>
-      <div className="version-selector__list">
-        {layouts.map((layout) => (
-          <div
-            key={layout.id}
-            className={`version-selector__item${layout.is_active ? " version-selector__item--active" : ""}`}
-          >
-            <div className="version-selector__item-dims">
-              {layout.rows} × {layout.cols}
-            </div>
-            <div className="version-selector__item-date">
-              {formatDate(layout.created_at)}
-            </div>
-            {layout.is_active ? (
+      {sorted.map((layout, index) => (
+        <div
+          key={layout.id}
+          className={`version-selector__row${
+            layout.is_active ? " version-selector__row--active" : ""
+          }`}
+        >
+          <div className="version-selector__row-left">
+            {layout.is_active && (
               <span className="version-selector__active-badge">Active</span>
-            ) : (
+            )}
+            <span className="version-selector__version-label">
+              Version {index + 1}
+            </span>
+            <span className="version-selector__dims">
+              {layout.rows} rows × {layout.cols} columns
+            </span>
+          </div>
+          <div className="version-selector__row-right">
+            <span className="version-selector__date">
+              Created {formatDate(layout.created_at)}
+            </span>
+            {!layout.is_active && (
               <button
                 className="version-selector__activate-btn"
                 onClick={() => onActivate(layout.id)}
@@ -48,8 +64,8 @@ const VersionSelector = memo(function VersionSelector({
               </button>
             )}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   );
 });
