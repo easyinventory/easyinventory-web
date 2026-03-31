@@ -187,6 +187,7 @@ export default function StoreLayoutPage() {
       setShowZoneModal(false);
       setPendingCells(null);
       setFreeformCells([]);
+      setPlacementMode("none");
       refetchLayouts();
     },
   );
@@ -218,6 +219,7 @@ export default function StoreLayoutPage() {
       setShowFixtureModal(false);
       setPendingCells(null);
       setFreeformCells([]);
+      setPlacementMode("none");
       refetchLayouts();
     },
   );
