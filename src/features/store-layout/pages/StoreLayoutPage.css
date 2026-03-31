@@ -4,6 +4,10 @@
 
 .store-layout-page {
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 64px);
+  overflow: hidden;
 }
 
 /* ── + New Version button ─── */
@@ -32,6 +36,8 @@
   grid-template-columns: 1fr 300px;
   gap: 16px;
   align-items: start;
+  flex: 1;
+  min-height: 0;
 }
 
 /* ── Grid editor card ─── */
@@ -42,6 +48,9 @@
   box-shadow: var(--shadow-xs);
   padding: 16px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .store-layout-page__grid-card-header {
@@ -65,6 +74,8 @@
 /* Grid wrapper */
 .store-layout-page__grid-scroll {
   overflow: hidden;
+  flex: 1;
+  min-height: 0;
 }
 
 /* ── Toolbar + banners stack ─── */
