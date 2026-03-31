@@ -51,11 +51,11 @@
 /* ── Fixture cell ── */
 
 .layout-grid__cell--fixture {
-  background: #374151;
+  background: #6b7280;
 }
 
 .layout-grid__cell--fixture-wall {
-  background: #1f2937;
+  background: #4b5563;
 }
 
 /* ── Selected item highlight ── */
@@ -115,33 +115,32 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* ── Centroid label ── */
+/* ── Cell label (repeated in every cell) ── */
 
-.layout-grid__centroid-label {
+.layout-grid__cell-label {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
   pointer-events: none;
   user-select: none;
   white-space: nowrap;
-  max-width: 58px;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: calc(100% - 4px);
   text-align: center;
   line-height: 1.2;
 }
 
-.layout-grid__centroid-label--zone {
-  /* uses zone hex color text shadow */
+.layout-grid__cell-label--zone {
+  color: rgba(0, 0, 0, 0.55);
 }
 
-.layout-grid__centroid-label--fixture {
+.layout-grid__cell-label--fixture {
   color: #e5e7eb;
+  font-size: 12px;
 }
 
 .layout-grid__cell--fixture .layout-grid__centroid-label {

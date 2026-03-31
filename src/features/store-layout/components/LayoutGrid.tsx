@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo, useRef, useState } from "react";
 import type { Cell, LayoutZone, LayoutFixture } from "../../../shared/types";
-import { ck, rectToCells, getCentroid, cellsToKeySet } from "../utils";
+import { ck, rectToCells, cellsToKeySet } from "../utils";
 import { findZoneColor, findFixtureType } from "../constants";
 import "./LayoutGrid.css";
 
@@ -45,6 +45,7 @@ interface LayoutGridProps {
 interface CellInfo {
   zoneId?: string;
   zoneBg?: string;
+  zoneName?: string;
   fixtureId?: string;
   fixtureIcon?: string;
   isOccupied: boolean;
@@ -65,6 +66,7 @@ function buildCellMap(
         ...existing,
         zoneId: z.id,
         zoneBg: colorDef.bg,
+        zoneName: z.name,
         isOccupied: true,
       });
     }
@@ -87,36 +89,7 @@ function buildCellMap(
   return map;
 }
 
-/* ── Centroid entries ── */
 
-interface CentroidEntry {
-  key: string;
-  label: string;
-  type: "zone" | "fixture";
-}
-
-function buildCentroids(
-  zones: LayoutZone[],
-  fixtures: LayoutFixture[],
-): CentroidEntry[] {
-  const entries: CentroidEntry[] = [];
-  for (const z of zones) {
-    if (z.cells.length === 0) continue;
-    const c = getCentroid(z.cells);
-    entries.push({ key: ck(c.row, c.col), label: z.name, type: "zone" });
-  }
-  for (const f of fixtures) {
-    if (f.cells.length === 0) continue;
-    const c = getCentroid(f.cells);
-    const ftDef = findFixtureType(f.fixture_type);
-    entries.push({
-      key: ck(c.row, c.col),
-      label: ftDef.icon,
-      type: "fixture",
-    });
-  }
-  return entries;
-}
 
 /* ── Component ── */
 
@@ -143,15 +116,7 @@ const LayoutGrid = memo(function LayoutGrid({
     () => buildCellMap(zones, fixtures),
     [zones, fixtures],
   );
-  const centroids = useMemo(
-    () => buildCentroids(zones, fixtures),
-    [zones, fixtures],
-  );
-  const centroidMap = useMemo(() => {
-    const m = new Map<string, CentroidEntry>();
-    for (const entry of centroids) m.set(entry.key, entry);
-    return m;
-  }, [centroids]);
+
 
   const freeformKeySet = useMemo(
     () => cellsToKeySet(freeformCells),
@@ -363,7 +328,11 @@ const LayoutGrid = memo(function LayoutGrid({
             .filter(Boolean)
             .join(" ");
 
-          const centroidEntry = centroidMap.get(key);
+          /* Label to show in every cell of the zone/fixture */
+          const cellLabel = info?.fixtureId
+            ? info.fixtureIcon
+            : info?.zoneName;
+          const cellLabelType = info?.fixtureId ? "fixture" : "zone";
 
           return (
             <div
@@ -378,11 +347,11 @@ const LayoutGrid = memo(function LayoutGrid({
               onMouseEnter={() => handleMouseEnter(r, c)}
               onClick={() => handleCellClick(r, c)}
             >
-              {centroidEntry && (
+              {cellLabel && (
                 <span
-                  className={`layout-grid__centroid-label layout-grid__centroid-label--${centroidEntry.type}`}
+                  className={`layout-grid__cell-label layout-grid__cell-label--${cellLabelType}`}
                 >
-                  {centroidEntry.label}
+                  {cellLabel}
                 </span>
               )}
               {showCoords && (
