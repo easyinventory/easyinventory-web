@@ -1,0 +1,279 @@
+/* ═══════════════════════════════════════════════════════
+   InventoryDetailPage
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Header actions ── */
+
+.inventory-detail__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.inventory-detail__receipt-btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-bg);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.inventory-detail__sale-btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-hover);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.inventory-detail__sale-btn:hover {
+  background: var(--color-bg-secondary);
+}
+
+/* ── Info Card (read-only) ── */
+
+.inventory-detail__info-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+
+.inventory-detail__info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.inventory-detail__info-item label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 4px;
+}
+
+.inventory-detail__info-item span {
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+.inventory-detail__empty {
+  color: var(--color-text-tertiary);
+}
+
+/* ── Hero quantity (large) ── */
+
+.inventory-detail__qty-hero {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.inventory-detail__qty-hero--zero {
+  color: var(--color-danger);
+}
+
+/* ── Hero price ── */
+
+.inventory-detail__price-hero {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* ── Zone badge in info card ── */
+
+.inventory-detail__zone-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+/* ── Tabs Card ── */
+
+.inventory-detail__tabs-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  overflow: hidden;
+}
+
+.inventory-detail__tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.inventory-detail__tab {
+  height: 44px;
+  padding: 0 20px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+.inventory-detail__tab:hover {
+  color: var(--color-text);
+}
+
+.inventory-detail__tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: 600;
+}
+
+.inventory-detail__tab-content {
+  padding: 20px 24px;
+}
+
+/* ── Settings tab ── */
+
+.inventory-detail__settings {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inventory-detail__settings-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.inventory-detail__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inventory-detail__field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.inventory-detail__field-input,
+.inventory-detail__field-select {
+  height: 40px;
+  padding: 0 12px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  border: 1px solid var(--color-border-hover);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.inventory-detail__field-input:focus,
+.inventory-detail__field-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+
+.inventory-detail__field-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.inventory-detail__field-select {
+  appearance: none;
+  padding-right: 32px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='%236b7280' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.inventory-detail__settings-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.inventory-detail__save-btn {
+  height: 38px;
+  padding: 0 20px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-bg);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.inventory-detail__save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Deactivate (inside settings tab) ── */
+
+.inventory-detail__deactivate-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.inventory-detail__deactivate-btn {
+  height: 38px;
+  padding: 0 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.inventory-detail__deactivate-btn:hover {
+  background: var(--color-danger-bg);
+}
+
+.inventory-detail__deactivate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .inventory-detail__info-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .inventory-detail__actions {
+    flex-wrap: wrap;
+  }
+  .inventory-detail__settings-row {
+    grid-template-columns: 1fr;
+  }
+}
