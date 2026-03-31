@@ -90,6 +90,12 @@ const VersionSelector = memo(function VersionSelector({
                 </span>
                 <span className="version-selector__dims">
                   {layout.rows} rows &times; {layout.cols} columns
+                  {layout.zones && layout.fixtures && (
+                    <>
+                      {" "}&middot; {layout.zones.length} zones &middot;{" "}
+                      {layout.fixtures.length} fixtures
+                    </>
+                  )}
                 </span>
                 <span className="version-selector__date">
                   Created {formatDate(layout.created_at)}
