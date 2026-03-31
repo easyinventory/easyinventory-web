@@ -17,6 +17,7 @@ import type {
   FixtureType,
 } from "../../../shared/types";
 import type { PlacementMode } from "../components/LayoutGrid";
+import { findZoneColor, findFixtureType } from "../constants";
 import {
   CreateLayoutForm,
   EditBanner,
@@ -119,6 +120,21 @@ export default function StoreLayoutPage() {
       return zoneList.find((z) => z.id === editingId)?.name ?? "Zone";
     }
     return fixtureList.find((f) => f.id === editingId)?.name ?? "Fixture";
+  })();
+
+  /* Edit-shape color info (for coloring cells during edit) */
+  const editingColor = (() => {
+    if (!editingId) return undefined;
+    if (editingType === "zone") {
+      const z = zoneList.find((z) => z.id === editingId);
+      if (!z) return undefined;
+      const cd = findZoneColor(z.color);
+      return { bg: cd.bg, hex: cd.hex };
+    }
+    const f = fixtureList.find((f) => f.id === editingId);
+    if (!f) return undefined;
+    const fd = findFixtureType(f.fixture_type);
+    return { bg: fd.bg, hex: fd.hex };
   })();
 
   /* ── Hint text ── */
@@ -414,6 +430,8 @@ export default function StoreLayoutPage() {
                           editingType={editingType}
                           editingCells={editingCells}
                           onEditingCellsChange={setEditingCells}
+                          editingColor={editingColor}
+                          editingLabel={editingName}
                           selectedItemId={selectedItemId}
                           onItemClick={handleItemClick}
                           onItemDoubleClick={handleItemOpen}
@@ -424,7 +442,8 @@ export default function StoreLayoutPage() {
                       zones={zoneList}
                       fixtures={fixtureList}
                       selectedItemId={selectedItemId}
-                      onItemClick={handleItemOpen}
+                      onItemClick={handleItemClick}
+                      onItemDoubleClick={handleItemOpen}
                     />
                   </div>
                 </>

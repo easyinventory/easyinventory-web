@@ -6,14 +6,13 @@
   display: grid;
   grid-template-columns: repeat(var(--layout-cols), 1fr);
   grid-template-rows: repeat(var(--layout-rows), 1fr);
-  gap: 2px;
+  gap: 4px;
   width: 100%;
   height: 100%;
   max-height: 100%;
-  background: var(--color-border, #e2e8f0);
-  border: 1px solid var(--color-border, #e2e8f0);
+  background: transparent;
   border-radius: var(--radius-md, 8px);
-  padding: 2px;
+  padding: 3px;
   box-sizing: border-box;
   user-select: none;
 }
@@ -22,9 +21,10 @@
 
 .layout-grid__cell {
   position: relative;
-  background: var(--color-bg-secondary, #f8f9fa);
-  border-radius: 2px;
-  transition: background 0.1s, box-shadow 0.1s;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  transition: background 0.1s, border-color 0.15s, box-shadow 0.15s;
   cursor: default;
   overflow: hidden;
   min-height: 0;
@@ -44,30 +44,26 @@
 /* ── Zone cell ── */
 
 .layout-grid__cell--zone {
-  /* --zone-bg is set via inline style */
   background: var(--zone-bg);
+  border: 1.5px dashed var(--zone-hex);
 }
 
 /* ── Fixture cell ── */
 
 .layout-grid__cell--fixture {
-  background: repeating-linear-gradient(
-    -45deg,
-    #6b7280,
-    #6b7280 4px,
-    #7f8694 4px,
-    #7f8694 8px
-  );
+  background: var(--fixture-bg, #f3f4f6);
+  border: 1.5px solid var(--fixture-hex, #6b7280);
 }
 
 .layout-grid__cell--fixture-wall {
   background: repeating-linear-gradient(
     -45deg,
-    #4b5563,
-    #4b5563 4px,
-    #6b7280 4px,
-    #6b7280 8px
+    #e5e7eb,
+    #e5e7eb 3px,
+    #d1d5db 3px,
+    #d1d5db 6px
   );
+  border: 1.5px solid #9ca3af;
 }
 
 /* ── Selected item highlight ── */
@@ -75,29 +71,40 @@
 .layout-grid__cell--selected-item {
   outline: 2.5px solid rgba(59, 130, 246, 0.85);
   outline-offset: -1px;
-  box-shadow: 0 0 8px 2px rgba(59, 130, 246, 0.45);
+  box-shadow: 0 0 8px 2px rgba(59, 130, 246, 0.35);
   z-index: 1;
 }
 
 /* ── Freeform mode ── */
 
 .layout-grid__cell--freeform-selected {
-  background: rgba(59, 130, 246, 0.3);
-  box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.15);
+  border: 1.5px dashed rgba(59, 130, 246, 0.6);
 }
 
 /* ── Edit-shape mode ── */
 
 .layout-grid__cell--editing-member {
-  box-shadow: inset 0 0 0 2px var(--color-primary, #3b82f6);
+  border: 2px dashed var(--edit-hex, var(--color-primary, #3b82f6));
+}
+
+.layout-grid__cell--editing-member-zone {
+  background: var(--edit-bg, rgba(59, 130, 246, 0.1));
+}
+
+.layout-grid__cell--editing-member-fixture {
+  background: var(--edit-bg, #f3f4f6);
+  border-style: solid;
 }
 
 .layout-grid__cell--editing-addable {
-  background: rgba(59, 130, 246, 0.08);
+  background: rgba(59, 130, 246, 0.04);
+  border-color: #e2e8f0;
 }
 
 .layout-grid__cell--editing-addable:hover {
-  background: rgba(59, 130, 246, 0.2);
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 /* ── Coord label ── */
@@ -106,17 +113,23 @@
   position: absolute;
   bottom: 2px;
   right: 3px;
-  font-size: 9px;
+  font-size: 8px;
   color: var(--color-text-tertiary, #94a3b8);
   pointer-events: none;
   user-select: none;
   font-variant-numeric: tabular-nums;
   line-height: 1;
+  opacity: 0.7;
 }
 
-.layout-grid__cell--zone .layout-grid__cell-coord,
+.layout-grid__cell--zone .layout-grid__cell-coord {
+  color: var(--zone-hex);
+  opacity: 0.5;
+}
+
 .layout-grid__cell--fixture .layout-grid__cell-coord {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--fixture-hex, #6b7280);
+  opacity: 0.5;
 }
 
 /* ── Cell label (repeated in every cell) ── */
@@ -133,18 +146,18 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(100% - 4px);
+  max-width: calc(100% - 6px);
   text-align: center;
   line-height: 1.2;
 }
 
 .layout-grid__cell-label--zone {
-  color: rgba(0, 0, 0, 0.55);
+  color: var(--zone-hex, var(--edit-hex, #334155));
 }
 
 .layout-grid__cell-label--fixture {
-  color: #e5e7eb;
-  font-size: 12px;
+  color: var(--fixture-hex, var(--edit-hex, #374151));
+  font-size: 10px;
 }
 
 /* ── Plus icon for addable cells ── */
@@ -156,7 +169,7 @@
   transform: translate(-50%, -50%);
   font-size: 14px;
   font-weight: 300;
-  color: rgba(0, 0, 0, 0.15);
+  color: rgba(0, 0, 0, 0.12);
   pointer-events: none;
   user-select: none;
   line-height: 1;

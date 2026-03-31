@@ -27,6 +27,10 @@ interface LayoutGridProps {
   editingCells: Cell[];
   onEditingCellsChange: (cells: Cell[]) => void;
 
+  /** Editing item visual info (for coloring edit cells) */
+  editingColor?: { bg: string; hex: string };
+  editingLabel?: string;
+
   /** Which item is selected (highlighted) */
   selectedItemId: string | null;
 
@@ -43,11 +47,14 @@ interface LayoutGridProps {
 interface CellInfo {
   zoneId?: string;
   zoneBg?: string;
+  zoneHex?: string;
   zoneName?: string;
   fixtureId?: string;
   fixtureIcon?: string;
   fixtureName?: string;
   fixtureType?: string;
+  fixtureBg?: string;
+  fixtureHex?: string;
   isOccupied: boolean;
 }
 
@@ -66,6 +73,7 @@ function buildCellMap(
         ...existing,
         zoneId: z.id,
         zoneBg: colorDef.bg,
+        zoneHex: colorDef.hex,
         zoneName: z.name,
         isOccupied: true,
       });
@@ -83,6 +91,8 @@ function buildCellMap(
         fixtureIcon: ftDef.icon,
         fixtureName: f.name,
         fixtureType: f.fixture_type,
+        fixtureBg: ftDef.bg,
+        fixtureHex: ftDef.hex,
         isOccupied: true,
       });
     }
@@ -104,9 +114,11 @@ const LayoutGrid = memo(function LayoutGrid({
   freeformCells,
   onFreeformCellsChange,
   editingId,
-  editingType: _editingType,
+  editingType,
   editingCells,
   onEditingCellsChange,
+  editingColor,
+  editingLabel,
   selectedItemId,
   onItemClick,
   onItemDoubleClick,
@@ -288,25 +300,43 @@ const LayoutGrid = memo(function LayoutGrid({
             isSelectedItem && "layout-grid__cell--selected-item",
             isFreeformSelected && "layout-grid__cell--freeform-selected",
             isEditMember && "layout-grid__cell--editing-member",
+            isEditMember && editingType === "zone" && "layout-grid__cell--editing-member-zone",
+            isEditMember && editingType === "fixture" && "layout-grid__cell--editing-member-fixture",
             isEditAddable && "layout-grid__cell--editing-addable",
           ]
             .filter(Boolean)
             .join(" ");
 
           /* Label to show in every cell of the zone/fixture */
-          const cellLabel = info?.fixtureId
-            ? info.fixtureName
-            : info?.zoneName;
-          const cellLabelType = info?.fixtureId ? "fixture" : "zone";
+          const cellLabel = isEditMember && editingLabel
+            ? editingLabel
+            : info?.fixtureId
+              ? info.fixtureName
+              : info?.zoneName;
+          const cellLabelType = isEditMember && editingType
+            ? editingType
+            : info?.fixtureId ? "fixture" : "zone";
 
           return (
             <div
               key={key}
               className={cellClass}
               style={
-                info?.zoneBg && !info?.fixtureId
-                  ? ({ "--zone-bg": info.zoneBg } as React.CSSProperties)
-                  : undefined
+                {
+                  ...(info?.zoneBg &&
+                    !info?.fixtureId && {
+                      "--zone-bg": info.zoneBg,
+                      "--zone-hex": info.zoneHex,
+                    }),
+                  ...(info?.fixtureId && {
+                    "--fixture-bg": info.fixtureBg,
+                    "--fixture-hex": info.fixtureHex,
+                  }),
+                  ...(isEditMember && editingColor && {
+                    "--edit-bg": editingColor.bg,
+                    "--edit-hex": editingColor.hex,
+                  }),
+                } as React.CSSProperties
               }
               onMouseDown={() => handleMouseDown(r, c)}
               onMouseEnter={() => handleMouseEnter(r, c)}

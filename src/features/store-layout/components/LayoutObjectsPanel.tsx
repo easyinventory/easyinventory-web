@@ -8,6 +8,7 @@ interface LayoutObjectsPanelProps {
   fixtures: LayoutFixture[];
   selectedItemId: string | null;
   onItemClick: (type: "zone" | "fixture", id: string) => void;
+  onItemDoubleClick: (type: "zone" | "fixture", id: string) => void;
 }
 
 const LayoutObjectsPanel = memo(function LayoutObjectsPanel({
@@ -15,6 +16,7 @@ const LayoutObjectsPanel = memo(function LayoutObjectsPanel({
   fixtures,
   selectedItemId,
   onItemClick,
+  onItemDoubleClick,
 }: LayoutObjectsPanelProps) {
   const totalCount = zones.length + fixtures.length;
 
@@ -40,6 +42,7 @@ const LayoutObjectsPanel = memo(function LayoutObjectsPanel({
                 : ""
             }`}
             onClick={() => onItemClick("zone", z.id)}
+            onDoubleClick={() => onItemDoubleClick("zone", z.id)}
           >
             <span
               className="layout-objects-panel__item-dot"
@@ -75,6 +78,7 @@ const LayoutObjectsPanel = memo(function LayoutObjectsPanel({
                   : ""
               }`}
               onClick={() => onItemClick("fixture", f.id)}
+              onDoubleClick={() => onItemDoubleClick("fixture", f.id)}
             >
               <span className="layout-objects-panel__item-icon">
                 {ftDef.icon}

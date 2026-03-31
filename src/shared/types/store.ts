@@ -100,4 +100,6 @@ export interface FixtureTypeDef {
   type: FixtureType;
   label: string;
   icon: string; // emoji
+  hex: string;  // accent color
+  bg: string;   // light fill
 }
