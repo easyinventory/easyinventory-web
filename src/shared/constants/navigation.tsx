@@ -75,7 +75,6 @@ export const navItems: NavItem[] = [
     description: "Track stock levels, log adjustments, and receive low-stock alerts.",
     ctaLabel: "Go to Inventory",
     icon: <IconInventory />,
-    disabled: true,
   },
   {
     key: "store-layout",
