@@ -62,10 +62,10 @@
   color: var(--color-text-tertiary);
 }
 
-/* Scrollable wrapper for large grids */
+/* Scrollable wrapper for very large grids */
 .store-layout-page__grid-scroll {
   overflow: auto;
-  max-height: 600px;
+  max-height: 70vh;
 }
 
 /* ── Toolbar + banners stack ─── */
