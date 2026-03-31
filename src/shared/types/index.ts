@@ -15,4 +15,4 @@ export type {
   AddSupplierToProductRequest,
   ToggleProductSupplierRequest,
 } from "./product";
-export type { Store } from "./store";
+export type { Store, StoreLayout } from "./store";
