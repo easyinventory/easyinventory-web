@@ -22,9 +22,22 @@ export function StoreProvider({ children }: StoreProviderProps) {
   const { selectedOrgId } = useOrg();
   const [explicitSelection, setExplicitSelection] = useState<ExplicitSelection | null>(null);
 
-  const { data: stores, isLoading } = useApiData(listStores, [selectedOrgId]);
+  const { data: stores, isLoading, error } = useApiData(listStores, [selectedOrgId]);
 
-  const resolvedStores = useMemo(() => stores ?? [], [stores]);
+  // Render-time state adjustment (React-documented pattern for derived state sync).
+  // Tracks which org the current `stores` value was fetched for. When selectedOrgId
+  // changes, committedOrgId lags by one render — orgChanged is true for that render,
+  // causing resolvedStores to return []. After the immediate re-render triggered by
+  // setCommittedOrgId, committedOrgId catches up and isLoading takes over until the
+  // new fetch settles.
+  const [committedOrgId, setCommittedOrgId] = useState<string | null>(selectedOrgId);
+  const orgChanged = committedOrgId !== selectedOrgId;
+  if (orgChanged) setCommittedOrgId(selectedOrgId);
+
+  const resolvedStores = useMemo(
+    () => (orgChanged || isLoading || stores == null ? [] : stores),
+    [orgChanged, isLoading, stores]
+  );
 
   // Only honour the explicit selection when it belongs to the current org
   const effectiveStoreId =
@@ -54,8 +67,9 @@ export function StoreProvider({ children }: StoreProviderProps) {
       selectedStoreName: selectedStore?.name ?? null,
       switchStore,
       isLoading,
+      error,
     }),
-    [resolvedStores, selectedStore, switchStore, isLoading]
+    [resolvedStores, selectedStore, switchStore, isLoading, error]
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

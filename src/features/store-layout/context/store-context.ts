@@ -12,6 +12,8 @@ export interface StoreContextType {
   switchStore: (storeId: string) => void;
   /** True while the stores list is being fetched */
   isLoading: boolean;
+  /** Error message if the stores fetch failed, null otherwise */
+  error: string | null;
 }
 
 export const StoreContext = createContext<StoreContextType | null>(null);

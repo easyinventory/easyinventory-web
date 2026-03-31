@@ -16,6 +16,18 @@
   cursor: default;
   overflow: hidden;
   min-height: 36px;
+  width: 100%;
+  /* reset <button> defaults */
+  background: transparent;
+  border: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.store-switcher__current:disabled {
+  opacity: 1;
+  pointer-events: none;
 }
 
 .store-switcher__current--clickable {
@@ -60,6 +72,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   line-height: 1.4;
+}
+
+.store-switcher__name--error {
+  color: rgba(255, 100, 100, 0.85);
+  font-weight: 500;
 }
 
 .store-switcher__label {
