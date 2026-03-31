@@ -52,15 +52,10 @@ const VersionSelector = memo(function VersionSelector({
           <span className="version-selector__dims">
             {active.rows} rows &times; {active.cols} columns
           </span>
-          {(active as StoreLayout & { zones?: unknown[]; fixtures?: unknown[] })
-            .zones &&
-            (active as StoreLayout & { zones?: unknown[]; fixtures?: unknown[] })
-              .fixtures && (
-              <span className="version-selector__dims">
-                &middot; {(active.zones ?? []).length} zones &middot;{" "}
-                {(active.fixtures ?? []).length} fixtures
-              </span>
-            )}
+          <span className="version-selector__dims">
+            &middot; {active.zones.length} zones &middot;{" "}
+            {active.fixtures.length} fixtures
+          </span>
         </div>
         <div className="version-selector__toggle-right">
           <span className="version-selector__date">

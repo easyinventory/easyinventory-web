@@ -1,9 +1,1 @@
-export {
-  ck,
-  parseCk,
-  cellsToKeySet,
-  rectToCells,
-  getBounds,
-  getCentroid,
-  isRectangle,
-} from "./grid";
+export { ck, cellsToKeySet, isRectangle } from "./grid";

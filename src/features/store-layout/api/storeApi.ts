@@ -10,8 +10,6 @@ import type {
   FixtureUpdateRequest,
 } from "../../../shared/types";
 
-export type { Store, StoreLayout };
-
 export async function listStores(): Promise<Store[]> {
   const response = await apiClient.get("/api/stores");
   return response.data;

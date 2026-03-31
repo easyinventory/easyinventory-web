@@ -1,5 +1,5 @@
 import type { Cell } from "../../../shared/types";
-import "./FreeformBar.css";
+import "./action-bar.css";
 
 interface FreeformBarProps {
   cells: Cell[];
@@ -15,21 +15,21 @@ export default function FreeformBar({
   onCancel,
 }: FreeformBarProps) {
   return (
-    <div className="freeform-bar">
-      <span className="freeform-bar__text">
+    <div className="action-bar">
+      <span className="action-bar__text">
         Creating {placementType} ·{" "}
-        <span className="freeform-bar__count">{cells.length}</span> cell
+        <span className="action-bar__bold">{cells.length}</span> cell
         {cells.length !== 1 ? "s" : ""} selected. Click cells to add or
         remove.
       </span>
       <button
-        className="freeform-bar__btn freeform-bar__btn--cancel"
+        className="action-bar__btn action-bar__btn--cancel"
         onClick={onCancel}
       >
         Cancel
       </button>
       <button
-        className="freeform-bar__btn freeform-bar__btn--done"
+        className="action-bar__btn action-bar__btn--primary"
         onClick={onDone}
         disabled={cells.length === 0}
       >

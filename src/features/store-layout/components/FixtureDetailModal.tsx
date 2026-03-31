@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FIXTURE_TYPES, findFixtureType } from "../constants";
 import type { LayoutFixture, FixtureType } from "../../../shared/types";
-import "./FixtureDetailModal.css";
+import "./layout-modal.css";
 
 interface FixtureDetailModalProps {
   fixture: LayoutFixture;
@@ -40,70 +40,56 @@ export default function FixtureDetailModal({
     onUpdate(fixture.id, updates);
   }
 
-  function handleEditShape() {
-    onEditShape(fixture.id);
-  }
-
-  function handleDelete() {
-    onDelete(fixture.id);
-  }
-
   return (
-    <div className="fixture-detail-modal__overlay" onClick={onClose}>
+    <div className="layout-modal-overlay" onClick={onClose}>
       <div
-        className="fixture-detail-modal__dialog"
+        className="layout-modal-dialog"
+        style={{ width: 420 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="fixture-detail-modal__header">
-          <span className="fixture-detail-modal__icon">{currentDef.icon}</span>
-          <h3 className="fixture-detail-modal__title">{fixture.name}</h3>
-          <button className="fixture-detail-modal__close" onClick={onClose}>
+        <div className="layout-modal-header">
+          <span style={{ fontSize: "1.5rem", flexShrink: 0 }}>
+            {currentDef.icon}
+          </span>
+          <h3 className="layout-modal-title">{fixture.name}</h3>
+          <button className="layout-modal-close" onClick={onClose}>
             ✕
           </button>
         </div>
 
-        <div className="fixture-detail-modal__stats">
-          <span className="fixture-detail-modal__stat">
+        <div className="layout-modal-stats">
+          <span className="layout-modal-stat">
             <strong>{fixture.cells.length}</strong> cells
           </span>
-          <span className="fixture-detail-modal__stat">
-            {currentDef.label}
-          </span>
+          <span className="layout-modal-stat">{currentDef.label}</span>
         </div>
 
-        <div className="fixture-detail-modal__section">
-          <label
-            className="fixture-detail-modal__label"
-            htmlFor="fixture-detail-name"
-          >
+        <div className="layout-modal-section">
+          <label className="layout-modal-label" htmlFor="fixture-detail-name">
             Name
           </label>
           <input
             id="fixture-detail-name"
-            className="fixture-detail-modal__input"
+            className="layout-modal-input"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
         </div>
 
-        <div className="fixture-detail-modal__section">
-          <span className="fixture-detail-modal__label">Fixture Type</span>
-          <div className="fixture-detail-modal__type-grid">
+        <div className="layout-modal-section">
+          <span className="layout-modal-label">Fixture Type</span>
+          <div className="layout-modal-type-grid">
             {FIXTURE_TYPES.map((ft) => (
               <button
                 key={ft.type}
                 type="button"
-                className={`fixture-detail-modal__type-btn${
-                  fixtureType === ft.type
-                    ? " fixture-detail-modal__type-btn--selected"
-                    : ""
+                className={`layout-modal-type-btn${
+                  fixtureType === ft.type ? " layout-modal-type-btn--selected" : ""
                 }`}
                 onClick={() => setFixtureType(ft.type)}
               >
-                <span className="fixture-detail-modal__type-icon">
-                  {ft.icon}
-                </span>
+                <span className="layout-modal-type-icon">{ft.icon}</span>
                 {ft.label}
               </button>
             ))}
@@ -111,22 +97,22 @@ export default function FixtureDetailModal({
         </div>
 
         {!showDeleteConfirm && (
-          <div className="fixture-detail-modal__actions">
+          <div className="layout-modal-actions">
             <button
-              className="fixture-detail-modal__btn fixture-detail-modal__btn--edit-shape"
-              onClick={handleEditShape}
+              className="layout-modal-btn layout-modal-btn--edit-shape"
+              onClick={() => onEditShape(fixture.id)}
             >
               ✏️ Edit Shape
             </button>
             <button
-              className="fixture-detail-modal__btn fixture-detail-modal__btn--delete"
+              className="layout-modal-btn layout-modal-btn--danger"
               onClick={() => setShowDeleteConfirm(true)}
             >
               🗑️ Delete
             </button>
             {hasChanges && (
               <button
-                className="fixture-detail-modal__btn fixture-detail-modal__btn--save"
+                className="layout-modal-btn layout-modal-btn--save"
                 onClick={handleSave}
                 disabled={!canSave}
               >
@@ -137,20 +123,20 @@ export default function FixtureDetailModal({
         )}
 
         {showDeleteConfirm && (
-          <div className="fixture-detail-modal__delete-confirm">
-            <p className="fixture-detail-modal__delete-text">
+          <div className="layout-modal-delete-confirm">
+            <p className="layout-modal-delete-text">
               Delete <strong>{fixture.name}</strong>? This cannot be undone.
             </p>
-            <div className="fixture-detail-modal__delete-actions">
+            <div className="layout-modal-delete-actions">
               <button
-                className="fixture-detail-modal__btn fixture-detail-modal__btn--cancel-delete"
+                className="layout-modal-btn layout-modal-btn--cancel-delete"
                 onClick={() => setShowDeleteConfirm(false)}
               >
                 Cancel
               </button>
               <button
-                className="fixture-detail-modal__btn fixture-detail-modal__btn--confirm-delete"
-                onClick={handleDelete}
+                className="layout-modal-btn layout-modal-btn--confirm-delete"
+                onClick={() => onDelete(fixture.id)}
               >
                 Delete Fixture
               </button>

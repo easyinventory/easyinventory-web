@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════════════════════
-   EditBanner — shown during edit-shape mode
+   action-bar — shared base styles for FreeformBar & EditBanner
    ═══════════════════════════════════════════════════════ */
 
-.edit-banner {
+.action-bar {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -14,19 +14,15 @@
   color: #1e40af;
 }
 
-.edit-banner__text {
+.action-bar__text {
   flex: 1;
 }
 
-.edit-banner__name {
+.action-bar__bold {
   font-weight: 600;
 }
 
-.edit-banner__count {
-  font-weight: 600;
-}
-
-.edit-banner__btn {
+.action-bar__btn {
   padding: 5px 14px;
   border-radius: 6px;
   font-size: 0.8rem;
@@ -35,26 +31,26 @@
   border: none;
 }
 
-.edit-banner__btn--save {
+.action-bar__btn--primary {
   background: var(--color-primary, #3b82f6);
   color: #fff;
 }
 
-.edit-banner__btn--save:hover {
+.action-bar__btn--primary:hover {
   background: var(--color-primary-hover, #2563eb);
 }
 
-.edit-banner__btn--save:disabled {
+.action-bar__btn--primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.edit-banner__btn--cancel {
+.action-bar__btn--cancel {
   background: #fff;
   color: #64748b;
   border: 1px solid #e2e8f0;
 }
 
-.edit-banner__btn--cancel:hover {
+.action-bar__btn--cancel:hover {
   background: #f1f5f9;
 }

@@ -290,13 +290,7 @@ const LayoutGrid = memo(function LayoutGrid({
             "layout-grid__cell",
             info?.zoneId && !info?.fixtureId && "layout-grid__cell--zone",
             info?.fixtureId && "layout-grid__cell--fixture",
-            info?.fixtureId &&
-              (() => {
-                const fix = fixtures.find((f) => f.id === info.fixtureId);
-                return fix?.fixture_type === "WALL"
-                  ? "layout-grid__cell--fixture-wall"
-                  : "";
-              })(),
+            info?.fixtureType === "WALL" && "layout-grid__cell--fixture-wall",
             isSelectedItem && "layout-grid__cell--selected-item",
             isFreeformSelected && "layout-grid__cell--freeform-selected",
             isEditMember && "layout-grid__cell--editing-member",

@@ -1,5 +1,5 @@
 import type { Cell } from "../../../shared/types";
-import "./EditBanner.css";
+import "./action-bar.css";
 
 interface EditBannerProps {
   name: string;
@@ -17,22 +17,22 @@ export default function EditBanner({
   isSaving = false,
 }: EditBannerProps) {
   return (
-    <div className="edit-banner">
-      <span className="edit-banner__text">
+    <div className="action-bar">
+      <span className="action-bar__text">
         ✏️ Editing shape of{" "}
-        <span className="edit-banner__name">{name}</span> —{" "}
-        <span className="edit-banner__count">{cells.length}</span> cells
+        <span className="action-bar__bold">{name}</span> —{" "}
+        <span className="action-bar__bold">{cells.length}</span> cells
         selected. Click cells to add or remove.
       </span>
       <button
-        className="edit-banner__btn edit-banner__btn--cancel"
+        className="action-bar__btn action-bar__btn--cancel"
         onClick={onCancel}
         disabled={isSaving}
       >
         Cancel
       </button>
       <button
-        className="edit-banner__btn edit-banner__btn--save"
+        className="action-bar__btn action-bar__btn--primary"
         onClick={onSave}
         disabled={cells.length === 0 || isSaving}
       >

@@ -11,13 +11,8 @@ import {
   updateFixture,
   deleteFixture,
 } from "../api/storeApi";
-import type {
-  StoreLayout,
-  Cell,
-  FixtureType,
-} from "../../../shared/types";
-import type { PlacementMode } from "../components/LayoutGrid";
-import { findZoneColor, findFixtureType } from "../constants";
+import type { StoreLayout, Cell, FixtureType } from "../../../shared/types";
+import { useLayoutEditor } from "../hooks";
 import {
   CreateLayoutForm,
   EditBanner,
@@ -34,14 +29,13 @@ import {
 import PageHeader from "../../../shared/components/layout/PageHeader";
 import { ErrorBanner, LoadingState } from "../../../shared/components/ui";
 import { useApiData, useAsyncAction } from "../../../shared/hooks";
-import { isRectangle } from "../utils";
 import "./StoreLayoutPage.css";
 
 export default function StoreLayoutPage() {
   const { selectedStoreId, selectedStoreName } = useStore();
   const [showNewVersionForm, setShowNewVersionForm] = useState(false);
 
-  /* ── Layout data (zones & fixtures are eagerly loaded) ── */
+  /* ── Layout data ── */
   const fetchLayouts = useCallback(
     (): Promise<StoreLayout[]> =>
       selectedStoreId ? listLayouts(selectedStoreId) : Promise.resolve([]),
@@ -57,12 +51,13 @@ export default function StoreLayoutPage() {
   const activeLayout =
     layouts?.find((l) => l.is_active) ?? layouts?.[0] ?? null;
   const hasLayouts = layouts && layouts.length > 0;
-
-  /* Derive zones & fixtures directly from the active layout */
   const zoneList = activeLayout?.zones ?? [];
   const fixtureList = activeLayout?.fixtures ?? [];
 
-  /* ── Layout CRUD actions ── */
+  /* ── Editor state (hook) ── */
+  const editor = useLayoutEditor(zoneList, fixtureList);
+
+  /* ── Layout version actions ── */
   const createLayoutAction = useAsyncAction(
     async (rows: number, cols: number) => {
       await createLayout(selectedStoreId!, rows, cols);
@@ -80,118 +75,7 @@ export default function StoreLayoutPage() {
     { successTimeout: 2000 },
   );
 
-  /* ── Editor state ── */
-  const [placementMode, setPlacementMode] = useState<PlacementMode>("none");
-  const [freeformCells, setFreeformCells] = useState<Cell[]>([]);
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [selectedItemType, setSelectedItemType] = useState<
-    "zone" | "fixture" | null
-  >(null);
-
-  /* Edit-shape state */
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingType, setEditingType] = useState<"zone" | "fixture" | null>(
-    null,
-  );
-  const [editingCells, setEditingCells] = useState<Cell[]>([]);
-
-  /* Modal state */
-  const [pendingCells, setPendingCells] = useState<Cell[] | null>(null);
-  const [pendingIsFreeform, setPendingIsFreeform] = useState(false);
-  const [showZoneModal, setShowZoneModal] = useState(false);
-  const [showFixtureModal, setShowFixtureModal] = useState(false);
-
-  /* Detail modal targets */
-  const selectedZone =
-    selectedItemType === "zone"
-      ? zoneList.find((z) => z.id === selectedItemId) ?? null
-      : null;
-  const selectedFixture =
-    selectedItemType === "fixture"
-      ? fixtureList.find((f) => f.id === selectedItemId) ?? null
-      : null;
-  const [showZoneDetail, setShowZoneDetail] = useState(false);
-  const [showFixtureDetail, setShowFixtureDetail] = useState(false);
-
-  /* Edit-shape name for banner */
-  const editingName = (() => {
-    if (!editingId) return "";
-    if (editingType === "zone") {
-      return zoneList.find((z) => z.id === editingId)?.name ?? "Zone";
-    }
-    return fixtureList.find((f) => f.id === editingId)?.name ?? "Fixture";
-  })();
-
-  /* Edit-shape color info (for coloring cells during edit) */
-  const editingColor = (() => {
-    if (!editingId) return undefined;
-    if (editingType === "zone") {
-      const z = zoneList.find((z) => z.id === editingId);
-      if (!z) return undefined;
-      const cd = findZoneColor(z.color);
-      return { bg: cd.bg, hex: cd.hex };
-    }
-    const f = fixtureList.find((f) => f.id === editingId);
-    if (!f) return undefined;
-    const fd = findFixtureType(f.fixture_type);
-    return { bg: fd.bg, hex: fd.hex };
-  })();
-
-  /* ── Hint text ── */
-  const hintText = (() => {
-    if (editingId) return "Click cells to add or remove from shape";
-    if (placementMode === "none") return "Click a zone or fixture to select";
-    return "Click cells to paint, then press Done";
-  })();
-
-  /* ── Handlers ── */
-
-  function handlePlacementModeChange(mode: PlacementMode) {
-    setPlacementMode(mode);
-    setFreeformCells([]);
-    setSelectedItemId(null);
-    setSelectedItemType(null);
-    setShowZoneDetail(false);
-    setShowFixtureDetail(false);
-  }
-
-  // Freeform "Done" → open creation modal
-  function handleFreeformDone() {
-    if (freeformCells.length === 0) return;
-    setPendingCells(freeformCells);
-    setPendingIsFreeform(!isRectangle(freeformCells));
-    if (placementMode === "zone") {
-      setShowZoneModal(true);
-    } else if (placementMode === "fixture") {
-      setShowFixtureModal(true);
-    }
-  }
-
-  function handleFreeformCancel() {
-    setFreeformCells([]);
-    setPlacementMode("none");
-  }
-
-  // Item click in grid — highlight only
-  function handleItemClick(type: "zone" | "fixture", id: string) {
-    setSelectedItemId(id);
-    setSelectedItemType(type);
-  }
-
-  // Item double-click in grid or panel click — open detail modal
-  function handleItemOpen(type: "zone" | "fixture", id: string) {
-    setSelectedItemId(id);
-    setSelectedItemType(type);
-    if (type === "zone") {
-      setShowZoneDetail(true);
-      setShowFixtureDetail(false);
-    } else {
-      setShowFixtureDetail(true);
-      setShowZoneDetail(false);
-    }
-  }
-
-  /* ── Zone CRUD actions ── */
+  /* ── Zone CRUD ── */
   const createZoneAction = useAsyncAction(
     async (name: string, color: string, cells: Cell[], isFreeform: boolean) => {
       await createZone(selectedStoreId!, activeLayout!.id, {
@@ -200,10 +84,7 @@ export default function StoreLayoutPage() {
         cells,
         is_freeform: isFreeform,
       });
-      setShowZoneModal(false);
-      setPendingCells(null);
-      setFreeformCells([]);
-      setPlacementMode("none");
+      editor.resetAfterCreate();
       refetchLayouts();
     },
   );
@@ -211,20 +92,18 @@ export default function StoreLayoutPage() {
   const updateZoneAction = useAsyncAction(
     async (zoneId: string, updates: { name?: string; color?: string }) => {
       await updateZone(selectedStoreId!, activeLayout!.id, zoneId, updates);
-      setShowZoneDetail(false);
+      editor.closeDetailAfterUpdate("zone");
       refetchLayouts();
     },
   );
 
   const deleteZoneAction = useAsyncAction(async (zoneId: string) => {
     await deleteZone(selectedStoreId!, activeLayout!.id, zoneId);
-    setShowZoneDetail(false);
-    setSelectedItemId(null);
-    setSelectedItemType(null);
+    editor.resetAfterDelete();
     refetchLayouts();
   });
 
-  /* ── Fixture CRUD actions ── */
+  /* ── Fixture CRUD ── */
   const createFixtureAction = useAsyncAction(
     async (name: string, fixtureType: FixtureType, cells: Cell[]) => {
       await createFixture(selectedStoreId!, activeLayout!.id, {
@@ -232,10 +111,7 @@ export default function StoreLayoutPage() {
         fixture_type: fixtureType,
         cells,
       });
-      setShowFixtureModal(false);
-      setPendingCells(null);
-      setFreeformCells([]);
-      setPlacementMode("none");
+      editor.resetAfterCreate();
       refetchLayouts();
     },
   );
@@ -245,78 +121,33 @@ export default function StoreLayoutPage() {
       fixtureId: string,
       updates: { name?: string; fixture_type?: FixtureType },
     ) => {
-      await updateFixture(
-        selectedStoreId!,
-        activeLayout!.id,
-        fixtureId,
-        updates,
-      );
-      setShowFixtureDetail(false);
+      await updateFixture(selectedStoreId!, activeLayout!.id, fixtureId, updates);
+      editor.closeDetailAfterUpdate("fixture");
       refetchLayouts();
     },
   );
 
   const deleteFixtureAction = useAsyncAction(async (fixtureId: string) => {
     await deleteFixture(selectedStoreId!, activeLayout!.id, fixtureId);
-    setShowFixtureDetail(false);
-    setSelectedItemId(null);
-    setSelectedItemType(null);
+    editor.resetAfterDelete();
     refetchLayouts();
   });
 
-  /* ── Edit-shape handlers ── */
-
-  function handleEnterEditShape(
-    type: "zone" | "fixture",
-    id: string,
-  ) {
-    const item =
-      type === "zone"
-        ? zoneList.find((z) => z.id === id)
-        : fixtureList.find((f) => f.id === id);
-    if (!item) return;
-    setEditingId(id);
-    setEditingType(type);
-    setEditingCells([...item.cells]);
-    setShowZoneDetail(false);
-    setShowFixtureDetail(false);
-    setPlacementMode("none");
-  }
-
+  /* ── Edit-shape save ── */
   const saveShapeAction = useAsyncAction(async () => {
-    if (!editingId || !editingType) return;
-    if (editingType === "zone") {
-      await updateZone(selectedStoreId!, activeLayout!.id, editingId, {
-        cells: editingCells,
+    if (!editor.editingId || !editor.editingType) return;
+    if (editor.editingType === "zone") {
+      await updateZone(selectedStoreId!, activeLayout!.id, editor.editingId, {
+        cells: editor.editingCells,
       });
-      refetchLayouts();
     } else {
-      await updateFixture(selectedStoreId!, activeLayout!.id, editingId, {
-        cells: editingCells,
+      await updateFixture(selectedStoreId!, activeLayout!.id, editor.editingId, {
+        cells: editor.editingCells,
       });
-      refetchLayouts();
     }
-    setEditingId(null);
-    setEditingType(null);
-    setEditingCells([]);
+    editor.handleCancelEditShape();
+    refetchLayouts();
   });
-
-  function handleCancelEditShape() {
-    setEditingId(null);
-    setEditingType(null);
-    setEditingCells([]);
-  }
-
-  /* ── Cancel creation modals ── */
-  function handleCancelZoneModal() {
-    setShowZoneModal(false);
-    setPendingCells(null);
-  }
-
-  function handleCancelFixtureModal() {
-    setShowFixtureModal(false);
-    setPendingCells(null);
-  }
 
   /* ── Aggregate error ── */
   const actionError =
@@ -328,6 +159,7 @@ export default function StoreLayoutPage() {
     deleteFixtureAction.error ||
     saveShapeAction.error;
 
+  /* ── Render ── */
   return (
     <div className="store-layout-page">
       <PageHeader
@@ -381,30 +213,29 @@ export default function StoreLayoutPage() {
                 <>
                   <div className="store-layout-page__toolbar-area">
                     <ModeToolbar
-                      placementMode={placementMode}
-                      onPlacementModeChange={handlePlacementModeChange}
-                      disabled={editingId !== null}
+                      placementMode={editor.placementMode}
+                      onPlacementModeChange={editor.handlePlacementModeChange}
+                      disabled={editor.editingId !== null}
                     />
 
-                    {editingId && (
+                    {editor.editingId && (
                       <EditBanner
-                        name={editingName}
-                        cells={editingCells}
+                        name={editor.editingName}
+                        cells={editor.editingCells}
                         onSave={() => void saveShapeAction.execute()}
-                        onCancel={handleCancelEditShape}
+                        onCancel={editor.handleCancelEditShape}
                         isSaving={saveShapeAction.isLoading}
                       />
                     )}
 
-                    {placementMode !== "none" &&
-                      !editingId && (
-                        <FreeformBar
-                          cells={freeformCells}
-                          placementType={placementMode as "zone" | "fixture"}
-                          onDone={handleFreeformDone}
-                          onCancel={handleFreeformCancel}
-                        />
-                      )}
+                    {editor.placementMode !== "none" && !editor.editingId && (
+                      <FreeformBar
+                        cells={editor.freeformCells}
+                        placementType={editor.placementMode as "zone" | "fixture"}
+                        onDone={editor.handleFreeformDone}
+                        onCancel={editor.handleFreeformCancel}
+                      />
+                    )}
                   </div>
 
                   <div className="store-layout-page__editor-layout">
@@ -414,7 +245,7 @@ export default function StoreLayoutPage() {
                           Grid Editor
                         </span>
                         <span className="store-layout-page__grid-card-hint">
-                          {hintText}
+                          {editor.hintText}
                         </span>
                       </div>
                       <div className="store-layout-page__grid-scroll">
@@ -423,27 +254,27 @@ export default function StoreLayoutPage() {
                           cols={activeLayout.cols}
                           zones={zoneList}
                           fixtures={fixtureList}
-                          placementMode={placementMode}
-                          freeformCells={freeformCells}
-                          onFreeformCellsChange={setFreeformCells}
-                          editingId={editingId}
-                          editingType={editingType}
-                          editingCells={editingCells}
-                          onEditingCellsChange={setEditingCells}
-                          editingColor={editingColor}
-                          editingLabel={editingName}
-                          selectedItemId={selectedItemId}
-                          onItemClick={handleItemClick}
-                          onItemDoubleClick={handleItemOpen}
+                          placementMode={editor.placementMode}
+                          freeformCells={editor.freeformCells}
+                          onFreeformCellsChange={editor.setFreeformCells}
+                          editingId={editor.editingId}
+                          editingType={editor.editingType}
+                          editingCells={editor.editingCells}
+                          onEditingCellsChange={editor.setEditingCells}
+                          editingColor={editor.editingColor}
+                          editingLabel={editor.editingName}
+                          selectedItemId={editor.selectedItemId}
+                          onItemClick={editor.handleItemClick}
+                          onItemDoubleClick={editor.handleItemOpen}
                         />
                       </div>
                     </div>
                     <LayoutObjectsPanel
                       zones={zoneList}
                       fixtures={fixtureList}
-                      selectedItemId={selectedItemId}
-                      onItemClick={handleItemClick}
-                      onItemDoubleClick={handleItemOpen}
+                      selectedItemId={editor.selectedItemId}
+                      onItemClick={editor.handleItemClick}
+                      onItemDoubleClick={editor.handleItemOpen}
                     />
                   </div>
                 </>
@@ -462,56 +293,54 @@ export default function StoreLayoutPage() {
         </>
       )}
 
-      {/* ── Zone creation modal ── */}
-      {showZoneModal && pendingCells && (
+      {/* ── Creation modals ── */}
+      {editor.showZoneModal && editor.pendingCells && (
         <ZoneNameModal
-          cells={pendingCells}
-          isFreeform={pendingIsFreeform}
+          cells={editor.pendingCells}
+          isFreeform={editor.pendingIsFreeform}
           onConfirm={(name, color, cells, isFreeform) =>
             void createZoneAction.execute(name, color, cells, isFreeform)
           }
-          onCancel={handleCancelZoneModal}
+          onCancel={editor.handleCancelCreationModal}
         />
       )}
 
-      {/* ── Fixture creation modal ── */}
-      {showFixtureModal && pendingCells && (
+      {editor.showFixtureModal && editor.pendingCells && (
         <FixtureNameModal
-          cells={pendingCells}
+          cells={editor.pendingCells}
           onConfirm={(name, fixtureType, cells) =>
             void createFixtureAction.execute(name, fixtureType, cells)
           }
-          onCancel={handleCancelFixtureModal}
+          onCancel={editor.handleCancelCreationModal}
         />
       )}
 
-      {/* ── Zone detail modal ── */}
-      {showZoneDetail && selectedZone && (
+      {/* ── Detail modals ── */}
+      {editor.showZoneDetail && editor.selectedZone && (
         <ZoneDetailModal
-          zone={selectedZone}
+          zone={editor.selectedZone}
           onUpdate={(zoneId, updates) =>
             void updateZoneAction.execute(zoneId, updates)
           }
-          onEditShape={(zoneId) => handleEnterEditShape("zone", zoneId)}
+          onEditShape={(zoneId) => editor.handleEnterEditShape("zone", zoneId)}
           onDelete={(zoneId) => void deleteZoneAction.execute(zoneId)}
-          onClose={() => setShowZoneDetail(false)}
+          onClose={editor.closeZoneDetail}
         />
       )}
 
-      {/* ── Fixture detail modal ── */}
-      {showFixtureDetail && selectedFixture && (
+      {editor.showFixtureDetail && editor.selectedFixture && (
         <FixtureDetailModal
-          fixture={selectedFixture}
+          fixture={editor.selectedFixture}
           onUpdate={(fixtureId, updates) =>
             void updateFixtureAction.execute(fixtureId, updates)
           }
           onEditShape={(fixtureId) =>
-            handleEnterEditShape("fixture", fixtureId)
+            editor.handleEnterEditShape("fixture", fixtureId)
           }
           onDelete={(fixtureId) =>
             void deleteFixtureAction.execute(fixtureId)
           }
-          onClose={() => setShowFixtureDetail(false)}
+          onClose={editor.closeFixtureDetail}
         />
       )}
     </div>
