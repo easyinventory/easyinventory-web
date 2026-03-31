@@ -1,0 +1,277 @@
+/* ═══════════════════════════════════════════════════════
+   layout-modal — shared base styles for all store-layout modals
+   ═══════════════════════════════════════════════════════ */
+
+.layout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.layout-modal-dialog {
+  background: var(--color-surface, #fff);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 90vw;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+/* ── Header (detail modals) ── */
+
+.layout-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.layout-modal-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-text, #1e293b);
+  flex: 1;
+}
+
+.layout-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--color-text-secondary, #94a3b8);
+  padding: 4px;
+  line-height: 1;
+}
+
+.layout-modal-close:hover {
+  color: var(--color-text, #1e293b);
+}
+
+/* ── Stats row ── */
+
+.layout-modal-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.layout-modal-stat {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.layout-modal-stat strong {
+  color: var(--color-text, #1e293b);
+}
+
+/* ── Form fields ── */
+
+.layout-modal-section {
+  margin-bottom: 16px;
+}
+
+.layout-modal-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.layout-modal-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.layout-modal-input:focus {
+  border-color: var(--color-primary, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* ── Zone color swatches ── */
+
+.layout-modal-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.layout-modal-swatch {
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.layout-modal-swatch:hover {
+  transform: scale(1.15);
+}
+
+.layout-modal-swatch--selected {
+  border-color: var(--color-text, #1e293b);
+}
+
+/* ── Fixture type picker ── */
+
+.layout-modal-type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.layout-modal-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 4px;
+  border: 2px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  background: var(--color-surface, #fff);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.layout-modal-type-btn:hover {
+  background: var(--color-surface-alt, #f8fafc);
+}
+
+.layout-modal-type-btn--selected {
+  border-color: var(--color-primary, #3b82f6);
+  background: rgba(59, 130, 246, 0.06);
+  color: var(--color-primary, #3b82f6);
+  font-weight: 600;
+}
+
+.layout-modal-type-icon {
+  font-size: 1.5rem;
+}
+
+/* ── Button row ── */
+
+.layout-modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.layout-modal-actions--right {
+  justify-content: flex-end;
+}
+
+.layout-modal-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+}
+
+.layout-modal-btn--cancel {
+  background: var(--color-surface-alt, #f1f5f9);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.layout-modal-btn--cancel:hover {
+  background: var(--color-border, #e2e8f0);
+}
+
+.layout-modal-btn--primary {
+  background: var(--color-primary, #3b82f6);
+  color: #fff;
+}
+
+.layout-modal-btn--primary:hover {
+  background: var(--color-primary-hover, #2563eb);
+}
+
+.layout-modal-btn--primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.layout-modal-btn--edit-shape {
+  background: var(--color-surface-alt, #f1f5f9);
+  color: var(--color-text, #1e293b);
+}
+
+.layout-modal-btn--edit-shape:hover {
+  background: var(--color-border, #e2e8f0);
+}
+
+.layout-modal-btn--danger {
+  background: #fef2f2;
+  color: #dc2626;
+  margin-left: auto;
+}
+
+.layout-modal-btn--danger:hover {
+  background: #fee2e2;
+}
+
+.layout-modal-btn--save {
+  background: var(--color-primary, #3b82f6);
+  color: #fff;
+  margin-left: auto;
+}
+
+.layout-modal-btn--save:hover {
+  background: var(--color-primary-hover, #2563eb);
+}
+
+.layout-modal-btn--save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Delete confirmation panel ── */
+
+.layout-modal-delete-confirm {
+  background: #fef2f2;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.layout-modal-delete-text {
+  font-size: 0.9rem;
+  color: #991b1b;
+  margin: 0 0 12px;
+}
+
+.layout-modal-delete-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.layout-modal-btn--confirm-delete {
+  background: #dc2626;
+  color: #fff;
+}
+
+.layout-modal-btn--confirm-delete:hover {
+  background: #b91c1c;
+}
+
+.layout-modal-btn--cancel-delete {
+  background: #fff;
+  color: var(--color-text-secondary, #64748b);
+}

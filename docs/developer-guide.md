@@ -70,6 +70,7 @@ import { useAuth } from '../../../auth/context/useAuth';
 
 - **Plain CSS only** — no Sass, Less, Tailwind, or CSS-in-JS.
 - **Co-located files** — every `.tsx` component that needs styles has a matching `.css` file in the same directory.
+- **Shared stylesheets** — when multiple components share the same visual patterns (e.g., modals, action bars), extract a shared `.css` file instead of duplicating styles. Components import the shared file directly.
 - **BEM naming** — use `.block__element--modifier` for class names.
 - **CSS custom properties** — all theme variables (colors, spacing, radii, shadows) are defined in `src/app/index.css` and referenced throughout.
 
@@ -252,6 +253,65 @@ const {
 | `setPageSize` | `(size: number) => void` | Change items per page (resets to page 1) |
 
 Pair with the `<Pagination />` UI component for a complete table paging solution.
+
+### Complex State: Custom Hook Extraction
+
+When a page component accumulates many state variables (10+) and handlers, extract them into a custom hook to keep the page focused on orchestration and rendering.
+
+**Pattern:** `use<Feature>Editor`
+
+The `useLayoutEditor` hook in the store-layout feature demonstrates this pattern. It encapsulates ~15 state variables, derived values, and handlers for the grid editor:
+
+```tsx
+// hooks/useLayoutEditor.ts
+export function useLayoutEditor(
+  zoneList: LayoutZone[],
+  fixtureList: LayoutFixture[],
+): LayoutEditorState {
+  // State groups
+  const [placementMode, setPlacementMode] = useState<PlacementMode>("none");
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  // ... more state
+
+  // Derived values via useMemo
+  const editingName = useMemo(() => { /* ... */ }, [editingId]);
+  const hintText = useMemo(() => { /* ... */ }, [placementMode, editingId]);
+
+  // Handlers
+  const handlePlacementModeChange = useCallback(/* ... */);
+  const handleItemClick = useCallback(/* ... */);
+
+  // Reset helpers for consistent state cleanup after CRUD
+  const resetAfterCreate = useCallback(/* ... */);
+  const resetAfterDelete = useCallback(/* ... */);
+
+  return { placementMode, selectedItemId, hintText, /* ... */ };
+}
+```
+
+```tsx
+// pages/StoreLayoutPage.tsx — clean orchestration
+function StoreLayoutPage() {
+  const editor = useLayoutEditor(zoneList, fixtureList);
+  const createZoneAction = useAsyncAction(async (body) => {
+    await createZone(storeId, layoutId, body);
+    editor.resetAfterCreate();
+    refetchLayouts();
+  });
+  // ... render using editor.* values and handlers
+}
+```
+
+**When to extract:**
+- The page has 10+ `useState` calls
+- Multiple handlers need to coordinate resets across several state variables
+- Derived values (`useMemo`) depend on combinations of the state variables
+- The page file exceeds ~300 lines
+
+**What stays in the page:**
+- API calls (`useApiData`, `useAsyncAction`)
+- Data fetching and refetch orchestration
+- JSX rendering
 
 ---
 
@@ -617,8 +677,8 @@ Before opening (or approving) a pull request, verify:
 - [ ] **TypeScript** — No `any` types. No `@ts-ignore` comments. All new types live in `shared/types/`.
 - [ ] **Lint** — `npm run lint` passes with zero errors.
 - [ ] **Tests** — `npm run test` passes. New features have corresponding tests.
-- [ ] **CSS** — Co-located `.css` file. Uses CSS variables for colors/spacing. BEM class naming.
-- [ ] **Hooks** — Data fetching uses `useApiData` or `useAsyncAction`. No raw `useEffect` + `fetch` patterns.
+- [ ] **CSS** — Co-located `.css` file (or shared stylesheet for common patterns). Uses CSS variables for colors/spacing. BEM class naming.
+- [ ] **Hooks** — Data fetching uses `useApiData` or `useAsyncAction`. No raw `useEffect` + `fetch` patterns. Complex state extracted into custom hooks.
 - [ ] **Error handling** — Uses `extractApiError`. Displays `<ErrorBanner>` for errors, `<LoadingState>` for loading.
 - [ ] **Routing** — New routes added to `App.tsx`. Protected routes wrapped in `ProtectedRoute` / `RoleRoute` as needed.
 - [ ] **Navigation** — New sidebar items added to `navigation.tsx` with appropriate role restrictions.

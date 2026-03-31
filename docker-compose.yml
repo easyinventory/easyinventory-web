@@ -1,0 +1,32 @@
+services:
+  # ── Dev server (hot-reload) ──────────────────────────────────────────────────
+  # Usage: docker compose up --build
+  # Serves via Vite at http://localhost:5173
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      # Mount source for live hot-reload; keep node_modules from the image
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+
+  # ── Production preview (nginx) ────────────────────────────────────────────────
+  # Usage: docker compose --profile prod up --build
+  # Serves the compiled bundle via nginx at http://localhost:3000
+  web:
+    profiles: ["prod"]
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_COGNITO_REGION: ${VITE_COGNITO_REGION}
+        VITE_COGNITO_USER_POOL_ID: ${VITE_COGNITO_USER_POOL_ID}
+        VITE_COGNITO_APP_CLIENT_ID: ${VITE_COGNITO_APP_CLIENT_ID}
+    ports:
+      - "3000:3000"
