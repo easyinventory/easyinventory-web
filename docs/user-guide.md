@@ -24,15 +24,25 @@
    - [Creating a Supplier](#creating-a-supplier)
    - [Editing a Supplier](#editing-a-supplier)
    - [Deleting a Supplier](#deleting-a-supplier)
-8. [Organization Settings](#organization-settings)
+8. [Store Layout](#store-layout)
+   - [Selecting a Layout Version](#selecting-a-layout-version)
+   - [Creating a New Layout Version](#creating-a-new-layout-version)
+   - [Activating a Layout Version](#activating-a-layout-version)
+   - [Creating Zones](#creating-zones)
+   - [Creating Fixtures](#creating-fixtures)
+   - [Viewing & Editing Zones](#viewing--editing-zones)
+   - [Viewing & Editing Fixtures](#viewing--editing-fixtures)
+   - [Editing Shapes](#editing-shapes)
+   - [Deleting Zones & Fixtures](#deleting-zones--fixtures)
+9. [Organization Settings](#organization-settings)
    - [Inviting a Member](#inviting-a-member)
    - [Changing a Member's Role](#changing-a-members-role)
    - [Deactivating / Reactivating a Member](#deactivating--reactivating-a-member)
    - [Removing a Member](#removing-a-member)
-9. [System Admin Panel](#system-admin-panel)
+10. [System Admin Panel](#system-admin-panel)
    - [Managing Organizations](#managing-organizations)
    - [Managing Users](#managing-users)
-10. [Roles & Permissions](#roles--permissions)
+11. [Roles & Permissions](#roles--permissions)
 
 ---
 
@@ -96,7 +106,7 @@ The left-hand sidebar is your primary navigation. It shows links to:
 - **Products** — Product catalog management
 - **Suppliers** — Supplier contact management
 - **Inventory** — *(Coming Soon)*
-- **Store Layout** — *(Coming Soon)*
+- **Store Layout** — Store floor plan editor
 - **Analytics** — *(Coming Soon)*
 - **Org Settings** — Organization member management (Owners / Admins only)
 - **Admin** — System administration (System Admins only)
@@ -135,7 +145,7 @@ The Dashboard is the first page you see after logging in. It displays a grid of 
 | Products | Navigate to the product catalog |
 | Suppliers | Navigate to supplier management |
 | Inventory | *Coming Soon* — greyed out |
-| Store Layout | *Coming Soon* — greyed out |
+| Store Layout | Navigate to the store floor plan editor |
 | Analytics | *Coming Soon* — greyed out |
 | Organization Settings | Manage org members (visible to Owners/Admins) |
 | Admin Panel | System administration (visible to System Admins) |
@@ -229,6 +239,106 @@ Each product can be associated with one or more suppliers:
 
 ---
 
+## Store Layout
+
+The Store Layout page lets you design the floor plan for your currently selected store using an interactive grid editor. You can create inventory zones (e.g., "Produce", "Electronics") and place fixtures (walls, doors, checkout counters, etc.) on the grid.
+
+### Selecting a Layout Version
+
+Each store can have multiple layout versions. When you open the Store Layout page:
+
+1. The currently **active** layout version loads automatically.
+2. A **version selector** dropdown at the top shows all versions with their dimensions, zone/fixture counts, and creation dates.
+3. Click the dropdown to switch between versions for viewing.
+
+### Creating a New Layout Version
+
+1. If the store has no layouts yet, you'll see an **empty state** with a creation form in the center.
+2. If layouts already exist, click the **New Version** button in the page header.
+3. Enter the grid dimensions:
+   - **Rows** — number of rows (2–30)
+   - **Columns** — number of columns (2–30)
+4. Click **Create**. The new version is created and loaded automatically.
+
+### Activating a Layout Version
+
+1. Open the **version selector** dropdown.
+2. Each non-active version shows an **Activate** button.
+3. Click **Activate** on the version you want to make current.
+4. The activated version is marked with a green "Active" badge. Only one version can be active at a time.
+
+### Creating Zones
+
+Zones represent logical inventory areas on your store floor plan.
+
+1. In the **Place** toolbar below the version selector, click **Inventory Zone** (🔲).
+2. The grid enters **placement mode** — a hint bar appears at the top.
+3. **Click and drag** on grid cells to paint your zone shape. Click a painted cell again to unpaint it.
+4. The action bar shows the number of cells selected. Click **Done** when finished, or **Cancel** to discard.
+5. A **naming modal** appears:
+   - Enter a **name** for the zone (e.g., "Produce", "Electronics").
+   - Select a **color** from 8 predefined options (Blue, Green, Amber, Red, Purple, Cyan, Pink, Indigo).
+6. Click **Create**. The zone appears on the grid with your chosen color.
+
+### Creating Fixtures
+
+Fixtures represent physical structures in the store (walls, checkout counters, doors, pillars, etc.).
+
+1. In the **Place** toolbar, click **Wall / Fixture** (📌).
+2. The grid enters **placement mode**.
+3. **Click and drag** on grid cells to paint the fixture's footprint.
+4. Click **Done** when finished, or **Cancel** to discard.
+5. A **naming modal** appears:
+   - Enter a **name** for the fixture (e.g., "Main Entrance", "Register 1").
+   - Select a **type** from 8 options: Wall, Checkout, Front Desk, Door, Pillar, Restroom, Storage, Stairs. Each type has its own icon and color.
+6. Click **Create**. The fixture appears on the grid with the type's icon and accent color.
+
+### Viewing & Editing Zones
+
+- **Click** a zone on the grid or in the **Objects Panel** (right sidebar) to select it. The zone highlights on the grid.
+- **Double-click** a zone to open its **detail modal**, which shows:
+  - Zone name and color dot
+  - Cell count and shape type (rectangular or freeform)
+  - Options to **rename**, **change color**, **edit shape**, or **delete**
+- Edit the name or color and click **Save** to update.
+
+### Viewing & Editing Fixtures
+
+- **Click** a fixture on the grid or in the **Objects Panel** to select it.
+- **Double-click** a fixture to open its **detail modal**, which shows:
+  - Fixture name, type icon, and cell count
+  - Options to **rename**, **change type**, **edit shape**, or **delete**
+- Edit the name or type and click **Save** to update.
+
+### Editing Shapes
+
+To change which grid cells belong to an existing zone or fixture:
+
+1. Open the item's detail modal (double-click).
+2. Click **Edit Shape**.
+3. The modal closes and the grid enters **edit-shape mode** — the item's current cells are highlighted.
+4. Click cells to add or remove them from the shape.
+5. An **action bar** shows the item name and updated cell count.
+6. Click **Save** to apply changes, or **Cancel** to revert.
+
+### Deleting Zones & Fixtures
+
+1. Open the item's detail modal (double-click the zone or fixture).
+2. Click the **Delete** button.
+3. A **confirmation** appears asking you to confirm the deletion.
+4. Click **Delete** to confirm. The item is removed from the grid.
+
+### The Objects Panel
+
+The right-hand sidebar (Objects Panel) lists all zones and fixtures in the current layout version:
+
+- **Inventory Zones** section — shows each zone with its color dot, name, and cell count.
+- **Fixtures & Structures** section — shows each fixture with its type icon, name, and cell count.
+- Click an item to select it on the grid. Double-click to open its detail modal.
+- If no zones or fixtures exist yet, the panel shows a helpful empty-state message.
+
+---
+
 ## Organization Settings
 
 > **Access:** Only users with the **Owner** or **Admin** role can access Organization Settings.
@@ -314,12 +424,12 @@ The Users tab shows a table of **all users** across all organizations with their
 
 ### Organization Roles
 
-| Role | Products | Suppliers | Org Settings | Description |
-| ---- | -------- | --------- | ------------ | ----------- |
-| **Owner** | Full access | Full access | Full access | One per org. Can invite/remove members, change all roles, transfer ownership. |
-| **Admin** | Full access | Full access | Invite + manage non-admins | Can invite members and manage Employees/Viewers. |
-| **Employee** | Full access | Full access | View only | Day-to-day user. Can create, edit, and delete products and suppliers. |
-| **Viewer** | Read only | Read only | No access | Can browse products and suppliers but cannot make changes. |
+| Role | Products | Suppliers | Store Layout | Org Settings | Description |
+| ---- | -------- | --------- | ------------ | ------------ | ----------- |
+| **Owner** | Full access | Full access | Full access | Full access | One per org. Can invite/remove members, change all roles, transfer ownership. |
+| **Admin** | Full access | Full access | Full access | Invite + manage non-admins | Can invite members and manage Employees/Viewers. |
+| **Employee** | Full access | Full access | Full access | View only | Day-to-day user. Can create, edit, and delete products, suppliers, and layout items. |
+| **Viewer** | Read only | Read only | Read only | No access | Can browse products, suppliers, and layouts but cannot make changes. |
 
 ### Where Roles Are Enforced
 
