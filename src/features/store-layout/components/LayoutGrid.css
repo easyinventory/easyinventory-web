@@ -1,43 +1,144 @@
 /* ═══════════════════════════════════════════════════════
-   LayoutGrid — CSS Grid renderer for store layouts
+   LayoutGrid — Interactive CSS Grid for zone/fixture editing
    ═══════════════════════════════════════════════════════ */
 
 .layout-grid {
-  display: grid;
-  grid-template-columns: repeat(var(--layout-cols), 1fr);
-  grid-template-rows: repeat(var(--layout-rows), 1fr);
-  gap: 3px;
-  width: 100%;
-  aspect-ratio: var(--layout-cols) / var(--layout-rows);
-  max-height: 520px;
-  background: var(--color-border);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 3px;
+  display: inline-grid;
+  grid-template-columns: repeat(var(--layout-cols), 64px);
+  grid-template-rows: repeat(var(--layout-rows), 64px);
+  gap: 2px;
+  background: var(--color-border, #e2e8f0);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: 2px;
   box-sizing: border-box;
+  user-select: none;
 }
+
+/* ── Base cell ── */
 
 .layout-grid__cell {
   position: relative;
   background: var(--color-bg-secondary, #f8f9fa);
   border-radius: 2px;
-  transition: background 0.1s;
-  min-height: 0;
+  transition: background 0.1s, box-shadow 0.1s;
+  cursor: default;
   overflow: hidden;
 }
 
-.layout-grid__cell:hover {
-  background: var(--color-primary-bg);
+/* Hoverable in placement mode */
+.layout-grid--placing .layout-grid__cell {
+  cursor: crosshair;
 }
+
+/* Hoverable in edit-shape mode */
+.layout-grid--editing .layout-grid__cell {
+  cursor: pointer;
+}
+
+/* ── Zone cell ── */
+
+.layout-grid__cell--zone {
+  /* --zone-bg is set via inline style */
+  background: var(--zone-bg);
+}
+
+/* ── Fixture cell ── */
+
+.layout-grid__cell--fixture {
+  background: #374151;
+}
+
+.layout-grid__cell--fixture-wall {
+  background: #1f2937;
+}
+
+/* ── Selected item highlight ── */
+
+.layout-grid__cell--selected-item {
+  box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.7);
+}
+
+/* ── Rectangle drag selection preview ── */
+
+.layout-grid__cell--selecting {
+  background: rgba(59, 130, 246, 0.25);
+}
+
+/* When selecting over an occupied cell */
+.layout-grid__cell--overlap {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+/* ── Freeform mode ── */
+
+.layout-grid__cell--freeform-selected {
+  background: rgba(59, 130, 246, 0.3);
+  box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* ── Edit-shape mode ── */
+
+.layout-grid__cell--editing-member {
+  box-shadow: inset 0 0 0 2px var(--color-primary, #3b82f6);
+}
+
+.layout-grid__cell--editing-addable {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.layout-grid__cell--editing-addable:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+/* ── Coord label ── */
 
 .layout-grid__cell-coord {
   position: absolute;
-  bottom: 3px;
-  right: 4px;
+  bottom: 2px;
+  right: 3px;
   font-size: 9px;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-tertiary, #94a3b8);
   pointer-events: none;
   user-select: none;
   font-variant-numeric: tabular-nums;
   line-height: 1;
+}
+
+.layout-grid__cell--zone .layout-grid__cell-coord,
+.layout-grid__cell--fixture .layout-grid__cell-coord {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Centroid label ── */
+
+.layout-grid__centroid-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  max-width: 58px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.layout-grid__centroid-label--zone {
+  /* uses zone hex color text shadow */
+}
+
+.layout-grid__centroid-label--fixture {
+  color: #e5e7eb;
+}
+
+.layout-grid__cell--fixture .layout-grid__centroid-label {
+  font-size: 14px;
 }
