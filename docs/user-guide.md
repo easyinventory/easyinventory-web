@@ -115,6 +115,15 @@ On smaller screens, the sidebar becomes a slide-out menu. Tap the **hamburger ic
 
 If you belong to multiple organizations, an **Org Switcher** dropdown appears in the sidebar above the navigation links. Select an organization to switch context — all data (products, suppliers, members) updates to reflect the selected org.
 
+### Store Switcher
+
+Below the Org Switcher, a **Store Switcher** dropdown shows the currently selected store. On load, the first store for the selected org is automatically chosen.
+
+- If your organization has **multiple stores**, click the Store Switcher to expand a list and select a different one.
+- If your organization has **one store**, the name is displayed but the dropdown cannot be opened.
+- While stores are loading a brief **skeleton animation** is shown.
+- If the stores fetch fails, the switcher shows **"Failed to load"** in red — this is a network error, not an indication that the org has no stores.
+
 ---
 
 ## Dashboard

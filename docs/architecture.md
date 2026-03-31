@@ -20,7 +20,8 @@
    - [Password Reset Flow](#password-reset-flow)
    - [Session Persistence](#session-persistence)
 4. [Multi-Tenancy (Org Context)](#multi-tenancy-org-context)
-5. [API Client & Interceptors](#api-client--interceptors)
+5. [Store Context](#store-context)
+6. [API Client & Interceptors](#api-client--interceptors)
 6. [Role-Based Access Control](#role-based-access-control)
    - [System Roles](#system-roles)
    - [Organization Roles](#organization-roles)
@@ -107,7 +108,7 @@ Three components protect routes at different levels:
 **Nesting order matters:**
 
 ```
-ProtectedRoute → RequireOrg → OrgProvider → AppLayout → RoleRoute → Page
+ProtectedRoute → RequireOrg → OrgProvider → StoreProvider → AppLayout → RoleRoute → Page
 ```
 
 Each guard runs only if the previous one passes, ensuring a clean cascade of access checks.
@@ -252,6 +253,51 @@ The Cognito SDK stores session tokens in the browser's Local Storage. The `getCu
 
 ---
 
+## Store Context
+
+Each organization can have multiple physical stores. `StoreContext` tracks which store the current user is working in.
+
+### How It Works
+
+1. **`StoreProvider`** wraps `AppLayout` (inside `RequireOrg`, after `OrgProvider`).
+2. On mount (and whenever `selectedOrgId` changes), it calls `GET /api/stores` via `useApiData`.
+3. It auto-selects the first store returned. The user can switch stores via the **StoreSwitcher** dropdown in the sidebar.
+4. Switching orgs resets the store selection — `resolvedStores` is cleared for one render cycle using a render-time state adjustment, preventing the previous org's stores from ever being shown while the new fetch is in flight.
+5. The `error` field is exposed to consumers (e.g. `StoreSwitcher` shows "Failed to load" when the fetch fails, distinguishing a network error from an org with zero stores).
+
+### Context Value
+
+```typescript
+interface StoreContextType {
+  stores: Store[];                  // All stores for the current org
+  selectedStoreId: string | null;   // Currently selected store
+  selectedStoreName: string | null; // Display name of the selected store
+  switchStore: (storeId: string) => void;
+  isLoading: boolean;               // True while fetching
+  error: string | null;             // Fetch error, if any
+}
+```
+
+Consumers access it via:
+
+```tsx
+const { selectedStoreId, selectedStoreName, isLoading, error } = useStore();
+```
+
+### Data Isolation
+
+Downstream pages that are store-scoped read `selectedStoreId` from `useStore()` and pass it explicitly in their API calls. Unlike `X-Org-Id` (which is injected on every request by the Axios interceptor), the store ID is passed per-call by each feature that needs it.
+
+### Provider Nesting Order
+
+```
+ProtectedRoute → RequireOrg → OrgProvider → StoreProvider → AppLayout → Page
+```
+
+`StoreProvider` is intentionally nested inside `OrgProvider` so it can read `selectedOrgId` via `useOrg()` and re-fetch stores when the org changes.
+
+---
+
 ## Multi-Tenancy (Org Context)
 
 Users can belong to multiple organizations. The `OrgContext` manages which organization is currently selected.
@@ -366,6 +412,7 @@ The app uses **no external state management library**. All state is managed thro
 | ------- | -------- | ---- | ----- |
 | `AuthContext` | `AuthProvider` (wraps entire app) | `useAuth()` | User identity, token, login/logout |
 | `OrgContext` | `OrgProvider` (wraps protected content) | `useOrg()` | Selected org, memberships, org role |
+| `StoreContext` | `StoreProvider` (wraps `AppLayout`) | `useStore()` | Selected store, store list, loading/error state |
 
 ### 2. Component-Local State
 
@@ -381,7 +428,7 @@ Feature pages use `useState` for local UI state (form inputs, modals open/closed
 
 ### Why Not Redux / Zustand?
 
-- The app's shared state is limited to **auth** and **org selection** — two contexts handle this cleanly.
+- Three React Contexts (`AuthContext`, `OrgContext`, `StoreContext`) handle this cleanly.
 - Feature data is fetched per-page and doesn't need to persist across routes.
 - Custom hooks encapsulate all data-fetching complexity.
 - Adding a state library would increase bundle size and conceptual overhead with no benefit.
@@ -406,7 +453,7 @@ The main layout wraps all authenticated pages:
 └─────────────────────────────────────┘
 ```
 
-- **Sidebar** — Renders navigation links (filtered by role), user info, org switcher, and collapse control.
+- **Sidebar** — Renders navigation links (filtered by role), user info, org switcher, store switcher, and collapse control.
 - **Content area** — Renders the matched child route via React Router's `<Outlet />`.
 
 ### AuthLayout
