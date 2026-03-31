@@ -33,8 +33,8 @@ export default function ModeToolbar({
     <div className="mode-toolbar">
       <div className="mode-toolbar__group">
         <span className="mode-toolbar__label">Place:</span>
-        {modeBtn("zone", "Zone", "🔲")}
-        {modeBtn("fixture", "Fixture", "📌")}
+        {modeBtn("zone", "Inventory Zone", "🔲")}
+        {modeBtn("fixture", "Wall / Fixture", "📌")}
       </div>
     </div>
   );
