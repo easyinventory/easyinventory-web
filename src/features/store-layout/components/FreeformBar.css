@@ -1,0 +1,56 @@
+/* ═══════════════════════════════════════════════════════
+   FreeformBar — shown during freeform paint mode
+   ═══════════════════════════════════════════════════════ */
+
+.freeform-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #166534;
+}
+
+.freeform-bar__text {
+  flex: 1;
+}
+
+.freeform-bar__count {
+  font-weight: 600;
+}
+
+.freeform-bar__btn {
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+}
+
+.freeform-bar__btn--done {
+  background: #22c55e;
+  color: #fff;
+}
+
+.freeform-bar__btn--done:hover {
+  background: #16a34a;
+}
+
+.freeform-bar__btn--done:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.freeform-bar__btn--cancel {
+  background: #fff;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.freeform-bar__btn--cancel:hover {
+  background: #f1f5f9;
+}
