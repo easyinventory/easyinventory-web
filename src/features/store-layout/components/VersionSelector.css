@@ -1,0 +1,84 @@
+/* ═══════════════════════════════════════════════════════
+   VersionSelector — layout version switcher
+   ═══════════════════════════════════════════════════════ */
+
+.version-selector {
+  margin-bottom: 20px;
+}
+
+.version-selector__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.version-selector__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.version-selector__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.version-selector__item--active {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-bg);
+}
+
+.version-selector__item-dims {
+  font-weight: 600;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.version-selector__item-date {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+}
+
+.version-selector__active-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+  border-radius: var(--radius-sm, 4px);
+  padding: 2px 8px;
+  letter-spacing: 0.02em;
+}
+
+.version-selector__activate-btn {
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: 1px solid var(--color-border-hover);
+  border-radius: var(--radius-md);
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.version-selector__activate-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+}
+
+.version-selector__activate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
