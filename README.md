@@ -2,7 +2,7 @@
 
 > React + TypeScript frontend for the EasyInventory inventory-management platform.
 
-EasyInventory helps retail teams manage products, suppliers, and team members across multiple organizations — all from a modern, role-aware dashboard.
+EasyInventory helps retail teams manage products, suppliers, store floor plans, and team members across multiple organizations — all from a modern, role-aware dashboard.
 
 ## Quick Start
 

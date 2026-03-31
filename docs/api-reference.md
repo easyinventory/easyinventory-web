@@ -17,9 +17,12 @@
 7. [Product–Supplier Links](#productsupplier-links)
 8. [Suppliers](#suppliers)
 9. [Stores](#stores)
-10. [System Admin — Organizations](#system-admin--organizations)
-11. [System Admin — Users](#system-admin--users)
-12. [TypeScript Types Reference](#typescript-types-reference)
+10. [Store Layout Versions](#store-layout-versions)
+11. [Layout Zones](#layout-zones)
+12. [Layout Fixtures](#layout-fixtures)
+13. [System Admin — Organizations](#system-admin--organizations)
+14. [System Admin — Users](#system-admin--users)
+15. [TypeScript Types Reference](#typescript-types-reference)
 
 ---
 
@@ -259,6 +262,131 @@ interface Store {
 
 ---
 
+## Store Layout Versions
+
+Manage layout versions for a store. Each store can have multiple layout versions, but only one is active at a time. Layout responses include nested `zones` and `fixtures` arrays, so no separate GET endpoints are needed for those resources.
+
+| Method | Endpoint | Description | Request Body | Response |
+| ------ | -------- | ----------- | ------------ | -------- |
+| `GET` | `/api/stores/{storeId}/layouts` | List all layout versions for a store | — | `StoreLayout[]` |
+| `POST` | `/api/stores/{storeId}/layouts` | Create a new layout version | `{ rows: number, cols: number }` | `StoreLayout` |
+| `POST` | `/api/stores/{storeId}/layouts/{layoutId}/activate` | Activate a layout version | — | `StoreLayout` |
+
+### Types
+
+```typescript
+interface StoreLayout {
+  id: string;
+  store_id: string;
+  version_number: number;
+  rows: number;
+  cols: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  zones: LayoutZone[];       // Nested — no separate GET needed
+  fixtures: LayoutFixture[]; // Nested — no separate GET needed
+}
+
+interface Cell {
+  row: number;
+  col: number;
+}
+```
+
+---
+
+## Layout Zones
+
+Manage inventory zones within a specific layout version. Zones represent logical areas of the store floor plan (e.g., "Produce", "Electronics"). Each zone owns a set of grid cells and has a color for visual identification.
+
+| Method | Endpoint | Description | Request Body | Response |
+| ------ | -------- | ----------- | ------------ | -------- |
+| `POST` | `/api/stores/{storeId}/layouts/{layoutId}/zones` | Create a new zone | `ZoneCreateRequest` | `LayoutZone` |
+| `PUT` | `/api/stores/{storeId}/layouts/{layoutId}/zones/{zoneId}` | Update a zone | `ZoneUpdateRequest` | `LayoutZone` |
+| `DELETE` | `/api/stores/{storeId}/layouts/{layoutId}/zones/{zoneId}` | Delete a zone | — | — |
+
+### Types
+
+```typescript
+interface LayoutZone {
+  id: string;
+  layout_version_id: string;
+  name: string;
+  color: string;             // Hex color (e.g., "#3B82F6")
+  cells: Cell[];             // Grid cells belonging to this zone
+  is_freeform?: boolean;     // True if the zone shape is non-rectangular
+  created_at: string;
+  updated_at: string;
+}
+
+interface ZoneCreateRequest {
+  name: string;
+  color: string;
+  cells: Cell[];
+  is_freeform?: boolean;
+}
+
+interface ZoneUpdateRequest {
+  name?: string;
+  color?: string;
+  cells?: Cell[];
+}
+```
+
+---
+
+## Layout Fixtures
+
+Manage fixtures and structural elements within a specific layout version. Fixtures represent physical structures in the store (walls, checkout counters, doors, pillars, etc.). Each fixture has a type that determines its visual representation.
+
+| Method | Endpoint | Description | Request Body | Response |
+| ------ | -------- | ----------- | ------------ | -------- |
+| `POST` | `/api/stores/{storeId}/layouts/{layoutId}/fixtures` | Create a new fixture | `FixtureCreateRequest` | `LayoutFixture` |
+| `PUT` | `/api/stores/{storeId}/layouts/{layoutId}/fixtures/{fixtureId}` | Update a fixture | `FixtureUpdateRequest` | `LayoutFixture` |
+| `DELETE` | `/api/stores/{storeId}/layouts/{layoutId}/fixtures/{fixtureId}` | Delete a fixture | — | — |
+
+### Types
+
+```typescript
+type FixtureType =
+  | 'WALL'
+  | 'CHECKOUT'
+  | 'FRONT_DESK'
+  | 'DOOR'
+  | 'PILLAR'
+  | 'RESTROOM'
+  | 'STORAGE'
+  | 'STAIRS';
+
+interface LayoutFixture {
+  id: string;
+  layout_version_id: string;
+  zone_id?: string;          // Optional link to a zone
+  name: string;
+  fixture_type: FixtureType;
+  cells: Cell[];             // Grid cells occupied by this fixture
+  created_at: string;
+  updated_at: string;
+}
+
+interface FixtureCreateRequest {
+  name: string;
+  fixture_type: FixtureType;
+  cells: Cell[];
+  zone_id?: string;
+}
+
+interface FixtureUpdateRequest {
+  name?: string;
+  fixture_type?: FixtureType;
+  cells?: Cell[];
+  zone_id?: string;
+}
+```
+
+---
+
 ## System Admin — Organizations
 
 Platform-wide organization management. Requires `SYSTEM_ADMIN` system role.
@@ -332,7 +460,7 @@ All request/response types are defined in `src/shared/types/` and exported throu
 | `org.ts` | `OrgMember`, `OrgMembership`, `InviteRequest`, `UpdateRoleRequest` |
 | `product.ts` | `Product`, `ProductWithSuppliers`, `ProductSupplierLink`, `ProductCreateRequest`, `ProductUpdateRequest`, `LinkSupplierRequest` |
 | `supplier.ts` | `Supplier`, `SupplierCreateRequest`, `SupplierUpdateRequest` |
-| `store.ts` | `Store` |
+| `store.ts` | `Store`, `StoreLayout`, `Cell`, `LayoutZone`, `ZoneCreateRequest`, `ZoneUpdateRequest`, `LayoutFixture`, `FixtureType`, `FixtureCreateRequest`, `FixtureUpdateRequest`, `ZoneColorDef`, `FixtureTypeDef` |
 | `admin.ts` | `OrgListItem`, `CreateOrgRequest`, `RenameOrgRequest`, `TransferOwnershipRequest`, `UserListItem` |
 | `index.ts` | Re-exports all of the above |
 

@@ -15,4 +15,17 @@ export type {
   AddSupplierToProductRequest,
   ToggleProductSupplierRequest,
 } from "./product";
-export type { Store } from "./store";
+export type {
+  Store,
+  StoreLayout,
+  Cell,
+  LayoutZone,
+  ZoneCreateRequest,
+  ZoneUpdateRequest,
+  LayoutFixture,
+  FixtureType,
+  FixtureCreateRequest,
+  FixtureUpdateRequest,
+  ZoneColorDef,
+  FixtureTypeDef,
+} from "./store";
