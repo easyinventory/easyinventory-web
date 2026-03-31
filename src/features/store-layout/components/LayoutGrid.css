@@ -5,8 +5,10 @@
 .layout-grid {
   display: grid;
   grid-template-columns: repeat(var(--layout-cols), 1fr);
+  grid-template-rows: repeat(var(--layout-rows), 1fr);
   gap: 2px;
   width: 100%;
+  max-height: calc(100vh - 300px);
   background: var(--color-border, #e2e8f0);
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: var(--radius-md, 8px);
@@ -19,12 +21,13 @@
 
 .layout-grid__cell {
   position: relative;
-  aspect-ratio: 1;
   background: var(--color-bg-secondary, #f8f9fa);
   border-radius: 2px;
   transition: background 0.1s, box-shadow 0.1s;
   cursor: default;
   overflow: hidden;
+  min-height: 0;
+  min-width: 0;
 }
 
 /* Hoverable in placement mode */
