@@ -71,7 +71,7 @@ These pages exist in the codebase with placeholder UI and are wired into the rou
 | Tailwind | The project uses plain CSS with variables and BEM for clarity and simplicity. |
 | CSS-in-JS (styled-components, Emotion) | Adds runtime cost and complexity. Plain CSS with co-located files is sufficient. |
 | Sass / Less | The app already uses CSS custom properties for theming. A preprocessor would add tooling without benefit. |
-| Redux / Zustand | Two React Contexts (`AuthContext`, `OrgContext`) plus custom hooks cover all shared-state needs without a third-party store. |
+| Redux / Zustand | Three React Contexts (`AuthContext`, `OrgContext`, `StoreContext`) plus custom hooks cover all shared-state needs without a third-party store. |
 | Next.js / Remix | The app is a pure SPA backed by a separate API server. Server-side rendering isn't needed. |
 
 ---
@@ -113,7 +113,7 @@ Not every feature has all folders. Simpler features skip `context/` or `componen
 | `inventory` | Placeholder | — | — | — | InventoryPage |
 | `org` | Active | `orgApi.ts` | InviteForm, MemberList, MemberRow | OrgContext, useOrg | OrgSettingsPage |
 | `products` | Active | `productApi.ts` | ProductTable, ProductForm, ProductSupplierTable, AddSupplierModal | — | ProductListPage, ProductDetailPage, ProductFormPage |
-| `store-layout` | Placeholder | — | — | — | StoreLayoutPage |
+| `store-layout` | Placeholder (page) / Active (infrastructure) | `storeApi.ts` | — | `StoreContext`, `store-context`, `useStore` | StoreLayoutPage |
 | `suppliers` | Active | `supplierApi.ts` | SupplierForm, SupplierSearchSelect | — | SuppliersPage |
 
 ---
@@ -183,11 +183,11 @@ src/
 | Folder | Contents |
 | ------ | -------- |
 | `shared/api/` | `client.ts` — single Axios instance with auth token + org ID interceptors |
-| `shared/components/layout/` | `AppLayout` (sidebar + content outlet), `Sidebar` (nav + user info + collapse), `PageHeader` (title/subtitle/back/actions), `OrgSwitcher` (multi-org dropdown), `AuthLayout` (split-screen branding) |
+| `shared/components/layout/` | `AppLayout` (sidebar + content outlet), `Sidebar` (nav + user info + collapse), `PageHeader` (title/subtitle/back/actions), `OrgSwitcher` (multi-org dropdown), `StoreSwitcher` (per-org store dropdown), `AuthLayout` (split-screen branding) |
 | `shared/components/ui/` | `LoadingState`, `ErrorBanner`, `SuccessBanner`, `EmptyState`, `ErrorBoundary`, `Pagination` |
 | `shared/constants/` | `roles.ts` (role enums + helper functions), `navigation.tsx` (nav item config array), `nav-icons.tsx` (inline SVG icon components) |
 | `shared/hooks/` | `useApiData` (data fetching on mount), `useAsyncAction` (user-triggered mutations), `usePagination` (client-side table pagination) |
-| `shared/types/` | `auth.ts`, `org.ts`, `admin.ts`, `product.ts`, `supplier.ts` + `index.ts` barrel |
+| `shared/types/` | `auth.ts`, `org.ts`, `admin.ts`, `product.ts`, `supplier.ts`, `store.ts` + `index.ts` barrel |
 | `shared/utils/` | `errors.ts` (`extractApiError`), `format.ts` (`formatDate`, `formatRoleLabel`) + `index.ts` barrel |
 
 ---
@@ -213,4 +213,4 @@ The authentication flow has many states (loading, logged out, needs new password
 
 ### Why No Global State Library?
 
-Two React Contexts (`AuthContext` for user + token, `OrgContext` for org membership selection) cover all shared state. Feature-local state is managed with `useState`. Custom hooks (`useApiData`, `useAsyncAction`) encapsulate data-fetching patterns. There's nothing that needs a full state management library.
+Three React Contexts (`AuthContext` for user + token, `OrgContext` for org membership selection, `StoreContext` for store selection) cover all shared state. Feature-local state is managed with `useState`. Custom hooks (`useApiData`, `useAsyncAction`) encapsulate data-fetching patterns. There's nothing that needs a full state management library.
