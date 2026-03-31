@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   getInventoryEntry,
@@ -92,19 +92,22 @@ export default function InventoryDetailPage() {
   const [settingsThreshold, setSettingsThreshold] = useState("");
   const [settingsZoneId, setSettingsZoneId] = useState("");
 
-  // Sync settings form when item / placement data loads
-  useEffect(() => {
-    if (item) {
-      setSettingsPrice(
-        item.unit_price ? parseFloat(item.unit_price).toFixed(2) : "",
-      );
-      setSettingsThreshold(item.low_stock_threshold?.toString() ?? "");
-    }
-  }, [item]);
+  // Sync settings form when item / placement data loads (adjust state during render)
+  const [syncedItemId, setSyncedItemId] = useState<string | null>(null);
+  if (item && item.id !== syncedItemId) {
+    setSyncedItemId(item.id);
+    setSettingsPrice(
+      item.unit_price ? parseFloat(item.unit_price).toFixed(2) : "",
+    );
+    setSettingsThreshold(item.low_stock_threshold?.toString() ?? "");
+  }
 
-  useEffect(() => {
-    setSettingsZoneId(currentPlacement?.zone_id ?? "");
-  }, [currentPlacement]);
+  const [syncedZoneId, setSyncedZoneId] = useState<string | undefined>(undefined);
+  const placementZoneId = currentPlacement?.zone_id;
+  if (placementZoneId !== syncedZoneId) {
+    setSyncedZoneId(placementZoneId);
+    setSettingsZoneId(placementZoneId ?? "");
+  }
 
   const {
     execute: saveSettings,

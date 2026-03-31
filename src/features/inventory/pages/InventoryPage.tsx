@@ -72,7 +72,10 @@ export default function InventoryPage() {
     pageSize,
   ]);
 
-  const items: StoreInventoryItem[] = inventoryData?.items ?? [];
+  const items = useMemo<StoreInventoryItem[]>(
+    () => inventoryData?.items ?? [],
+    [inventoryData],
+  );
   const totalItems = inventoryData?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
@@ -115,12 +118,12 @@ export default function InventoryPage() {
   const [zoneMap, setZoneMap] = useState<Map<string, string | null>>(new Map());
 
   useEffect(() => {
-    if (!storeId || items.length === 0) {
-      setZoneMap(new Map());
-      return;
-    }
     let cancelled = false;
     async function fetchZones() {
+      if (!storeId || items.length === 0) {
+        if (!cancelled) setZoneMap(new Map());
+        return;
+      }
       const map = new Map<string, string | null>();
       await Promise.all(
         items.map(async (item) => {
