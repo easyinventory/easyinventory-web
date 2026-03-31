@@ -36,7 +36,7 @@ export default function EditBanner({
         onClick={onSave}
         disabled={cells.length === 0 || isSaving}
       >
-        {isSaving ? "Saving…" : "Save Shape"}
+        {isSaving ? "Saving…" : "Done"}
       </button>
     </div>
   );

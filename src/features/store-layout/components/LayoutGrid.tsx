@@ -1,13 +1,12 @@
-import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef } from "react";
 import type { Cell, LayoutZone, LayoutFixture } from "../../../shared/types";
-import { ck, rectToCells, cellsToKeySet } from "../utils";
+import { ck, cellsToKeySet } from "../utils";
 import { findZoneColor, findFixtureType } from "../constants";
 import "./LayoutGrid.css";
 
 /* ── Types ── */
 
 export type PlacementMode = "none" | "zone" | "fixture";
-export type DrawMode = "rectangle" | "freeform";
 
 interface LayoutGridProps {
   rows: number;
@@ -17,7 +16,6 @@ interface LayoutGridProps {
 
   /** Current interaction mode */
   placementMode: PlacementMode;
-  drawMode: DrawMode;
 
   /** Freeform painted cells (lifted to parent) */
   freeformCells: Cell[];
@@ -32,10 +30,10 @@ interface LayoutGridProps {
   /** Which item is selected (highlighted) */
   selectedItemId: string | null;
 
-  /** Called when rectangle drag completes */
-  onRectangleComplete: (cells: Cell[]) => void;
   /** Called when a zone/fixture cell is clicked in view mode */
   onItemClick: (type: "zone" | "fixture", id: string) => void;
+  /** Called when a zone/fixture cell is double-clicked in view mode */
+  onItemDoubleClick: (type: "zone" | "fixture", id: string) => void;
 
   showCoords?: boolean;
 }
@@ -99,7 +97,6 @@ const LayoutGrid = memo(function LayoutGrid({
   zones,
   fixtures,
   placementMode,
-  drawMode,
   freeformCells,
   onFreeformCellsChange,
   editingId,
@@ -107,8 +104,8 @@ const LayoutGrid = memo(function LayoutGrid({
   editingCells,
   onEditingCellsChange,
   selectedItemId,
-  onRectangleComplete,
   onItemClick,
+  onItemDoubleClick,
   showCoords = true,
 }: LayoutGridProps) {
   /* — Derived maps — */
@@ -127,30 +124,12 @@ const LayoutGrid = memo(function LayoutGrid({
     [editingCells],
   );
 
-  /* — Rectangle drag state — */
-  const [dragStart, setDragStart] = useState<[number, number] | null>(null);
-  const [dragEnd, setDragEnd] = useState<[number, number] | null>(null);
-  const isDragging = useRef(false);
-
-  const selectionKeys = useMemo(() => {
-    if (!dragStart || !dragEnd) return new Set<string>();
-    const cells = rectToCells(
-      dragStart[0],
-      dragStart[1],
-      dragEnd[0],
-      dragEnd[1],
-    );
-    return cellsToKeySet(cells);
-  }, [dragStart, dragEnd]);
-
   /* — Freeform paint state — */
   const freeformMouseDown = useRef(false);
 
   /* — Helpers — */
   const isPlacing = placementMode !== "none" && !editingId;
   const isEditing = editingId !== null;
-  const isRectMode = drawMode === "rectangle";
-  const isFreeformMode = drawMode === "freeform";
 
   /* — Mouse handlers — */
   const handleMouseDown = useCallback(
@@ -173,32 +152,24 @@ const LayoutGrid = memo(function LayoutGrid({
 
       if (!isPlacing) return;
 
-      if (isRectMode) {
-        setDragStart([r, c]);
-        setDragEnd([r, c]);
-        isDragging.current = true;
-      } else if (isFreeformMode) {
-        freeformMouseDown.current = true;
-        const key = ck(r, c);
-        // Don't paint on occupied cells
-        if (cellMap.get(key)?.isOccupied) return;
-        // Toggle
-        if (freeformKeySet.has(key)) {
-          onFreeformCellsChange(
-            freeformCells.filter(
-              (cell) => ck(cell.row, cell.col) !== key,
-            ),
-          );
-        } else {
-          onFreeformCellsChange([...freeformCells, { row: r, col: c }]);
-        }
+      freeformMouseDown.current = true;
+      const key = ck(r, c);
+      // Don't paint on occupied cells
+      if (cellMap.get(key)?.isOccupied) return;
+      // Toggle
+      if (freeformKeySet.has(key)) {
+        onFreeformCellsChange(
+          freeformCells.filter(
+            (cell) => ck(cell.row, cell.col) !== key,
+          ),
+        );
+      } else {
+        onFreeformCellsChange([...freeformCells, { row: r, col: c }]);
       }
     },
     [
       isEditing,
       isPlacing,
-      isRectMode,
-      isFreeformMode,
       cellMap,
       editingKeySet,
       editingCells,
@@ -211,9 +182,7 @@ const LayoutGrid = memo(function LayoutGrid({
 
   const handleMouseEnter = useCallback(
     (r: number, c: number) => {
-      if (isRectMode && isDragging.current) {
-        setDragEnd([r, c]);
-      } else if (isFreeformMode && freeformMouseDown.current && isPlacing) {
+      if (freeformMouseDown.current && isPlacing) {
         const key = ck(r, c);
         if (cellMap.get(key)?.isOccupied) return;
         if (!freeformKeySet.has(key)) {
@@ -222,8 +191,6 @@ const LayoutGrid = memo(function LayoutGrid({
       }
     },
     [
-      isRectMode,
-      isFreeformMode,
       isPlacing,
       cellMap,
       freeformKeySet,
@@ -233,26 +200,8 @@ const LayoutGrid = memo(function LayoutGrid({
   );
 
   const handleMouseUp = useCallback(() => {
-    if (isRectMode && isDragging.current && dragStart && dragEnd) {
-      isDragging.current = false;
-      const cells = rectToCells(
-        dragStart[0],
-        dragStart[1],
-        dragEnd[0],
-        dragEnd[1],
-      );
-      // Filter out occupied cells
-      const free = cells.filter(
-        (cell) => !cellMap.get(ck(cell.row, cell.col))?.isOccupied,
-      );
-      setDragStart(null);
-      setDragEnd(null);
-      if (free.length > 0) {
-        onRectangleComplete(free);
-      }
-    }
     freeformMouseDown.current = false;
-  }, [isRectMode, dragStart, dragEnd, cellMap, onRectangleComplete]);
+  }, []);
 
   const handleCellClick = useCallback(
     (r: number, c: number) => {
@@ -260,7 +209,6 @@ const LayoutGrid = memo(function LayoutGrid({
       const key = ck(r, c);
       const info = cellMap.get(key);
       if (!info) return;
-      // Prefer fixture click, then zone
       if (info.fixtureId) {
         onItemClick("fixture", info.fixtureId);
       } else if (info.zoneId) {
@@ -268,6 +216,21 @@ const LayoutGrid = memo(function LayoutGrid({
       }
     },
     [isPlacing, isEditing, cellMap, onItemClick],
+  );
+
+  const handleCellDoubleClick = useCallback(
+    (r: number, c: number) => {
+      if (isPlacing || isEditing) return;
+      const key = ck(r, c);
+      const info = cellMap.get(key);
+      if (!info) return;
+      if (info.fixtureId) {
+        onItemDoubleClick("fixture", info.fixtureId);
+      } else if (info.zoneId) {
+        onItemDoubleClick("zone", info.zoneId);
+      }
+    },
+    [isPlacing, isEditing, cellMap, onItemDoubleClick],
   );
 
   /* — Class builder — */
@@ -295,7 +258,6 @@ const LayoutGrid = memo(function LayoutGrid({
         Array.from({ length: cols }, (_, c) => {
           const key = ck(r, c);
           const info = cellMap.get(key);
-          const isSelecting = selectionKeys.has(key);
           const isFreeformSelected = freeformKeySet.has(key);
           const isEditMember = isEditing && editingKeySet.has(key);
           const isEditAddable =
@@ -304,7 +266,9 @@ const LayoutGrid = memo(function LayoutGrid({
             selectedItemId !== null &&
             (info?.zoneId === selectedItemId ||
               info?.fixtureId === selectedItemId);
-          const isOverlap = isSelecting && info?.isOccupied;
+          const showPlus =
+            (isPlacing && !info?.isOccupied && !isFreeformSelected) ||
+            isEditAddable;
 
           const cellClass = [
             "layout-grid__cell",
@@ -312,15 +276,12 @@ const LayoutGrid = memo(function LayoutGrid({
             info?.fixtureId && "layout-grid__cell--fixture",
             info?.fixtureId &&
               (() => {
-                // Find the fixture to check type
                 const fix = fixtures.find((f) => f.id === info.fixtureId);
                 return fix?.fixture_type === "WALL"
                   ? "layout-grid__cell--fixture-wall"
                   : "";
               })(),
             isSelectedItem && "layout-grid__cell--selected-item",
-            isSelecting && !isOverlap && "layout-grid__cell--selecting",
-            isOverlap && "layout-grid__cell--overlap",
             isFreeformSelected && "layout-grid__cell--freeform-selected",
             isEditMember && "layout-grid__cell--editing-member",
             isEditAddable && "layout-grid__cell--editing-addable",
@@ -346,7 +307,11 @@ const LayoutGrid = memo(function LayoutGrid({
               onMouseDown={() => handleMouseDown(r, c)}
               onMouseEnter={() => handleMouseEnter(r, c)}
               onClick={() => handleCellClick(r, c)}
+              onDoubleClick={() => handleCellDoubleClick(r, c)}
             >
+              {showPlus && (
+                <span className="layout-grid__cell-plus">+</span>
+              )}
               {cellLabel && (
                 <span
                   className={`layout-grid__cell-label layout-grid__cell-label--${cellLabelType}`}

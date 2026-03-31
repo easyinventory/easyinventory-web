@@ -17,10 +17,10 @@ export default function FreeformBar({
   return (
     <div className="freeform-bar">
       <span className="freeform-bar__text">
-        ✏️ Freeform {placementType} —{" "}
+        Creating {placementType} ·{" "}
         <span className="freeform-bar__count">{cells.length}</span> cell
-        {cells.length !== 1 ? "s" : ""} painted. Click cells to add/remove,
-        then press Done.
+        {cells.length !== 1 ? "s" : ""} selected. Click cells to add or
+        remove.
       </span>
       <button
         className="freeform-bar__btn freeform-bar__btn--cancel"

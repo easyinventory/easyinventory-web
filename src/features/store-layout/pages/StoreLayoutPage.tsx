@@ -16,7 +16,7 @@ import type {
   Cell,
   FixtureType,
 } from "../../../shared/types";
-import type { PlacementMode, DrawMode } from "../components/LayoutGrid";
+import type { PlacementMode } from "../components/LayoutGrid";
 import {
   CreateLayoutForm,
   EditBanner,
@@ -81,7 +81,6 @@ export default function StoreLayoutPage() {
 
   /* ── Editor state ── */
   const [placementMode, setPlacementMode] = useState<PlacementMode>("none");
-  const [drawMode, setDrawMode] = useState<DrawMode>("rectangle");
   const [freeformCells, setFreeformCells] = useState<Cell[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [selectedItemType, setSelectedItemType] = useState<
@@ -124,9 +123,8 @@ export default function StoreLayoutPage() {
 
   /* ── Hint text ── */
   const hintText = (() => {
-    if (editingId) return "Click cells to add/remove";
+    if (editingId) return "Click cells to add or remove from shape";
     if (placementMode === "none") return "Click a zone or fixture to select";
-    if (drawMode === "rectangle") return "Click and drag to draw a rectangle";
     return "Click cells to paint, then press Done";
   })();
 
@@ -139,23 +137,6 @@ export default function StoreLayoutPage() {
     setSelectedItemType(null);
     setShowZoneDetail(false);
     setShowFixtureDetail(false);
-  }
-
-  function handleDrawModeChange(mode: DrawMode) {
-    setDrawMode(mode);
-    setFreeformCells([]);
-  }
-
-  // Rectangle drag complete → open creation modal
-  function handleRectangleComplete(cells: Cell[]) {
-    if (cells.length === 0) return;
-    setPendingCells(cells);
-    setPendingIsFreeform(false);
-    if (placementMode === "zone") {
-      setShowZoneModal(true);
-    } else if (placementMode === "fixture") {
-      setShowFixtureModal(true);
-    }
   }
 
   // Freeform "Done" → open creation modal
@@ -174,8 +155,14 @@ export default function StoreLayoutPage() {
     setFreeformCells([]);
   }
 
-  // Item click in grid or panel
+  // Item click in grid — highlight only
   function handleItemClick(type: "zone" | "fixture", id: string) {
+    setSelectedItemId(id);
+    setSelectedItemType(type);
+  }
+
+  // Item double-click in grid or panel click — open detail modal
+  function handleItemOpen(type: "zone" | "fixture", id: string) {
     setSelectedItemId(id);
     setSelectedItemType(type);
     if (type === "zone") {
@@ -376,9 +363,7 @@ export default function StoreLayoutPage() {
                   <div className="store-layout-page__toolbar-area">
                     <ModeToolbar
                       placementMode={placementMode}
-                      drawMode={drawMode}
                       onPlacementModeChange={handlePlacementModeChange}
-                      onDrawModeChange={handleDrawModeChange}
                       disabled={editingId !== null}
                     />
 
@@ -393,9 +378,7 @@ export default function StoreLayoutPage() {
                     )}
 
                     {placementMode !== "none" &&
-                      drawMode === "freeform" &&
-                      !editingId &&
-                      freeformCells.length > 0 && (
+                      !editingId && (
                         <FreeformBar
                           cells={freeformCells}
                           placementType={placementMode as "zone" | "fixture"}
@@ -422,7 +405,6 @@ export default function StoreLayoutPage() {
                           zones={zoneList}
                           fixtures={fixtureList}
                           placementMode={placementMode}
-                          drawMode={drawMode}
                           freeformCells={freeformCells}
                           onFreeformCellsChange={setFreeformCells}
                           editingId={editingId}
@@ -430,8 +412,8 @@ export default function StoreLayoutPage() {
                           editingCells={editingCells}
                           onEditingCellsChange={setEditingCells}
                           selectedItemId={selectedItemId}
-                          onRectangleComplete={handleRectangleComplete}
                           onItemClick={handleItemClick}
+                          onItemDoubleClick={handleItemOpen}
                         />
                       </div>
                     </div>
@@ -439,7 +421,7 @@ export default function StoreLayoutPage() {
                       zones={zoneList}
                       fixtures={fixtureList}
                       selectedItemId={selectedItemId}
-                      onItemClick={handleItemClick}
+                      onItemClick={handleItemOpen}
                     />
                   </div>
                 </>
