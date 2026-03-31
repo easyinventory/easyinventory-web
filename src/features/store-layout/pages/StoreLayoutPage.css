@@ -1,0 +1,28 @@
+/* ═══════════════════════════════════════════════════════
+   StoreLayoutPage — main store layout view
+   ═══════════════════════════════════════════════════════ */
+
+.store-layout-page {
+  padding: 0;
+}
+
+.store-layout-page__grid-wrapper {
+  margin-bottom: 24px;
+}
+
+.store-layout-page__grid-label {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  margin-top: 8px;
+  text-align: center;
+}
+
+.store-layout-page__empty-hint {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+}
+
+.store-layout-page__empty-hint p {
+  margin: 0;
+}

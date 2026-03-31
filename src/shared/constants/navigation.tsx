@@ -84,7 +84,6 @@ export const navItems: NavItem[] = [
     description: "Design and visualize your store floor plan with drag-and-drop editing.",
     ctaLabel: "View Layout",
     icon: <IconStoreLayout />,
-    disabled: true,
   },
   {
     key: "analytics",
