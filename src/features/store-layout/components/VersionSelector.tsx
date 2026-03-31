@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import type { StoreLayout } from "../../../shared/types";
 import "./VersionSelector.css";
 
@@ -21,51 +21,94 @@ const VersionSelector = memo(function VersionSelector({
   onActivate,
   isActivating,
 }: VersionSelectorProps) {
-  // Sort by created_at ascending to assign stable version numbers
+  const [open, setOpen] = useState(false);
+
   const sorted = useMemo(
     () =>
       [...layouts].sort(
-        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
       ),
-    [layouts]
+    [layouts],
   );
+
+  const activeIndex = sorted.findIndex((l) => l.is_active);
+  const active = sorted[activeIndex] ?? sorted[0];
+  const others = sorted.filter((l) => l.id !== active?.id);
+
+  if (!active) return null;
 
   return (
     <div className="version-selector">
-      {sorted.map((layout, index) => (
-        <div
-          key={layout.id}
-          className={`version-selector__row${
-            layout.is_active ? " version-selector__row--active" : ""
-          }`}
-        >
-          <div className="version-selector__row-left">
-            {layout.is_active && (
-              <span className="version-selector__active-badge">Active</span>
+      <button
+        className="version-selector__toggle"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <div className="version-selector__active-info">
+          <span className="version-selector__active-badge">Active</span>
+          <span className="version-selector__version-label">
+            Version {activeIndex + 1}
+          </span>
+          <span className="version-selector__dims">
+            {active.rows} rows &times; {active.cols} columns
+          </span>
+          {(active as StoreLayout & { zones?: unknown[]; fixtures?: unknown[] })
+            .zones &&
+            (active as StoreLayout & { zones?: unknown[]; fixtures?: unknown[] })
+              .fixtures && (
+              <span className="version-selector__dims">
+                &middot; {(active.zones ?? []).length} zones &middot;{" "}
+                {(active.fixtures ?? []).length} fixtures
+              </span>
             )}
-            <span className="version-selector__version-label">
-              Version {index + 1}
-            </span>
-            <span className="version-selector__dims">
-              {layout.rows} rows × {layout.cols} columns
-            </span>
-          </div>
-          <div className="version-selector__row-right">
-            <span className="version-selector__date">
-              Created {formatDate(layout.created_at)}
-            </span>
-            {!layout.is_active && (
-              <button
-                className="version-selector__activate-btn"
-                onClick={() => onActivate(layout.id)}
-                disabled={isActivating}
-              >
-                Activate
-              </button>
-            )}
-          </div>
         </div>
-      ))}
+        <div className="version-selector__toggle-right">
+          <span className="version-selector__date">
+            Created {formatDate(active.created_at)}
+          </span>
+          {others.length > 0 && (
+            <span
+              className={`version-selector__chevron${
+                open ? " version-selector__chevron--open" : ""
+              }`}
+            >
+              ▾
+            </span>
+          )}
+        </div>
+      </button>
+
+      {open && others.length > 0 && (
+        <div className="version-selector__dropdown">
+          {others.map((layout) => {
+            const versionNum =
+              sorted.findIndex((l) => l.id === layout.id) + 1;
+            return (
+              <div key={layout.id} className="version-selector__dropdown-row">
+                <span className="version-selector__version-label">
+                  Version {versionNum}
+                </span>
+                <span className="version-selector__dims">
+                  {layout.rows} rows &times; {layout.cols} columns
+                </span>
+                <span className="version-selector__date">
+                  Created {formatDate(layout.created_at)}
+                </span>
+                <button
+                  className="version-selector__activate-btn"
+                  onClick={() => {
+                    onActivate(layout.id);
+                    setOpen(false);
+                  }}
+                  disabled={isActivating}
+                >
+                  Activate
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 });
