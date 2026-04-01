@@ -29,3 +29,16 @@ export type {
   ZoneColorDef,
   FixtureTypeDef,
 } from "./store";
+export type {
+  InventoryProductSummary,
+  StoreInventoryItem,
+  PaginatedInventoryResponse,
+  StockProductRequest,
+  UpdateInventoryRequest,
+  MovementType,
+  RecordReceiptRequest,
+  RecordSaleRequest,
+  InventoryMovement,
+  InventoryPlacement,
+  AssignZoneRequest,
+} from "./inventory";

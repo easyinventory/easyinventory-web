@@ -20,9 +20,12 @@
 10. [Store Layout Versions](#store-layout-versions)
 11. [Layout Zones](#layout-zones)
 12. [Layout Fixtures](#layout-fixtures)
-13. [System Admin — Organizations](#system-admin--organizations)
-14. [System Admin — Users](#system-admin--users)
-15. [TypeScript Types Reference](#typescript-types-reference)
+13. [Store Inventory](#store-inventory)
+14. [Inventory Movements](#inventory-movements)
+15. [Inventory Placements](#inventory-placements)
+16. [System Admin — Organizations](#system-admin--organizations)
+17. [System Admin — Users](#system-admin--users)
+18. [TypeScript Types Reference](#typescript-types-reference)
 
 ---
 
@@ -387,6 +390,152 @@ interface FixtureUpdateRequest {
 
 ---
 
+## Store Inventory
+
+Manage inventory entries for a specific store. Each entry links a product to a store with quantity, sell price, and low-stock threshold. The list endpoint supports server-side pagination with search and category filtering.
+
+| Method | Endpoint | Description | Request Body | Response |
+| ------ | -------- | ----------- | ------------ | -------- |
+| `GET` | `/api/stores/{storeId}/inventory` | List inventory entries (paginated) | — | `PaginatedInventoryResponse` |
+| `GET` | `/api/stores/{storeId}/inventory/{entryId}` | Get a single inventory entry | — | `StoreInventoryItem` |
+| `POST` | `/api/stores/{storeId}/inventory` | Stock a product in this store | `StockProductRequest` | `StoreInventoryItem` |
+| `PATCH` | `/api/stores/{storeId}/inventory/{entryId}` | Update entry settings | `UpdateInventoryRequest` | `StoreInventoryItem` |
+| `DELETE` | `/api/stores/{storeId}/inventory/{entryId}` | Deactivate/delete an entry | — | — |
+
+### Query Parameters (List)
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `search` | `string` | Filter by product name or category (optional) |
+| `category` | `string` | Filter by exact category match (optional) |
+| `page` | `number` | Page number, 1-based (default: 1) |
+| `page_size` | `number` | Items per page (default: 10) |
+
+### Types
+
+```typescript
+interface InventoryProductSummary {
+  id: string;
+  name: string;
+  sku: string | null;
+  category: string | null;
+  description: string | null;
+}
+
+interface StoreInventoryItem {
+  id: string;
+  store_id: string;
+  product_id: string;
+  quantity: number;
+  unit_price: string | null;        // Decimal string (e.g. "2.9900")
+  low_stock_threshold: number | null;
+  created_at: string;
+  updated_at: string;
+  product: InventoryProductSummary;  // Embedded product summary
+}
+
+interface PaginatedInventoryResponse {
+  items: StoreInventoryItem[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+interface StockProductRequest {
+  product_id: string;
+  quantity?: number;
+  unit_price?: string | null;
+  low_stock_threshold?: number | null;
+}
+
+interface UpdateInventoryRequest {
+  quantity?: number;
+  unit_price?: string | null;
+  low_stock_threshold?: number | null;
+}
+```
+
+---
+
+## Inventory Movements
+
+Record receipts (inbound stock) and sales (outbound stock) for an inventory entry. Each movement adjusts the entry's quantity.
+
+| Method | Endpoint | Description | Request Body | Response |
+| ------ | -------- | ----------- | ------------ | -------- |
+| `POST` | `/api/stores/{storeId}/inventory/{entryId}/receipts` | Record a receipt (add stock) | `RecordReceiptRequest` | `InventoryMovement` |
+| `POST` | `/api/stores/{storeId}/inventory/{entryId}/sales` | Record a sale (remove stock) | `RecordSaleRequest` | `InventoryMovement` |
+| `GET` | `/api/stores/{storeId}/inventory/{entryId}/movements` | List movement history | — | `InventoryMovement[]` |
+
+> **⚠️ Backend Blocker:** The `GET .../movements` endpoint does not exist on the backend yet. The frontend’s `MovementHistory` component handles the resulting 404 gracefully with an error banner.
+
+### Types
+
+```typescript
+type MovementType = 'receipt' | 'sale';
+
+interface RecordReceiptRequest {
+  quantity: number;
+  unit_cost?: string | null;
+  reference_number?: string | null;
+  notes?: string | null;
+}
+
+interface RecordSaleRequest {
+  quantity: number;
+  unit_price?: string | null;
+  reference_number?: string | null;
+  notes?: string | null;
+}
+
+interface InventoryMovement {
+  id: string;
+  store_inventory_id: string;
+  movement_type: MovementType;
+  quantity: number;
+  unit_cost: string | null;
+  unit_price: string | null;
+  reference_number: string | null;
+  notes: string | null;
+  performed_by_user_id: string;
+  created_at: string;
+}
+```
+
+---
+
+## Inventory Placements
+
+Manage zone assignments for inventory entries. Each entry can be placed in one zone at a time. Assigning a new zone ends the previous placement automatically.
+
+| Method | Endpoint | Description | Request Body | Response |
+| ------ | -------- | ----------- | ------------ | -------- |
+| `GET` | `/api/stores/{storeId}/inventory/{entryId}/placements` | List placement history | — | `InventoryPlacement[]` |
+| `PATCH` | `/api/stores/{storeId}/inventory/{entryId}/placements` | Assign to a zone | `AssignZoneRequest` | `InventoryPlacement` |
+| `DELETE` | `/api/stores/{storeId}/inventory/{entryId}/placements/current` | Remove from current zone | — | — |
+
+### Types
+
+```typescript
+interface InventoryPlacement {
+  id: string;
+  store_inventory_id: string;
+  zone_id: string;
+  zone_name: string;
+  started_at: string;
+  ended_at: string | null;
+  placed_by_user_id: string;
+  duration_display: string | null;
+  created_at: string;
+}
+
+interface AssignZoneRequest {
+  active_zone_id: string;
+}
+```
+
+---
+
 ## System Admin — Organizations
 
 Platform-wide organization management. Requires `SYSTEM_ADMIN` system role.
@@ -461,6 +610,7 @@ All request/response types are defined in `src/shared/types/` and exported throu
 | `product.ts` | `Product`, `ProductWithSuppliers`, `ProductSupplierLink`, `ProductCreateRequest`, `ProductUpdateRequest`, `LinkSupplierRequest` |
 | `supplier.ts` | `Supplier`, `SupplierCreateRequest`, `SupplierUpdateRequest` |
 | `store.ts` | `Store`, `StoreLayout`, `Cell`, `LayoutZone`, `ZoneCreateRequest`, `ZoneUpdateRequest`, `LayoutFixture`, `FixtureType`, `FixtureCreateRequest`, `FixtureUpdateRequest`, `ZoneColorDef`, `FixtureTypeDef` |
+| `inventory.ts` | `StoreInventoryItem`, `InventoryProductSummary`, `PaginatedInventoryResponse`, `StockProductRequest`, `UpdateInventoryRequest`, `RecordReceiptRequest`, `RecordSaleRequest`, `InventoryMovement`, `MovementType`, `InventoryPlacement`, `AssignZoneRequest` |
 | `admin.ts` | `OrgListItem`, `CreateOrgRequest`, `RenameOrgRequest`, `TransferOwnershipRequest`, `UserListItem` |
 | `index.ts` | Re-exports all of the above |
 

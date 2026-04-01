@@ -34,15 +34,30 @@
    - [Viewing & Editing Fixtures](#viewing--editing-fixtures)
    - [Editing Shapes](#editing-shapes)
    - [Deleting Zones & Fixtures](#deleting-zones--fixtures)
-9. [Organization Settings](#organization-settings)
+9. [Inventory](#inventory)
+   - [Browsing Inventory](#browsing-inventory)
+   - [Stocking a Product](#stocking-a-product)
+   - [Recording a Receipt](#recording-a-receipt)
+   - [Recording a Sale](#recording-a-sale)
+   - [Inventory Detail Page](#inventory-detail-page)
+   - [Movement History](#movement-history)
+   - [Placement History](#placement-history)
+   - [Settings Tab](#settings-tab)
+   - [Deactivating an Inventory Item](#deactivating-an-inventory-item)
+10. [Organization Settings](#organization-settings)
    - [Inviting a Member](#inviting-a-member)
    - [Changing a Member's Role](#changing-a-members-role)
    - [Deactivating / Reactivating a Member](#deactivating--reactivating-a-member)
    - [Removing a Member](#removing-a-member)
-10. [System Admin Panel](#system-admin-panel)
+10. [Organization Settings](#organization-settings)
+   - [Inviting a Member](#inviting-a-member)
+   - [Changing a Member's Role](#changing-a-members-role)
+   - [Deactivating / Reactivating a Member](#deactivating--reactivating-a-member)
+   - [Removing a Member](#removing-a-member)
+11. [System Admin Panel](#system-admin-panel)
    - [Managing Organizations](#managing-organizations)
    - [Managing Users](#managing-users)
-11. [Roles & Permissions](#roles--permissions)
+12. [Roles & Permissions](#roles--permissions)
 
 ---
 
@@ -105,13 +120,15 @@ The left-hand sidebar is your primary navigation. It shows links to:
 - **Dashboard** — Your home screen
 - **Products** — Product catalog management
 - **Suppliers** — Supplier contact management
-- **Inventory** — *(Coming Soon)*
+- **Inventory** — Inventory management for the selected store
 - **Store Layout** — Store floor plan editor
 - **Analytics** — *(Coming Soon)*
 - **Org Settings** — Organization member management (Owners / Admins only)
 - **Admin** — System administration (System Admins only)
 
 Links marked "Coming Soon" are visible but disabled.
+
+> **Note:** Inventory and Store Layout are store-scoped. Use the Store Switcher to select which store you're managing before navigating to these pages.
 
 ### Collapsible Sidebar
 
@@ -144,7 +161,7 @@ The Dashboard is the first page you see after logging in. It displays a grid of 
 | ---- | ----------- |
 | Products | Navigate to the product catalog |
 | Suppliers | Navigate to supplier management |
-| Inventory | *Coming Soon* — greyed out |
+| Inventory | Navigate to inventory management for the selected store |
 | Store Layout | Navigate to the store floor plan editor |
 | Analytics | *Coming Soon* — greyed out |
 | Organization Settings | Manage org members (visible to Owners/Admins) |
@@ -339,6 +356,116 @@ The right-hand sidebar (Objects Panel) lists all zones and fixtures in the curre
 
 ---
 
+## Inventory
+
+The Inventory page lets you manage stocked products for the currently selected store. You can track quantities, record incoming receipts and outgoing sales, assign products to layout zones, and configure per-item settings like sell price and low-stock threshold.
+
+> **Prerequisite:** Select a store using the Store Switcher in the sidebar before navigating to Inventory.
+
+### Browsing Inventory
+
+1. Click **Inventory** in the sidebar.
+2. A **table** of all stocked products for the selected store is displayed, showing product name, SKU, category, zone, price, quantity, and stock status.
+3. Stock status badges indicate:
+   - **In Stock** (green) — quantity is above the low-stock threshold
+   - **Low Stock** (amber) — quantity is at or below the threshold
+   - **Out of Stock** (red) — quantity is zero
+4. Use the **search bar** to filter by product name or SKU.
+5. Use the **category dropdown** to filter by product category.
+6. Use the **pagination controls** at the bottom to navigate through large lists. You can adjust items per page (10, 25, or 50).
+
+### Stocking a Product
+
+1. On the Inventory list page, click the **Stock product** button in the header.
+2. A modal appears with a **searchable product dropdown** — type to filter by name or SKU.
+3. Click a product from the dropdown to select it.
+4. Optionally fill in:
+   - **Sell Price ($)** — the default sell price for this product at this store
+   - **Low Stock Threshold** — the quantity at which the product shows a "Low Stock" warning
+   - **Assign Zone** — place the product in a zone from the store's active layout
+5. Click **Stock Product**.
+6. The product is added to inventory with a quantity of 0. Use "Record Receipt" to add initial stock.
+
+> **Note:** Products already stocked in this store may appear in the dropdown. If you attempt to stock a duplicate, the backend will return an error.
+
+### Recording a Receipt
+
+Receipts represent inbound stock (shipments from suppliers, returns, etc.).
+
+1. Open the **Inventory Detail Page** for an item by clicking its row in the table.
+2. Click the **+ Receipt** button in the header.
+3. Fill in the receipt form:
+   - **Quantity Received** (required) — must be a positive integer
+   - **Unit Cost ($)** — price paid per unit (optional)
+   - **Reference Number** — e.g., a purchase order number (optional)
+   - **Notes** — any additional context (optional)
+4. Click **+ Record Receipt**.
+5. The item's quantity increases by the amount received.
+
+### Recording a Sale
+
+Sales represent outbound stock (sold to customer, consumed, transferred out, etc.).
+
+1. Open the **Inventory Detail Page** for an item.
+2. Click the **Record Sale** button in the header.
+3. Fill in the sale form:
+   - **Quantity Sold** (required) — must be a positive integer
+   - **Unit Price ($)** — auto-filled from the item's default sell price (editable)
+   - **Reference Number** — e.g., an invoice number (optional)
+   - **Notes** — any additional context (optional)
+4. Click **Record Sale**.
+5. The item's quantity decreases by the amount sold.
+
+### Inventory Detail Page
+
+Click any row in the inventory table to open the detail page for that item. The detail page shows:
+
+- **Header** — Product name, SKU, and category. Buttons for "+ Receipt" and "Record Sale."
+- **Info Card** — Read-only summary showing current quantity, default sell price, stock status badge, assigned zone, low-stock threshold, and category.
+- **Tabbed Section** — Three tabs for movement history, placement history, and settings.
+
+### Movement History
+
+The **Movement History** tab shows a chronological list of all receipts and sales for the item:
+
+- Receipts are shown with a **green** indicator and a "+" delta
+- Sales are shown with a **red** indicator and a "−" delta
+- Each entry shows the quantity, cost/price, reference number, notes, and timestamp
+- Client-side pagination lets you browse through long histories
+
+> **Note:** This tab requires a backend GET endpoint (`GET .../movements`) that is not yet implemented. Until it is added, an error banner will be displayed.
+
+### Placement History
+
+The **Placement History** tab shows the timeline of zone assignments for the item:
+
+- Each placement shows the zone name, start date, and end date
+- The current active placement (if any) is highlighted with a **"Current"** badge
+- Past placements show a duration display (e.g., "3 days")
+
+### Settings Tab
+
+The **Settings** tab lets you configure per-item settings:
+
+1. **Default Sell Price ($)** — update the sell price for this product at this store.
+2. **Low Stock Threshold** — set or change the quantity at which the product shows a "Low Stock" warning.
+3. **Assigned Zone** — reassign the product to a different zone from the store's active layout, or remove the zone assignment.
+4. Click **Save Changes** to apply updates. A success banner confirms the save.
+
+### Deactivating an Inventory Item
+
+To remove a product from a store's inventory:
+
+1. Open the **Inventory Detail Page** for the item.
+2. Click the **Settings** tab.
+3. Scroll down to the **Deactivate Inventory Item** button.
+4. Click the button and confirm in the dialog.
+5. The item is removed and you're redirected back to the inventory list.
+
+> **Warning:** Deactivating an inventory item cannot be undone. The item and its movement/placement history will no longer be accessible.
+
+---
+
 ## Organization Settings
 
 > **Access:** Only users with the **Owner** or **Admin** role can access Organization Settings.
@@ -424,12 +551,12 @@ The Users tab shows a table of **all users** across all organizations with their
 
 ### Organization Roles
 
-| Role | Products | Suppliers | Store Layout | Org Settings | Description |
-| ---- | -------- | --------- | ------------ | ------------ | ----------- |
-| **Owner** | Full access | Full access | Full access | Full access | One per org. Can invite/remove members, change all roles, transfer ownership. |
-| **Admin** | Full access | Full access | Full access | Invite + manage non-admins | Can invite members and manage Employees/Viewers. |
-| **Employee** | Full access | Full access | Full access | View only | Day-to-day user. Can create, edit, and delete products, suppliers, and layout items. |
-| **Viewer** | Read only | Read only | Read only | No access | Can browse products, suppliers, and layouts but cannot make changes. |
+| Role | Products | Suppliers | Inventory | Store Layout | Org Settings | Description |
+| ---- | -------- | --------- | --------- | ------------ | ------------ | ----------- |
+| **Owner** | Full access | Full access | Full access | Full access | Full access | One per org. Can invite/remove members, change all roles, transfer ownership. |
+| **Admin** | Full access | Full access | Full access | Full access | Invite + manage non-admins | Can invite members and manage Employees/Viewers. |
+| **Employee** | Full access | Full access | Full access | Full access | View only | Day-to-day user. Can create, edit, and delete products, suppliers, inventory, and layout items. |
+| **Viewer** | Read only | Read only | Read only | Read only | No access | Can browse products, suppliers, inventory, and layouts but cannot make changes. |
 
 ### Where Roles Are Enforced
 

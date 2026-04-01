@@ -1,0 +1,135 @@
+/* ═══════════════════════════════════════════════════════
+   InventoryTable
+   ═══════════════════════════════════════════════════════ */
+
+.inventory-table {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  overflow: hidden;
+}
+
+.inventory-table__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.inventory-table__table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--color-text-tertiary);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.inventory-table__th-right {
+  text-align: right !important;
+}
+
+.inventory-table__table td {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.inventory-table__row {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.inventory-table__row:hover {
+  background: var(--color-bg-secondary);
+}
+
+.inventory-table__row:last-child td {
+  border-bottom: none;
+}
+
+.inventory-table__name {
+  font-weight: 500;
+}
+
+.inventory-table__sku {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.inventory-table__category {
+  color: var(--color-text-secondary);
+}
+
+.inventory-table__empty {
+  color: var(--color-text-tertiary);
+}
+
+/* ── Zone badge ── */
+
+.inventory-table__zone-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+/* ── Price column ── */
+
+.inventory-table__price {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+}
+
+/* ── Quantity column ── */
+
+.inventory-table__qty {
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.inventory-table__qty--danger {
+  color: var(--color-danger);
+}
+
+.inventory-table__qty--warning {
+  color: var(--color-warning);
+}
+
+.inventory-table__qty--success {
+  color: var(--color-success);
+}
+
+/* ── Empty row ── */
+
+.inventory-table__empty-row {
+  text-align: center;
+  padding: 40px 16px !important;
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+}
+
+/* ── Mobile ── */
+
+@media (max-width: 700px) {
+  .inventory-table__table th:nth-child(4),
+  .inventory-table__table td:nth-child(4) {
+    display: none;
+  }
+
+  .inventory-table__table th:nth-child(5),
+  .inventory-table__table td:nth-child(5) {
+    display: none;
+  }
+}

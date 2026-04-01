@@ -1,0 +1,90 @@
+/* ═══════════════════════════════════════════════════════
+   PlacementHistory
+   ═══════════════════════════════════════════════════════ */
+
+.placement-history__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.placement-history__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.placement-history__row:last-child {
+  border-bottom: none;
+}
+
+/* ── Icon ── */
+
+.placement-history__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+}
+
+.placement-history__icon--current {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+/* ── Details ── */
+
+.placement-history__details {
+  flex: 1;
+  min-width: 0;
+}
+
+.placement-history__zone {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.placement-history__current-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-success);
+  background: var(--color-success-bg);
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+.placement-history__meta {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  margin-top: 2px;
+}
+
+/* ── Duration ── */
+
+.placement-history__duration {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+/* ── Empty ── */
+
+.placement-history__empty {
+  text-align: center;
+  padding: 32px;
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+}

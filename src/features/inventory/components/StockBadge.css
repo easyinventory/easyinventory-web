@@ -1,0 +1,49 @@
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stock-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* ── Danger (out of stock) ── */
+
+.stock-badge--danger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.stock-badge--danger .stock-badge__dot {
+  background: var(--color-danger);
+}
+
+/* ── Warning (low stock) ── */
+
+.stock-badge--warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.stock-badge--warning .stock-badge__dot {
+  background: var(--color-warning);
+}
+
+/* ── Success (in stock) ── */
+
+.stock-badge--success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.stock-badge--success .stock-badge__dot {
+  background: var(--color-success);
+}
