@@ -10,7 +10,6 @@ import type {
 import { listProducts, type Product } from "../../products/api/productApi";
 import { useStore } from "../../store-layout/context/useStore";
 import { useApiData } from "../../../shared/hooks/useApiData";
-import { extractApiError } from "../../../shared/utils";
 import PageHeader from "../../../shared/components/layout/PageHeader";
 import {
   EmptyState,
@@ -39,7 +38,7 @@ export default function InventoryPage() {
   const [showStockModal, setShowStockModal] = useState(false);
 
   /* ── Debounce search input ── */
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     debounceRef.current = setTimeout(() => {
       setDebouncedSearch(search);
@@ -86,12 +85,9 @@ export default function InventoryPage() {
   const { data: productsData } = useApiData<Product[]>(fetchProducts);
   const allProducts = useMemo(() => productsData ?? [], [productsData]);
 
-  /* ── Stocked product IDs (to hide already-stocked items in modal) ── */
-  const stockedIds = useMemo(() => {
-    const set = new Set<string>();
-    items.forEach((i) => set.add(i.product_id));
-    return set;
-  }, [items]);
+  /* ── Stocked product IDs — filtering disabled (current page only would be
+     incomplete); backend validates duplicates on stock attempts. ── */
+  const stockedIds = useMemo(() => new Set<string>(), []);
 
   /* ── Category options (from org products) ── */
   const categories = useMemo(() => {
@@ -118,27 +114,45 @@ export default function InventoryPage() {
 
   /* ── Zone map: inventoryId → zone name ── */
   const [zoneMap, setZoneMap] = useState<Map<string, string | null>>(new Map());
+  const zoneCacheRef = useRef<Map<string, string | null>>(new Map());
 
   useEffect(() => {
     let cancelled = false;
     async function fetchZones() {
       if (!storeId || items.length === 0) {
-        if (!cancelled) setZoneMap(new Map());
+        if (!cancelled) {
+          setZoneMap(new Map());
+          zoneCacheRef.current.clear();
+        }
         return;
       }
+
+      const cache = zoneCacheRef.current;
       const map = new Map<string, string | null>();
-      await Promise.all(
-        items.map(async (item) => {
-          try {
-            const placements = await listPlacements(storeId, item.id);
-            const current = placements.find((p) => !p.ended_at);
-            map.set(item.id, current?.zone_name ?? null);
-          } catch {
-            map.set(item.id, null);
-          }
-        }),
-      );
-      if (!cancelled) setZoneMap(map);
+
+      for (const item of items) {
+        if (cancelled) break;
+
+        if (cache.has(item.id)) {
+          map.set(item.id, cache.get(item.id) ?? null);
+          continue;
+        }
+
+        try {
+          const placements = await listPlacements(storeId, item.id);
+          const current = placements.find((p) => !p.ended_at);
+          const zoneName = current?.zone_name ?? null;
+          cache.set(item.id, zoneName);
+          map.set(item.id, zoneName);
+        } catch {
+          cache.set(item.id, null);
+          map.set(item.id, null);
+        }
+      }
+
+      if (!cancelled) {
+        setZoneMap(map);
+      }
     }
     void fetchZones();
     return () => {
@@ -190,7 +204,7 @@ export default function InventoryPage() {
         </button>
       </PageHeader>
 
-      {error && <ErrorBanner message={extractApiError(error)} />}
+      {error && <ErrorBanner message={error} />}
 
       {isLoading ? (
         <LoadingState text="Loading inventory..." />

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Product } from "../../../shared/types";
 import type { LayoutZone } from "../../../shared/types";
 import { stockProduct, assignZone } from "../api/inventoryApi";
@@ -49,6 +49,16 @@ export default function StockProductModal({
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
+
+  /* ── Close on Escape key ── */
+  const stableOnClose = useCallback(() => onClose(), [onClose]);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") stableOnClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [stableOnClose]);
 
   /* ── Available (unstocked) products ── */
   const available = useMemo(
@@ -111,9 +121,15 @@ export default function StockProductModal({
 
   return (
     <div className="stock-modal__overlay" onClick={onClose}>
-      <div className="stock-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="stock-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="stock-product-modal-title"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="stock-modal__header">
-          <span className="stock-modal__title">Stock a Product</span>
+          <span id="stock-product-modal-title" className="stock-modal__title">Stock a Product</span>
           <button
             className="stock-modal__close"
             onClick={onClose}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { StoreInventoryItem } from "../../../shared/types";
 import { recordSale } from "../api/inventoryApi";
 import { useAsyncAction } from "../../../shared/hooks/useAsyncAction";
@@ -23,6 +23,16 @@ export default function RecordSaleModal({
   const [unitPrice, setUnitPrice] = useState(defaultPrice);
   const [referenceNumber, setReferenceNumber] = useState("");
   const [notes, setNotes] = useState("");
+
+  /* ── Close on Escape key ── */
+  const stableOnClose = useCallback(() => onClose(), [onClose]);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") stableOnClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [stableOnClose]);
 
   const { execute, isLoading, error } = useAsyncAction(
     async () => {
@@ -51,9 +61,15 @@ export default function RecordSaleModal({
 
   return (
     <div className="movement-modal__overlay" onClick={onClose}>
-      <div className="movement-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="movement-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="record-sale-modal-title"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="movement-modal__header">
-          <span className="movement-modal__title">Record Sale</span>
+          <span id="record-sale-modal-title" className="movement-modal__title">Record Sale</span>
           <button
             className="movement-modal__close"
             onClick={onClose}

@@ -118,13 +118,16 @@ export default function InventoryDetailPage() {
   } = useAsyncAction(async () => {
     if (!item) return;
 
-    // 1. Update price + threshold
+    // 1. Validate & update price + threshold
     const priceVal = settingsPrice.trim() === "" ? null : settingsPrice.trim();
-    if (priceVal !== null && isNaN(parseFloat(priceVal))) return;
+    if (priceVal !== null && isNaN(parseFloat(priceVal))) {
+      throw new Error("Unit price must be a valid number.");
+    }
     const thresholdVal =
       settingsThreshold.trim() === "" ? null : parseInt(settingsThreshold, 10);
-    if (thresholdVal !== null && (isNaN(thresholdVal) || thresholdVal < 0))
-      return;
+    if (thresholdVal !== null && (isNaN(thresholdVal) || thresholdVal < 0)) {
+      throw new Error("Low stock threshold must be a non-negative integer.");
+    }
 
     await updateInventoryEntry(storeId, item.id, {
       unit_price: priceVal,
@@ -145,6 +148,7 @@ export default function InventoryDetailPage() {
     }
 
     refetch();
+    return "Settings saved successfully.";
   });
 
   const handleSaveSettings = () => {
@@ -211,7 +215,14 @@ export default function InventoryDetailPage() {
     );
   }
 
-  if (!item) return null;
+  if (!item) {
+    return (
+      <div>
+        <PageHeader title="Inventory Item" backTo={backTo} />
+        <ErrorBanner message="Inventory item could not be found. It may have been deleted, or the URL/store selection is invalid." />
+      </div>
+    );
+  }
 
   return (
     <div className="inventory-detail">
@@ -317,7 +328,7 @@ export default function InventoryDetailPage() {
           {activeTab === "settings" && (
             <div className="inventory-detail__settings">
               {saveError && <ErrorBanner message={saveError} />}
-              {saveSuccess && <SuccessBanner message="Settings saved successfully." />}
+              {saveSuccess && <SuccessBanner message={saveSuccess} />}
 
               <div className="inventory-detail__settings-row">
                 <div className="inventory-detail__field">
