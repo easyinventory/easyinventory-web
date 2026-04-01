@@ -204,7 +204,7 @@ const { execute, loading, error, success } = useAsyncAction<void>(
 | `execute` | `(...args) => Promise<T>` | Call to trigger the action |
 | `loading` | `boolean` | `true` while the action is running |
 | `error` | `string \| null` | Error message if the action failed |
-| `success` | `boolean` | `true` after the action completes successfully |
+| `success` | `string \| null` | Success message string if the action returned one, null otherwise |
 
 **Typical usage:**
 

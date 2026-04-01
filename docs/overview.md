@@ -30,6 +30,7 @@ EasyInventory Web is a single-page application (SPA) that lets retail teams mana
 | ------- | ------------ |
 | **Products** | Full CRUD for product catalog — name, SKU, category, description. Each product can be linked to one or more suppliers. |
 | **Suppliers** | Manage vendor contact details (name, email, phone, notes). Suppliers are linked to products for supply-chain tracking. |
+| **Inventory** | Full inventory management — stock products into a store, record receipts and sales, track movement history, manage zone placements, and configure per-item settings (sell price, low-stock threshold, zone assignment). Server-side paginated list with search and category filtering. |
 | **Store Layout** | Interactive grid editor for designing store floor plans. Create layout versions with configurable rows × columns, paint inventory zones and fixtures (walls, doors, checkouts, etc.) with freeform cell selection, manage multiple layout versions per store, and activate layouts. |
 | **Organization Settings** | Invite team members by email (they receive a Cognito invite), assign roles (Owner, Admin, Employee, Viewer), deactivate/reactivate/remove members. |
 | **System Admin** | Platform-wide administration — create new orgs (auto-invites the owner), view all orgs/users, rename/delete orgs, transfer ownership, delete users. |
@@ -41,10 +42,9 @@ EasyInventory Web is a single-page application (SPA) that lets retail teams mana
 
 | Feature | Stub Location |
 | ------- | ------------- |
-| **Inventory** | `src/features/inventory/pages/InventoryPage.tsx` |
 | **Analytics** | `src/features/analytics/pages/AnalyticsPage.tsx` |
 
-These pages exist in the codebase with placeholder UI and are wired into the router and sidebar. Implementing them is as straightforward as replacing the placeholder content with real components.
+This page exists in the codebase with placeholder UI and is wired into the router and sidebar. Implementing it is as straightforward as replacing the placeholder content with real components.
 
 ---
 
@@ -115,8 +115,9 @@ Not every feature has all folders. Simpler features skip `context/`, `hooks/`, `
 
 When multiple components within a feature share the same visual patterns, CSS is consolidated into shared stylesheets rather than duplicated per-component:
 
-- **`layout-modal.css`** — shared modal styles (overlay, dialog, header, form fields, buttons, type pickers, delete confirmations) used by all modal components
+- **`layout-modal.css`** — shared modal styles (overlay, dialog, header, form fields, buttons, type pickers, delete confirmations) used by all store-layout modal components
 - **`action-bar.css`** — shared action-bar styles (banner layout, text, buttons) used by FreeformBar and EditBanner
+- **`RecordMovementModal.css`** — shared modal styles for inventory receipt and sale modals (overlay, dialog, header, context card, form fields, footer buttons) used by RecordReceiptModal and RecordSaleModal
 
 Components import the shared stylesheet directly instead of maintaining their own CSS file. This reduces duplication and keeps styling consistent.
 
@@ -128,7 +129,7 @@ Components import the shared stylesheet directly instead of maintaining their ow
 | `analytics` | Placeholder | — | — | — | AnalyticsPage |
 | `auth` | Active | `cognito-service.ts` | ProtectedRoute, RequireOrg, RoleRoute | AuthContext, auth-reducer, useAuth | LoginPage, ForgotPasswordPage, ResetPasswordPage |
 | `dashboard` | Active | — | — | — | DashboardPage |
-| `inventory` | Placeholder | — | — | — | InventoryPage |
+| `inventory` | Active | `inventoryApi.ts` | StockBadge, InventoryTable, StockProductModal, RecordReceiptModal, RecordSaleModal, MovementHistory, PlacementHistory | — | InventoryPage, InventoryDetailPage |
 | `org` | Active | `orgApi.ts` | InviteForm, MemberList, MemberRow | OrgContext, useOrg | OrgSettingsPage |
 | `products` | Active | `productApi.ts` | ProductTable, ProductForm, ProductSupplierTable, AddSupplierModal | — | ProductListPage, ProductDetailPage, ProductFormPage |
 | `store-layout` | Active | `storeApi.ts` | CreateLayoutForm, LayoutGrid, LayoutObjectsPanel, ModeToolbar, VersionSelector, ZoneNameModal, ZoneDetailModal, FixtureNameModal, FixtureDetailModal, FreeformBar, EditBanner | `StoreContext`, `store-context`, `useStore` | StoreLayoutPage |
@@ -177,7 +178,7 @@ src/
 │   ├── analytics/       # Analytics page (placeholder)
 │   ├── auth/            # Authentication (Cognito, login, password flows)
 │   ├── dashboard/       # Dashboard page
-│   ├── inventory/       # Inventory page (placeholder)
+│   ├── inventory/       # Inventory management (list, detail, modals)
 │   ├── org/             # Organization settings (invite, roles, members)
 │   ├── products/        # Product CRUD + supplier linking
 │   ├── store-layout/    # Store layout grid editor + store context
@@ -205,7 +206,7 @@ src/
 | `shared/components/ui/` | `LoadingState`, `ErrorBanner`, `SuccessBanner`, `EmptyState`, `ErrorBoundary`, `Pagination` |
 | `shared/constants/` | `roles.ts` (role enums + helper functions), `navigation.tsx` (nav item config array), `nav-icons.tsx` (inline SVG icon components) |
 | `shared/hooks/` | `useApiData` (data fetching on mount), `useAsyncAction` (user-triggered mutations), `usePagination` (client-side table pagination) |
-| `shared/types/` | `auth.ts`, `org.ts`, `admin.ts`, `product.ts`, `supplier.ts`, `store.ts` (stores, layouts, zones, fixtures, cells) + `index.ts` barrel |
+| `shared/types/` | `auth.ts`, `org.ts`, `admin.ts`, `product.ts`, `supplier.ts`, `store.ts` (stores, layouts, zones, fixtures, cells), `inventory.ts` (inventory items, movements, placements, pagination) + `index.ts` barrel |
 | `shared/utils/` | `errors.ts` (`extractApiError`), `format.ts` (`formatDate`, `formatRoleLabel`) + `index.ts` barrel |
 
 ---

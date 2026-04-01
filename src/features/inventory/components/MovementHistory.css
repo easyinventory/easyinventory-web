@@ -1,0 +1,95 @@
+/* ═══════════════════════════════════════════════════════
+   MovementHistory
+   ═══════════════════════════════════════════════════════ */
+
+.movement-history__list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.movement-history__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── Icon ── */
+
+.movement-history__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.movement-history__icon--receipt {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.movement-history__icon--sale {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+/* ── Details ── */
+
+.movement-history__details {
+  flex: 1;
+  min-width: 0;
+}
+
+.movement-history__type {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.movement-history__meta {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Right side (qty + price) ── */
+
+.movement-history__right {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.movement-history__qty {
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.movement-history__qty--positive {
+  color: var(--color-success);
+}
+
+.movement-history__qty--negative {
+  color: var(--color-danger);
+}
+
+.movement-history__price {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+}
+
+/* ── Empty ── */
+
+.movement-history__empty {
+  text-align: center;
+  padding: 32px;
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+}

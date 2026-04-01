@@ -69,7 +69,8 @@ index.html
                ├── /products/:id  (ProductDetailPage)
                ├── /products/:id/edit (ProductFormPage)
                ├── /suppliers     (SuppliersPage)
-               ├── /inventory     (InventoryPage — placeholder)
+               ├── /inventory     (InventoryPage — server-side paginated list)
+               ├── /inventory/:id (InventoryDetailPage — tabs: movements, placements, settings)
                ├── /store-layout  (StoreLayoutPage — grid editor)
                ├── /analytics     (AnalyticsPage — placeholder)
                │
