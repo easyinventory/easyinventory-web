@@ -197,6 +197,17 @@ export default function InventoryPage() {
         subtitle={selectedStoreName ? `Stock for ${selectedStoreName}` : "Track stock across locations"}
       >
         <button
+          className="btn"
+          onClick={() => navigate("/inventory/heatmap")}
+        >
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" width="14" height="14">
+            <rect x="2.5" y="2.5" width="15" height="15" rx="1.5" />
+            <path d="M2.5 7.5 L17.5 7.5" />
+            <path d="M8.5 7.5 L8.5 17.5" />
+          </svg>
+          View Heatmap
+        </button>
+        <button
           className="inventory-page__stock-btn"
           onClick={() => setShowStockModal(true)}
         >
