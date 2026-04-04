@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   getInventoryEntry,
@@ -59,6 +59,13 @@ export default function InventoryDetailPage() {
     error,
     refetch,
   } = useApiData<StoreInventoryItem | null>(fetchEntry, [storeId, id]);
+
+  /* ── Redirect to inventory list when store changes and item is not found ── */
+  useEffect(() => {
+    if (error && storeId && isValidId) {
+      navigate("/inventory", { replace: true });
+    }
+  }, [error, storeId, isValidId, navigate]);
 
   /* ── Fetch current placement (zone) ── */
   const fetchPlacements = useCallback(() => {

@@ -36,6 +36,7 @@ export default function InventoryPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
   const [showStockModal, setShowStockModal] = useState(false);
+  const [stockedIds, setStockedIds] = useState<Set<string>>(new Set());
 
   /* ── Debounce search input ── */
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -85,9 +86,16 @@ export default function InventoryPage() {
   const { data: productsData } = useApiData<Product[]>(fetchProducts);
   const allProducts = useMemo(() => productsData ?? [], [productsData]);
 
-  /* ── Stocked product IDs — filtering disabled (current page only would be
-     incomplete); backend validates duplicates on stock attempts. ── */
-  const stockedIds = useMemo(() => new Set<string>(), []);
+  /* ── Fetch stocked product IDs on demand (when opening Stock modal) ── */
+  const refreshStockedIds = useCallback(async () => {
+    if (!storeId) return;
+    try {
+      const data = await listInventory(storeId, { page_size: 100 });
+      setStockedIds(new Set(data.items.map((i) => i.product_id)));
+    } catch {
+      // Fall back to empty set — backend will still reject duplicates
+    }
+  }, [storeId]);
 
   /* ── Category options (from org products) ── */
   const categories = useMemo(() => {
@@ -209,7 +217,10 @@ export default function InventoryPage() {
         </button>
         <button
           className="inventory-page__stock-btn"
-          onClick={() => setShowStockModal(true)}
+          onClick={async () => {
+            await refreshStockedIds();
+            setShowStockModal(true);
+          }}
         >
           Stock product
         </button>
