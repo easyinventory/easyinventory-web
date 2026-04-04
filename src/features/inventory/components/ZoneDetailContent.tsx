@@ -1,4 +1,5 @@
 import type { ZoneInventorySummary } from "../../analytics/api/analyticsTypes";
+import { useNavigate } from "react-router-dom";
 import StockBadge from "./StockBadge";
 import "./ZoneDetailContent.css";
 
@@ -7,6 +8,8 @@ interface ZoneDetailContentProps {
 }
 
 export default function ZoneDetailContent({ zone }: ZoneDetailContentProps) {
+  const navigate = useNavigate();
+
   return (
     <div className="zone-detail-content">
       {/* ── Summary stats ── */}
@@ -40,7 +43,12 @@ export default function ZoneDetailContent({ zone }: ZoneDetailContentProps) {
       ) : (
         <ul className="zone-detail-content__list">
           {zone.items.map((item) => (
-            <li key={item.inventory_id} className="zone-detail-content__item">
+            <li
+              key={item.inventory_id}
+              className="zone-detail-content__item"
+              onClick={() => navigate(`/inventory/${item.inventory_id}`)}
+              style={{ cursor: "pointer" }}
+            >
               <div className="zone-detail-content__item-header">
                 <span className="zone-detail-content__item-name">
                   {item.product_name}
@@ -62,6 +70,15 @@ export default function ZoneDetailContent({ zone }: ZoneDetailContentProps) {
                     </span>
                   )}
                 </span>
+                <button
+                  className="zone-detail-content__item-link"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/inventory/${item.inventory_id}`);
+                  }}
+                >
+                  View details ›
+                </button>
               </div>
             </li>
           ))}
