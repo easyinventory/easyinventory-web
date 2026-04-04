@@ -43,11 +43,15 @@ export default function InventoryDetailPage() {
   const { selectedStoreId } = useStore();
   const storeId = selectedStoreId ?? "";
 
+  /* ── UUID validation — guard against route param collisions ── */
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const isValidId = !!id && UUID_RE.test(id);
+
   /* ── Data fetching ── */
   const fetchEntry = useCallback(() => {
-    if (!storeId || !id) return Promise.resolve(null);
-    return getInventoryEntry(storeId, id);
-  }, [storeId, id]);
+    if (!storeId || !isValidId) return Promise.resolve(null);
+    return getInventoryEntry(storeId, id!);
+  }, [storeId, isValidId, id]);
 
   const {
     data: item,
@@ -58,9 +62,9 @@ export default function InventoryDetailPage() {
 
   /* ── Fetch current placement (zone) ── */
   const fetchPlacements = useCallback(() => {
-    if (!storeId || !id) return Promise.resolve([]);
-    return listPlacements(storeId, id);
-  }, [storeId, id]);
+    if (!storeId || !isValidId) return Promise.resolve([]);
+    return listPlacements(storeId, id!);
+  }, [storeId, isValidId, id]);
 
   const { data: placements, refetch: refetchPlacements } =
     useApiData<InventoryPlacement[]>(fetchPlacements, [storeId, id]);
