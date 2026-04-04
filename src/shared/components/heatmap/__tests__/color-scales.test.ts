@@ -25,4 +25,14 @@ describe("stockHealthColorScale", () => {
     const result = stockHealthColorScale(0.5);
     expect(result).toContain("180, 120, 15");
   });
+
+  it("returns neutral gray for NaN", () => {
+    const result = stockHealthColorScale(NaN);
+    expect(result).toContain("128, 128, 128");
+  });
+
+  it("returns neutral gray for Infinity", () => {
+    const result = stockHealthColorScale(Infinity);
+    expect(result).toContain("128, 128, 128");
+  });
 });

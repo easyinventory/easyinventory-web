@@ -20,7 +20,7 @@ export default function HeatmapDetailPanel({
       <div className="heatmap-detail">
         <div className="heatmap-detail__empty">
           <span className="heatmap-detail__empty-icon">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="28" height="28">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="28" height="28" aria-hidden="true">
               <rect x="2.5" y="2.5" width="15" height="15" rx="1.5" />
               <path d="M2.5 7.5 L17.5 7.5" />
               <path d="M8.5 7.5 L8.5 17.5" />

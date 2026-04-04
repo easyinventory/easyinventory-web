@@ -18,6 +18,11 @@ import type { HeatmapColorScale } from "../../types";
  * Zones with no inventory items get a neutral gray.
  */
 export const stockHealthColorScale: HeatmapColorScale = (value: number) => {
+  // Non-finite values (NaN, Infinity) → neutral gray (no data)
+  if (!Number.isFinite(value)) {
+    return "rgba(128, 128, 128, 0.25)";
+  }
+
   // Clamp
   const v = Math.max(0, Math.min(1, value));
 

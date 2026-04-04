@@ -14,6 +14,7 @@ import "./HeatmapGrid.css";
 interface ZoneCellInfo {
   type: "zone";
   zoneId: string;
+  zoneName: string;
   color: string;
 }
 
@@ -74,6 +75,7 @@ export default function HeatmapGrid({
         map.set(ck(cell.row, cell.col), {
           type: "zone",
           zoneId: zone.id,
+          zoneName: zone.name,
           color: heatColor,
         });
       }
@@ -149,7 +151,12 @@ export default function HeatmapGrid({
                 }
               : undefined
           }
-          aria-label={isZone ? `Zone cell at row ${row + 1}, column ${col + 1}` : undefined}
+          aria-label={
+            isZone && info?.type === "zone"
+              ? `${info.zoneName} zone, row ${row + 1}, column ${col + 1}`
+              : undefined
+          }
+          aria-pressed={isZone && info?.type === "zone" ? info.zoneId === selectedZoneId : undefined}
         >
           <span className="heatmap-grid__cell-coord">
             {row},{col}
