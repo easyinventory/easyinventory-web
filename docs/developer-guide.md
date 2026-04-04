@@ -357,6 +357,17 @@ The `shared/components/ui/` directory provides standardized feedback components:
 | `ErrorBoundary` | `@/shared/components/ui/ErrorBoundary` | Class component that catches render errors |
 | `Pagination` | `@/shared/components/ui/Pagination` | Page navigation controls for tables |
 
+### Heatmap Components
+
+The `shared/components/heatmap/` directory provides a reusable, metric-agnostic heatmap grid system:
+
+| Component | Import | Purpose |
+| --------- | ------ | ------- |
+| `HeatmapGrid` | `@/shared/components/heatmap` | Main grid + detail panel layout. Accepts zones with `heatValue` (0–1), a `colorScale` function, and a `renderDetail` callback |
+| `HeatmapDetailPanel` | `@/shared/components/heatmap` | Right-side panel showing selected zone info. Parent controls content via `children` |
+| `HeatmapLegend` | `@/shared/components/heatmap` | Color scale gradient bar with configurable low/high labels |
+| `stockHealthColorScale` | `@/shared/components/heatmap` | Predefined green→red color scale for inventory stock health |
+
 **Usage pattern for a typical list page:**
 
 ```tsx
