@@ -104,20 +104,23 @@
   border-color: #1b1f2e;
 }
 
-/* ── Coord label (same style as LayoutGrid) ── */
+/* ── Zone name label (centered on zone's middle cell) ── */
 
-.heatmap-grid__cell-coord {
+.heatmap-grid__zone-label {
   position: absolute;
-  bottom: 1px;
-  right: 2px;
-  font-size: 7px;
-  color: rgba(0, 0, 0, 0.2);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.5);
   pointer-events: none;
-  font-variant-numeric: tabular-nums;
-}
-
-.heatmap-grid__cell--fixture .heatmap-grid__cell-coord {
-  color: rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  text-align: center;
+  z-index: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: calc(100% - 4px);
 }
 
 /* ── Responsive ── */
