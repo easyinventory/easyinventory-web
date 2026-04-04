@@ -51,11 +51,6 @@
 /* ── Fixture cell ── */
 
 .layout-grid__cell--fixture {
-  background: var(--fixture-bg, #f3f4f6);
-  border: 1.5px solid var(--fixture-hex, #6b7280);
-}
-
-.layout-grid__cell--fixture-wall {
   background: repeating-linear-gradient(
     -45deg,
     #e5e7eb,
