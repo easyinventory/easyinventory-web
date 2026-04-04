@@ -86,11 +86,34 @@ export default function InventoryPage() {
   const { data: productsData } = useApiData<Product[]>(fetchProducts);
   const allProducts = useMemo(() => productsData ?? [], [productsData]);
 
-  /* ── Fetch stocked product IDs on demand (when opening Stock modal) ── */
+  /* ── Fetch all inventory (unfiltered) for stats + stocked IDs ── */
+  const fetchAllInventory = useCallback(() => {
+    if (!storeId) return Promise.resolve(null);
+    return listInventory(storeId, { page_size: 100 });
+  }, [storeId]);
+  const { data: allInventory, refetch: refetchAll } =
+    useApiData<PaginatedInventoryResponse | null>(fetchAllInventory, [storeId]);
+
+  const stats = useMemo(() => {
+    const all = allInventory?.items ?? [];
+    return {
+      totalProducts: all.length,
+      totalUnits: all.reduce((sum, i) => sum + i.quantity, 0),
+      lowStock: all.filter(
+        (i) =>
+          i.quantity > 0 &&
+          i.low_stock_threshold != null &&
+          i.quantity <= i.low_stock_threshold,
+      ).length,
+      outOfStock: all.filter((i) => i.quantity === 0).length,
+    };
+  }, [allInventory]);
+
+  /* ── Refresh stocked IDs for Stock modal ── */
   const refreshStockedIds = useCallback(async () => {
     if (!storeId) return;
     try {
-      const data = await listInventory(storeId, { page_size: 100 });
+      const data = await listInventory(storeId, { page_size: 10000 });
       setStockedIds(new Set(data.items.map((i) => i.product_id)));
     } catch {
       // Fall back to empty set — backend will still reject duplicates
@@ -186,6 +209,7 @@ export default function InventoryPage() {
   const handleStockSuccess = () => {
     setShowStockModal(false);
     refetch();
+    refetchAll();
   };
 
   /* ── No store selected ── */
@@ -225,6 +249,26 @@ export default function InventoryPage() {
           Stock product
         </button>
       </PageHeader>
+
+      {/* ── Summary stat cards ── */}
+      <div className="inventory-page__stats">
+        <div className="inventory-page__stat-card">
+          <span className="inventory-page__stat-label">Total Products</span>
+          <span className="inventory-page__stat-value">{stats.totalProducts}</span>
+        </div>
+        <div className="inventory-page__stat-card">
+          <span className="inventory-page__stat-label">Total Units</span>
+          <span className="inventory-page__stat-value">{stats.totalUnits}</span>
+        </div>
+        <div className="inventory-page__stat-card">
+          <span className="inventory-page__stat-label">Low Stock</span>
+          <span className="inventory-page__stat-value inventory-page__stat-value--warning">{stats.lowStock}</span>
+        </div>
+        <div className="inventory-page__stat-card">
+          <span className="inventory-page__stat-label">Out of Stock</span>
+          <span className="inventory-page__stat-value inventory-page__stat-value--danger">{stats.outOfStock}</span>
+        </div>
+      </div>
 
       {error && <ErrorBanner message={error} />}
 

@@ -20,6 +20,61 @@
   cursor: not-allowed;
 }
 
+/* ── Stat cards ── */
+
+.inventory-page__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.inventory-page__stat-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inventory-page__stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+}
+
+.inventory-page__stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.1;
+}
+
+.inventory-page__stat-value--warning {
+  color: var(--color-warning, #b45309);
+}
+
+.inventory-page__stat-value--danger {
+  color: var(--color-danger, #991b1b);
+}
+
+@media (max-width: 768px) {
+  .inventory-page__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .inventory-page__stats {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Toolbar ── */
 
 .inventory-page__toolbar-card {
