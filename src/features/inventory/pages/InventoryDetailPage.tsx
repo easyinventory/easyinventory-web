@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   getInventoryEntry,
   updateInventoryEntry,
@@ -40,6 +40,7 @@ function formatPrice(value: string | null): string {
 export default function InventoryDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { selectedStoreId } = useStore();
   const storeId = selectedStoreId ?? "";
 
@@ -200,7 +201,11 @@ export default function InventoryDetailPage() {
     refetch();
   };
 
-  const backTo = { label: "Back to Inventory", path: "/inventory" };
+  const navState = location.state as { from?: string; zoneId?: string } | null;
+  const cameFromHeatmap = navState?.from === "heatmap";
+  const backTo = cameFromHeatmap
+    ? { label: "Back to Heatmap", path: "/inventory/heatmap", state: { zoneId: navState?.zoneId } as Record<string, unknown> }
+    : { label: "Back to Inventory", path: "/inventory" };
 
   /* ── Build subtitle: SKU · Category ── */
   const subtitle = [item?.product.sku, item?.product.category]

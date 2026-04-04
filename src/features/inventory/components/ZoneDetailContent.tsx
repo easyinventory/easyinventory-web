@@ -46,7 +46,7 @@ export default function ZoneDetailContent({ zone }: ZoneDetailContentProps) {
             <li
               key={item.inventory_id}
               className="zone-detail-content__item"
-              onClick={() => navigate(`/inventory/${item.inventory_id}`)}
+              onClick={() => navigate(`/inventory/${item.inventory_id}`, { state: { from: "heatmap", zoneId: zone.zone_id } })}
               style={{ cursor: "pointer" }}
             >
               <div className="zone-detail-content__item-header">
@@ -74,7 +74,7 @@ export default function ZoneDetailContent({ zone }: ZoneDetailContentProps) {
                   className="zone-detail-content__item-link"
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate(`/inventory/${item.inventory_id}`);
+                    navigate(`/inventory/${item.inventory_id}`, { state: { from: "heatmap", zoneId: zone.zone_id } });
                   }}
                 >
                   View details ›

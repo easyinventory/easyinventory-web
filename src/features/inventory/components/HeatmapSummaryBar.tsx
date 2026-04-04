@@ -23,26 +23,26 @@ export default function HeatmapSummaryBar({ data }: HeatmapSummaryBarProps) {
   return (
     <div className="heatmap-summary">
       <div className="heatmap-summary__card">
+        <span className="heatmap-summary__label">Total Products</span>
         <span className="heatmap-summary__value">{totalItems}</span>
-        <span className="heatmap-summary__label">Total items stocked</span>
       </div>
       <div className="heatmap-summary__card">
+        <span className="heatmap-summary__label">In Stock</span>
         <span className="heatmap-summary__value heatmap-summary__value--success">
           {inStock}
         </span>
-        <span className="heatmap-summary__label">In stock</span>
       </div>
       <div className="heatmap-summary__card">
+        <span className="heatmap-summary__label">Low Stock</span>
         <span className="heatmap-summary__value heatmap-summary__value--warning">
           {lowStock}
         </span>
-        <span className="heatmap-summary__label">Low stock</span>
       </div>
       <div className="heatmap-summary__card">
+        <span className="heatmap-summary__label">Out of Stock</span>
         <span className="heatmap-summary__value heatmap-summary__value--danger">
           {outOfStock}
         </span>
-        <span className="heatmap-summary__label">Out of stock</span>
       </div>
     </div>
   );

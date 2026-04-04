@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useStore } from "../../store-layout/context/useStore";
 import { getZoneInventorySummary } from "../../analytics/api/analyticsApi";
 import type { ZoneInventorySummaryResponse, ZoneInventorySummary as ZoneSummary } from "../../analytics/api/analyticsTypes";
@@ -14,7 +15,9 @@ import "./InventoryHeatmapPage.css";
 
 export default function InventoryHeatmapPage() {
   const { selectedStoreId, selectedStoreName } = useStore();
-  const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
+  const location = useLocation();
+  const incomingZoneId = (location.state as { zoneId?: string } | null)?.zoneId ?? null;
+  const [selectedZoneId, setSelectedZoneId] = useState<string | null>(incomingZoneId);
 
   /* ── Fetch zone inventory summary ── */
   const fetchSummary = useCallback(

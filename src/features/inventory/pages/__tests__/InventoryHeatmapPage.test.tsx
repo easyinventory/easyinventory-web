@@ -61,7 +61,7 @@ describe("InventoryHeatmapPage", () => {
 
     renderPage();
     expect(
-      await screen.findByTestId("error-banner"),
+      await screen.findByText("Something went wrong. Please try again."),
     ).toBeInTheDocument();
   });
 
@@ -144,6 +144,7 @@ describe("InventoryHeatmapPage", () => {
 
     renderPage();
     expect(screen.getByText("Inventory Heatmap")).toBeInTheDocument();
-    expect(screen.getByText("Inventory")).toBeInTheDocument(); // back link
+    const backLink = screen.getByRole("link", { name: /Inventory/i });
+    expect(backLink).toHaveAttribute("href", "/inventory");
   });
 });
