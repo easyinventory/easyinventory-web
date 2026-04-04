@@ -43,43 +43,38 @@ export default function ZoneDetailContent({ zone }: ZoneDetailContentProps) {
       ) : (
         <ul className="zone-detail-content__list">
           {zone.items.map((item) => (
-            <li
-              key={item.inventory_id}
-              className="zone-detail-content__item"
-              onClick={() => navigate(`/inventory/${item.inventory_id}`, { state: { from: "heatmap", zoneId: zone.zone_id } })}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="zone-detail-content__item-header">
-                <span className="zone-detail-content__item-name">
-                  {item.product_name}
-                </span>
-                <StockBadge
-                  quantity={item.quantity}
-                  threshold={item.low_stock_threshold}
-                />
-              </div>
-              <div className="zone-detail-content__item-meta">
-                {item.sku && (
-                  <span className="zone-detail-content__item-sku">{item.sku}</span>
-                )}
-                <span className="zone-detail-content__item-qty">
-                  Qty: <strong>{item.quantity}</strong>
-                  {item.low_stock_threshold !== null && (
-                    <span className="zone-detail-content__item-threshold">
-                      {" "}/ min {item.low_stock_threshold}
-                    </span>
+            <li key={item.inventory_id} className="zone-detail-content__item">
+              <button
+                type="button"
+                className="zone-detail-content__item-btn"
+                onClick={() => navigate(`/inventory/${item.inventory_id}`, { state: { from: "heatmap", zoneId: zone.zone_id } })}
+              >
+                <div className="zone-detail-content__item-header">
+                  <span className="zone-detail-content__item-name">
+                    {item.product_name}
+                  </span>
+                  <StockBadge
+                    quantity={item.quantity}
+                    threshold={item.low_stock_threshold}
+                  />
+                </div>
+                <div className="zone-detail-content__item-meta">
+                  {item.sku && (
+                    <span className="zone-detail-content__item-sku">{item.sku}</span>
                   )}
-                </span>
-                <button
-                  className="zone-detail-content__item-link"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/inventory/${item.inventory_id}`, { state: { from: "heatmap", zoneId: zone.zone_id } });
-                  }}
-                >
-                  View details ›
-                </button>
-              </div>
+                  <span className="zone-detail-content__item-qty">
+                    Qty: <strong>{item.quantity}</strong>
+                    {item.low_stock_threshold !== null && (
+                      <span className="zone-detail-content__item-threshold">
+                        {" "}/ min {item.low_stock_threshold}
+                      </span>
+                    )}
+                  </span>
+                  <span className="zone-detail-content__item-link">
+                    View details ›
+                  </span>
+                </div>
+              </button>
             </li>
           ))}
         </ul>

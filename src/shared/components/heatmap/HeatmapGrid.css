@@ -145,7 +145,8 @@
   transition: opacity 0.12s;
 }
 
-.heatmap-grid__cell--zone:hover .heatmap-grid__tooltip {
+.heatmap-grid__cell--zone:hover .heatmap-grid__tooltip,
+.heatmap-grid__cell--zone:focus-visible .heatmap-grid__tooltip {
   opacity: 1;
 }
 

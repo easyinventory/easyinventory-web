@@ -121,22 +121,41 @@
   color: var(--color-text-tertiary);
 }
 
-/* ── View details link (revealed on hover) ── */
+/* ── Full-row interactive button ── */
+
+.zone-detail-content__item-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.zone-detail-content__item-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── View details link (revealed on hover/focus) ── */
 
 .zone-detail-content__item-link {
   font-size: 11px;
-  font-family: var(--font-sans);
   color: var(--color-primary);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
   margin-left: auto;
   opacity: 0;
   transition: opacity 0.12s;
   white-space: nowrap;
 }
 
-.zone-detail-content__item:hover .zone-detail-content__item-link {
+.zone-detail-content__item:hover .zone-detail-content__item-link,
+.zone-detail-content__item-btn:focus-visible .zone-detail-content__item-link {
   opacity: 1;
 }

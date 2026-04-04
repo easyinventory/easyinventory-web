@@ -111,12 +111,16 @@ export default function InventoryPage() {
 
   /* ── Refresh stocked IDs for Stock modal ── */
   const refreshStockedIds = useCallback(async () => {
-    if (!storeId) return;
+    if (!storeId) {
+      setStockedIds(new Set());
+      return;
+    }
     try {
       const data = await listInventory(storeId, { page_size: 10000 });
       setStockedIds(new Set(data.items.map((i) => i.product_id)));
     } catch {
       // Fall back to empty set — backend will still reject duplicates
+      setStockedIds(new Set());
     }
   }, [storeId]);
 
