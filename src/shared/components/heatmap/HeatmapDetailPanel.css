@@ -1,0 +1,86 @@
+/* ═══════════════════════════════════════════════════════
+   HeatmapDetailPanel — Right-side zone detail panel
+   ═══════════════════════════════════════════════════════ */
+
+.heatmap-detail {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  height: 100%;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Empty state ── */
+
+.heatmap-detail__empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+}
+
+.heatmap-detail__empty-icon {
+  color: var(--color-text-tertiary);
+  opacity: 0.5;
+}
+
+.heatmap-detail__empty-text {
+  font-size: 13px;
+  color: var(--color-text-tertiary);
+  text-align: center;
+}
+
+/* ── Header ── */
+
+.heatmap-detail__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+}
+
+.heatmap-detail__color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.heatmap-detail__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.heatmap-detail__cell-count {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+}
+
+/* ── Divider ── */
+
+.heatmap-detail__divider {
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* ── Content ── */
+
+.heatmap-detail__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
