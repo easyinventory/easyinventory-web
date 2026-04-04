@@ -5,7 +5,7 @@ import "./PageHeader.css";
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
-  backTo?: { label: string; path: string };
+  backTo?: { label: string; path: string; state?: Record<string, unknown> };
   children?: React.ReactNode;
 }
 
@@ -19,7 +19,7 @@ export default memo(function PageHeader({
     <div className="page-header">
       <div>
         {backTo && (
-          <Link to={backTo.path} className="page-header__back">
+          <Link to={backTo.path} state={backTo.state} className="page-header__back">
             ← {backTo.label}
           </Link>
         )}

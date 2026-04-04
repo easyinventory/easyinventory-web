@@ -1,0 +1,24 @@
+/* ═══════════════════════════════════════════════════════
+   HeatmapLegend — Color scale bar with labels
+   ═══════════════════════════════════════════════════════ */
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.heatmap-legend__label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.heatmap-legend__bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  min-width: 120px;
+  max-width: 200px;
+}

@@ -1,0 +1,55 @@
+/* ═══════════════════════════════════════════════════════
+   HeatmapSummaryBar — Store-wide stock health at a glance
+   ═══════════════════════════════════════════════════════ */
+
+.heatmap-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.heatmap-summary__card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.heatmap-summary__value {
+  font-size: 28px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+  line-height: 1.1;
+}
+
+.heatmap-summary__value--success {
+  color: var(--color-success);
+}
+
+.heatmap-summary__value--warning {
+  color: var(--color-warning);
+}
+
+.heatmap-summary__value--danger {
+  color: var(--color-danger);
+}
+
+.heatmap-summary__label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 600px) {
+  .heatmap-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

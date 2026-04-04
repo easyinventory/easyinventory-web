@@ -154,8 +154,12 @@ const LayoutGrid = memo(function LayoutGrid({
         // Toggle cell in editing set
         const key = ck(r, c);
         const cellInfo = cellMap.get(key);
+        // Allow re-adding cells that belong to the item being edited
+        const belongsToEditingItem =
+          (editingType === "zone" && cellInfo?.zoneId === editingId) ||
+          (editingType === "fixture" && cellInfo?.fixtureId === editingId);
         // Don't allow adding a cell that belongs to ANOTHER occupied zone/fixture
-        if (cellInfo?.isOccupied && !editingKeySet.has(key)) return;
+        if (cellInfo?.isOccupied && !editingKeySet.has(key) && !belongsToEditingItem) return;
 
         const newCells = editingKeySet.has(key)
           ? editingCells.filter(
@@ -188,6 +192,8 @@ const LayoutGrid = memo(function LayoutGrid({
       isEditing,
       isPlacing,
       cellMap,
+      editingId,
+      editingType,
       editingKeySet,
       editingCells,
       onEditingCellsChange,
@@ -277,21 +283,29 @@ const LayoutGrid = memo(function LayoutGrid({
           const info = cellMap.get(key);
           const isFreeformSelected = freeformKeySet.has(key);
           const isEditMember = isEditing && editingKeySet.has(key);
+          // A cell belongs to the item being edited but was deselected
+          const isEditDeselected =
+            isEditing &&
+            !editingKeySet.has(key) &&
+            ((editingType === "zone" && info?.zoneId === editingId) ||
+              (editingType === "fixture" && info?.fixtureId === editingId));
           const isEditAddable =
-            isEditing && !editingKeySet.has(key) && !info?.isOccupied;
+            isEditing && !editingKeySet.has(key) && (!info?.isOccupied || isEditDeselected);
           const isSelectedItem =
             selectedItemId !== null &&
-            (info?.zoneId === selectedItemId ||
-              info?.fixtureId === selectedItemId);
+            !isEditDeselected &&
+            (isEditMember
+              ? editingId === selectedItemId
+              : (info?.zoneId === selectedItemId ||
+                info?.fixtureId === selectedItemId));
           const showPlus =
             (isPlacing && !info?.isOccupied && !isFreeformSelected) ||
             isEditAddable;
 
           const cellClass = [
             "layout-grid__cell",
-            info?.zoneId && !info?.fixtureId && "layout-grid__cell--zone",
-            info?.fixtureId && "layout-grid__cell--fixture",
-            info?.fixtureType === "WALL" && "layout-grid__cell--fixture-wall",
+            info?.zoneId && !info?.fixtureId && !isEditDeselected && "layout-grid__cell--zone",
+            info?.fixtureId && !isEditDeselected && "layout-grid__cell--fixture",
             isSelectedItem && "layout-grid__cell--selected-item",
             isFreeformSelected && "layout-grid__cell--freeform-selected",
             isEditMember && "layout-grid__cell--editing-member",
@@ -305,7 +319,9 @@ const LayoutGrid = memo(function LayoutGrid({
           /* Label to show in every cell of the zone/fixture */
           const cellLabel = isEditMember && editingLabel
             ? editingLabel
-            : info?.fixtureId
+            : isEditDeselected
+              ? undefined
+              : info?.fixtureId
               ? info.fixtureName
               : info?.zoneName;
           const cellLabelType = isEditMember && editingType
@@ -319,11 +335,11 @@ const LayoutGrid = memo(function LayoutGrid({
               style={
                 {
                   ...(info?.zoneBg &&
-                    !info?.fixtureId && {
+                    !info?.fixtureId && !isEditDeselected && {
                       "--zone-bg": info.zoneBg,
                       "--zone-hex": info.zoneHex,
                     }),
-                  ...(info?.fixtureId && {
+                  ...(info?.fixtureId && !isEditDeselected && {
                     "--fixture-bg": info.fixtureBg,
                     "--fixture-hex": info.fixtureHex,
                   }),

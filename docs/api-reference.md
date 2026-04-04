@@ -611,6 +611,7 @@ All request/response types are defined in `src/shared/types/` and exported throu
 | `supplier.ts` | `Supplier`, `SupplierCreateRequest`, `SupplierUpdateRequest` |
 | `store.ts` | `Store`, `StoreLayout`, `Cell`, `LayoutZone`, `ZoneCreateRequest`, `ZoneUpdateRequest`, `LayoutFixture`, `FixtureType`, `FixtureCreateRequest`, `FixtureUpdateRequest`, `ZoneColorDef`, `FixtureTypeDef` |
 | `inventory.ts` | `StoreInventoryItem`, `InventoryProductSummary`, `PaginatedInventoryResponse`, `StockProductRequest`, `UpdateInventoryRequest`, `RecordReceiptRequest`, `RecordSaleRequest`, `InventoryMovement`, `MovementType`, `InventoryPlacement`, `AssignZoneRequest` |
+| `heatmap.ts` | `HeatmapZone`, `HeatmapFixture`, `HeatmapGridConfig`, `HeatmapColorScale` |
 | `admin.ts` | `OrgListItem`, `CreateOrgRequest`, `RenameOrgRequest`, `TransferOwnershipRequest`, `UserListItem` |
 | `index.ts` | Re-exports all of the above |
 
