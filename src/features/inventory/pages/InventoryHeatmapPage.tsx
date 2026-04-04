@@ -9,6 +9,7 @@ import { LoadingState, ErrorBanner, EmptyState } from "../../../shared/component
 import { useApiData } from "../../../shared/hooks";
 import ZoneDetailContent from "../components/ZoneDetailContent";
 import HeatmapSummaryBar from "../components/HeatmapSummaryBar";
+import ZoneAttentionList from "../components/ZoneAttentionList";
 import "./InventoryHeatmapPage.css";
 
 export default function InventoryHeatmapPage() {
@@ -149,6 +150,12 @@ export default function InventoryHeatmapPage() {
               )}
             </div>
           )}
+
+          <ZoneAttentionList
+            data={data}
+            selectedZoneId={selectedZoneId}
+            onZoneClick={setSelectedZoneId}
+          />
         </>
       )}
     </div>
