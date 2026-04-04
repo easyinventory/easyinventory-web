@@ -93,6 +93,39 @@ export default function HeatmapGrid({
     return map;
   }, [zones, fixtures, colorScale]);
 
+  /* ── Compute label placement: one label per zone on its center cell ── */
+  const zoneLabelCells = useMemo(() => {
+    const labels = new Map<string, string>(); // cell key → zone name
+    for (const zone of zones) {
+      if (zone.cells.length === 0) continue;
+      // Find centroid
+      let sumR = 0, sumC = 0;
+      for (const c of zone.cells) { sumR += c.row; sumC += c.col; }
+      const avgR = sumR / zone.cells.length;
+      const avgC = sumC / zone.cells.length;
+      // Find the cell closest to centroid
+      let bestCell = zone.cells[0];
+      let bestDist = Infinity;
+      for (const c of zone.cells) {
+        const dist = Math.abs(c.row - avgR) + Math.abs(c.col - avgC);
+        if (dist < bestDist) { bestDist = dist; bestCell = c; }
+      }
+      labels.set(ck(bestCell.row, bestCell.col), zone.name);
+    }
+    return labels;
+  }, [zones]);
+
+  /* ── Build tooltip text per zone cell ── */
+  const zoneTooltipMap = useMemo(() => {
+    const tips = new Map<string, string>(); // zoneId → tooltip text
+    for (const zone of zones) {
+      if (zone.tooltipText) {
+        tips.set(zone.id, zone.tooltipText);
+      }
+    }
+    return tips;
+  }, [zones]);
+
   /* ── Selected zone object ── */
   const selectedZone = useMemo(
     () => zones.find((z) => z.id === selectedZoneId) ?? null,
@@ -158,9 +191,14 @@ export default function HeatmapGrid({
           }
           aria-pressed={isZone && info?.type === "zone" ? info.zoneId === selectedZoneId : undefined}
         >
-          <span className="heatmap-grid__cell-coord">
-            {row},{col}
-          </span>
+          {isZone && info?.type === "zone" && zoneTooltipMap.has(info.zoneId) && (
+            <span className="heatmap-grid__tooltip">{zoneTooltipMap.get(info.zoneId)}</span>
+          )}
+          {zoneLabelCells.has(ck(row, col)) ? (
+            <span className="heatmap-grid__zone-label">
+              {zoneLabelCells.get(ck(row, col))}
+            </span>
+          ) : null}
         </div>,
       );
     }

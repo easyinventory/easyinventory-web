@@ -14,6 +14,8 @@ export interface HeatmapZone {
   cells: Cell[];
   /** Normalized metric value: 0.0 (best) to 1.0 (worst) */
   heatValue: number;
+  /** Optional tooltip text shown on hover */
+  tooltipText?: string;
 }
 
 /** A fixture rendered as a non-interactive cell on the heatmap. */

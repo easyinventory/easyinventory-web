@@ -14,6 +14,7 @@ import ProductListPage from "../features/products/pages/ProductListPage";
 import ProductDetailPage from "../features/products/pages/ProductDetailPage";
 import ProductFormPage from "../features/products/pages/ProductFormPage";
 import InventoryPage from "../features/inventory/pages/InventoryPage";
+import InventoryHeatmapPage from "../features/inventory/pages/InventoryHeatmapPage";
 import InventoryDetailPage from "../features/inventory/pages/InventoryDetailPage";
 import StoreLayoutPage from "../features/store-layout/pages/StoreLayoutPage";
 import AnalyticsPage from "../features/analytics/pages/AnalyticsPage";
@@ -44,8 +45,11 @@ export default function App() {
                 <Route path="/products/new" element={<ProductFormPage />} />
                 <Route path="/products/:id" element={<ProductDetailPage />} />
                 <Route path="/products/:id/edit" element={<ProductFormPage />} />
-                <Route path="/inventory" element={<InventoryPage />} />
-                <Route path="/inventory/:id" element={<InventoryDetailPage />} />
+                <Route path="/inventory">
+                  <Route index element={<InventoryPage />} />
+                  <Route path="heatmap" element={<InventoryHeatmapPage />} />
+                  <Route path=":id" element={<InventoryDetailPage />} />
+                </Route>
                 <Route path="/store-layout" element={<StoreLayoutPage />} />
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/suppliers" element={<SuppliersPage />} />
