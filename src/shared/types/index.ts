@@ -42,3 +42,4 @@ export type {
   InventoryPlacement,
   AssignZoneRequest,
 } from "./inventory";
+export type * from "./heatmap";

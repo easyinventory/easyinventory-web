@@ -204,9 +204,10 @@ src/
 | `shared/api/` | `client.ts` — single Axios instance with auth token + org ID interceptors |
 | `shared/components/layout/` | `AppLayout` (sidebar + content outlet), `Sidebar` (nav + user info + collapse), `PageHeader` (title/subtitle/back/actions), `OrgSwitcher` (multi-org dropdown), `StoreSwitcher` (per-org store dropdown), `AuthLayout` (split-screen branding) |
 | `shared/components/ui/` | `LoadingState`, `ErrorBanner`, `SuccessBanner`, `EmptyState`, `ErrorBoundary`, `Pagination` |
+| `shared/components/heatmap/` | `HeatmapGrid` (metric-agnostic store layout heatmap), `HeatmapDetailPanel` (composable right-side detail panel), `HeatmapLegend` (color scale bar), `stockHealthColorScale` (predefined green→red color scale) |
 | `shared/constants/` | `roles.ts` (role enums + helper functions), `navigation.tsx` (nav item config array), `nav-icons.tsx` (inline SVG icon components) |
 | `shared/hooks/` | `useApiData` (data fetching on mount), `useAsyncAction` (user-triggered mutations), `usePagination` (client-side table pagination) |
-| `shared/types/` | `auth.ts`, `org.ts`, `admin.ts`, `product.ts`, `supplier.ts`, `store.ts` (stores, layouts, zones, fixtures, cells), `inventory.ts` (inventory items, movements, placements, pagination) + `index.ts` barrel |
+| `shared/types/` | `auth.ts`, `org.ts`, `admin.ts`, `product.ts`, `supplier.ts`, `store.ts` (stores, layouts, zones, fixtures, cells), `inventory.ts` (inventory items, movements, placements, pagination), `heatmap.ts` (heatmap zones, fixtures, grid config, color scales) + `index.ts` barrel |
 | `shared/utils/` | `errors.ts` (`extractApiError`), `format.ts` (`formatDate`, `formatRoleLabel`) + `index.ts` barrel |
 
 ---
