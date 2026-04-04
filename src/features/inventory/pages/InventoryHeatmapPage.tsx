@@ -8,6 +8,7 @@ import PageHeader from "../../../shared/components/layout/PageHeader";
 import { LoadingState, ErrorBanner, EmptyState } from "../../../shared/components/ui";
 import { useApiData } from "../../../shared/hooks";
 import ZoneDetailContent from "../components/ZoneDetailContent";
+import HeatmapSummaryBar from "../components/HeatmapSummaryBar";
 import "./InventoryHeatmapPage.css";
 
 export default function InventoryHeatmapPage() {
@@ -107,6 +108,8 @@ export default function InventoryHeatmapPage() {
         <EmptyState message="No zones defined in the active layout. Create zones in the Store Layout editor to see the heatmap." />
       ) : (
         <>
+          <HeatmapSummaryBar data={data} />
+
           <HeatmapGrid
             config={{ rows: data.rows, cols: data.cols }}
             zones={heatmapZones}

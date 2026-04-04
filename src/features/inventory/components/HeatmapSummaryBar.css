@@ -1,0 +1,50 @@
+/* ═══════════════════════════════════════════════════════
+   HeatmapSummaryBar — Store-wide stock health at a glance
+   ═══════════════════════════════════════════════════════ */
+
+.heatmap-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.heatmap-summary__card {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.heatmap-summary__value {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.heatmap-summary__value--success {
+  color: var(--color-success);
+}
+
+.heatmap-summary__value--warning {
+  color: var(--color-warning);
+}
+
+.heatmap-summary__value--danger {
+  color: var(--color-danger);
+}
+
+.heatmap-summary__label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  margin-top: 2px;
+}
+
+@media (max-width: 600px) {
+  .heatmap-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
