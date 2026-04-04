@@ -34,12 +34,22 @@ export default function InventoryHeatmapPage() {
         z.total_items === 0
           ? 0
           : (z.low_stock_count + z.out_of_stock_count) / z.total_items;
+
+      // Build tooltip text
+      let tooltip = `${z.zone_name}: ${z.total_items} item${z.total_items !== 1 ? "s" : ""}`;
+      if (z.out_of_stock_count > 0) {
+        tooltip += ` \u00b7 ${z.out_of_stock_count} out`;
+      } else if (z.low_stock_count > 0) {
+        tooltip += ` \u00b7 ${z.low_stock_count} low`;
+      }
+
       return {
         id: z.zone_id,
         name: z.zone_name,
         color: z.zone_color,
         cells: z.cells,
         heatValue: healthRatio,
+        tooltipText: tooltip,
       };
     });
   }, [data]);

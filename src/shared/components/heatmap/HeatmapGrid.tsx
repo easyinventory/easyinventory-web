@@ -115,6 +115,17 @@ export default function HeatmapGrid({
     return labels;
   }, [zones]);
 
+  /* ── Build tooltip text per zone cell ── */
+  const zoneTooltipMap = useMemo(() => {
+    const tips = new Map<string, string>(); // zoneId → tooltip text
+    for (const zone of zones) {
+      if (zone.tooltipText) {
+        tips.set(zone.id, zone.tooltipText);
+      }
+    }
+    return tips;
+  }, [zones]);
+
   /* ── Selected zone object ── */
   const selectedZone = useMemo(
     () => zones.find((z) => z.id === selectedZoneId) ?? null,
@@ -180,6 +191,9 @@ export default function HeatmapGrid({
           }
           aria-pressed={isZone && info?.type === "zone" ? info.zoneId === selectedZoneId : undefined}
         >
+          {isZone && info?.type === "zone" && zoneTooltipMap.has(info.zoneId) && (
+            <span className="heatmap-grid__tooltip">{zoneTooltipMap.get(info.zoneId)}</span>
+          )}
           {zoneLabelCells.has(ck(row, col)) ? (
             <span className="heatmap-grid__zone-label">
               {zoneLabelCells.get(ck(row, col))}
