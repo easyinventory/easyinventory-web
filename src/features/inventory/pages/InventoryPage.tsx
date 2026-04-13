@@ -89,7 +89,7 @@ export default function InventoryPage() {
   /* ── Fetch all inventory (unfiltered) for stats + stocked IDs ── */
   const fetchAllInventory = useCallback(() => {
     if (!storeId) return Promise.resolve(null);
-    return listInventory(storeId, { page_size: 100 });
+    return listInventory(storeId, { page_size: 100000 });
   }, [storeId]);
   const { data: allInventory, refetch: refetchAll } =
     useApiData<PaginatedInventoryResponse | null>(fetchAllInventory, [storeId]);
@@ -116,7 +116,7 @@ export default function InventoryPage() {
       return;
     }
     try {
-      const data = await listInventory(storeId, { page_size: 10000 });
+      const data = await listInventory(storeId, { page_size: 100000 });
       setStockedIds(new Set(data.items.map((i) => i.product_id)));
     } catch {
       // Fall back to empty set — backend will still reject duplicates
