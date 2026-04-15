@@ -91,7 +91,6 @@ export const navItems: NavItem[] = [
     description: "View sales trends, inventory turnover, and performance metrics.",
     ctaLabel: "View Analytics",
     icon: <IconAnalytics />,
-    disabled: true,
   },
   {
     key: "organization",
